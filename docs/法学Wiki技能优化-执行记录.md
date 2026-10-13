@@ -170,3 +170,114 @@
 - 已知限制：块锚点“待核”（未在真实 Obsidian 全版本实测）；`extract_pdf` 真实提取路径未在依赖齐全环境实跑（pymupdf 可选依赖）；行为级场景（只读哈希一致、四场景压力测试）待 WIKI-08 抽测执行；真实 vault 只读回归未执行（未获授权）。
 - 未实施（后续批次）：WIKI-03、WIKI-07、WIKI-08、WIKI-10、WIKI-11、WIKI-12。
 - 铁律核对：全程未执行 `git push`（分支 `work/wiki-audit-v2610.9` 仅本地）。
+
+
+## WIKI-03 官方模板与论文—案例同步闭环
+
+- 状态：已完成
+- 实施提交：`c87bc17`
+- 修改文件：`legal-wiki-audit-repair/scripts/`（`case_link_utils.py` 新增；`sync_paper_case_links.py`、`scan_missing_paper_case_links.py`、`verify_case_link_sections.py`、`insert_norm_sections.py` 重写）；`legal-wiki-audit-repair/references/batch-operations.md`；`legal-research-wiki/assets/templates/case.md`；`tests/test_paper_case_sync.py`（新增 5）。
+- 原问题与复现样例：同步脚本只认旧的无链接写法、单层目录，官方模板 `[[ ]]` 写法扫不到；`TARGETS` 写在源码里；缺漏扫描只扫一层；预演没有具体 diff；验收用 `len()`、同步用 CJK 口径（同步通过而验收误报）；空章节追加崩溃。
+- 实际改动：共享模块统一章节提取（文末/空章节）、条目解析（`[[ ]]`/无链接/别名/中英文冒号）、唯一 `cjk_len` 与关系分类；同步改 `--plan JSON` 输入、预演输出具体 diff 与文件哈希、`expect_sha256` 冲突即停、批次含备份→修改→updated→日志→写后复核、部分失败报告已改/未改；扫描递归化并支持 `--plan`；验收与同步同口径并统计关系分布；规范依据插入同样 `--plan` 化。
+- 验收命令或评估场景：`tests/test_paper_case_sync.py` 官方模板全流程（扫描→预演→同步→二次同步 0 条→验收）。
+- 实际结果：通过。RED 5/5（对 HEAD 旧脚本全失败）→ GREEN；全套 189/189 双环境。
+- 兼容性与恢复验证：哈希冲突不写入；备份拒绝覆盖；二次执行幂等；旧写法继续可用。
+- 剩余问题：无。
+
+## WIKI-10 法规范效力与案件去重的审计检查
+
+- 状态：已完成
+- 实施提交：`2adafc5`
+- 修改文件：`legal-wiki-audit-repair/scripts/multimodal_audit.py`（新增第 7 项检查）、`legal-wiki-audit-repair/SKILL.md`、`legal-wiki-audit-repair/README.md`、根 `README.md`、`legal-research-wiki/references/case-ingestion.md`、`legal-research-wiki/assets/templates/SCHEMA.md`、`legal-research-wiki/assets/templates/case.md`；`tests/test_audit_special_checks.py`（新增 8）。
+- 原问题与复现样例：深检与每日检修检不出——法规范页缺 `效力状态/核验日期`、核验日期超期、失效规范被概念/比较页当现行依据引用、同一案号（全半角括号不同）重复页面。
+- 实际改动：新增第 7 项「法学专项」——NORM-01/02/03 与 DUP-01（案号全半角与空格规范化为主键，辅以法院/裁判日期展示；只报告不合并）；`norm_verify_max_age_days`（默认 365）可配置；「七项深检」文档与每日检修回归项同步；案例摄入补“按案号查重”纪律；案例模板与 SCHEMA 增可选 `authority`（权威层级）。
+- 验收命令或评估场景：合成样例（缺字段/过期/被引用失效规范/全半角同案号两页）；`multimodal_audit.py <fixture> --json`。
+- 实际结果：通过。四类问题全部按预期报告；运行零写入（前后目录树哈希一致）；RED 8/8 → GREEN。
+- 兼容性与恢复验证：纯只读检查；新配置键缺省兼容。
+- 剩余问题：无。
+
+## WIKI-11 个人信息与脱敏检查
+
+- 状态：已完成
+- 实施提交：`2adafc5`（与 WIKI-10 同一检查项落地）
+- 修改文件：同上（`PRIV-01` 部分）。
+- 原问题与复现样例：没有任何个人信息格式检查；设计书脱敏规则没有落点。
+- 实际改动：可选检查（`--privacy` 或配置 `privacy.enabled`）：身份证号/手机号/银行卡号 + `privacy.extra_patterns`（设计书规则；非法正则拒绝）；命中值一律打码（前 3 后 2）；raw 提取物只报告不修改；默认关闭时在报告中说明。
+- 验收命令或评估场景：`--privacy` 合成样例（页面手机号 ×1；raw 内身份证/手机/银行卡各 ×1）；配置启用与非法正则两个边界。
+- 实际结果：通过。4/4 命中打码输出，全文号码不出现在任何输出；默认关闭不误报。
+- 兼容性与恢复验证：只读；默认关闭不影响既有库。
+- 剩余问题：无。
+
+## WIKI-13（第二批收尾）发布元数据与措辞一致性
+
+- 状态：已完成
+- 实施提交：`64792d5`
+- 修改文件：三个 `bundle-lock.json` 与 `bundle-release.json`（刷新）。
+- 验收命令或评估场景：`python3 tools/prepare_bundle_release.py --check`。
+- 实际结果：通过（`Bundle 2610.9.0 is consistent`）；全套 197/197 双环境（无依赖显式跳过 70）。
+- 兼容性与恢复验证：同版本刷新由工具设计支持。
+- 剩余问题：版本号与 CHANGELOG 条目留待发布决定。
+
+## 第二批小结（WIKI-03、10、11、13-2）
+
+- 已解决任务：WIKI-03、WIKI-10、WIKI-11、WIKI-13（第二批收尾）。
+- 变更文件：`legal-wiki-audit-repair/`（scripts：新增 `case_link_utils.py`，重写 sync/scan/verify/insert_norm 与 multimodal_audit；SKILL.md、README.md、references/batch-operations.md）；`legal-research-wiki/`（assets/templates：case.md、SCHEMA.md；references：case-ingestion.md）；根 `README.md`；tests：`test_paper_case_sync.py`、`test_audit_special_checks.py`（新增共 13）；bundle 三锁与清单。
+- 测试命令及结果：`python3 -X utf8 -m unittest discover -s tests` → 197/197（依赖齐全）；无依赖显式跳过 70；`--check` 一致。
+- 已知限制：块锚点“待核”（沿旧）；真实 vault 只读回归未执行（未获授权）。
+- 未实施（当时）：WIKI-07、WIKI-08、WIKI-12。
+- 铁律核对：仍未执行 `git push`。
+
+## WIKI-07 五种任务入口与模板边界
+
+- 状态：已完成
+- 实施提交：`2ee8eaa`
+- 修改文件：`legal-research-wiki/SKILL.md`、`assets/templates/wiki-design-brief.md`、`assets/templates/research-design.md`、`references/wiki-design-interview.md`；`tests/test_wiki07_task_entries.py`（新增 5）。
+- 原问题与复现样例：正文偏重“新建”；“先论文后案例”被写成固定规则；《设计书》与《研究设计页》两份模板各维护一张材料表（重复大表）。
+- 实际改动：新增“任务入口”五类（新建/增量摄入/查询/加深/审计修复）及路由与边界（增量不重启访谈、查询不建页不改库、已说明目的材料范围时不重复提问）；首批材料顺序改为按研究类型（论文导向推荐先论文）；设计书只写建库架构决定、D 节去大表并链接研究设计页；访谈参考补增量说明与常见错误。
+- 验收命令或评估场景：`tests/test_wiki07_task_entries.py`（五入口、边界语句、推荐顺序、模板去重）。
+- 实际结果：通过。RED 5/5 → GREEN；全套 202/202 双环境。
+- 兼容性与恢复验证：纯文档变更；既有引用路径不变。
+- 剩余问题：无。
+
+## WIKI-12 两技能职责归位与 SKILL.md 瘦身
+
+- 状态：已完成
+- 实施提交：`791d85b`（归位）、`2fd8645`（语言统一）、`58f0872`（瘦身）
+- 修改文件：`legal-wiki-audit-repair/references/`（迁入 literature-audit-and-repair、staged-deep-repair、systematic-vault-audit-and-optimization-ledger；新增 daily-maintenance-and-periodic-checks、obsidian-parsing-details、templating-and-false-graph-detection、technical-health-checklist、academic-usability-checklist）；`legal-research-wiki/references/`（新增 dual-track-isolation、directory-layout-and-page-types、material-routing；迁出三件）；两个 `SKILL.md` 与 `README.md`；`legal-research-wiki/references/pdf-paper-ingestion.md`；多份 `multimodal-*.md` 中文化与示例替换；`docs/WIKI-12-规则迁移对照.md`（新增）；`tests/test_wiki12_doc_ownership.py`、`tests/test_wiki12c_skill_slimming.py`（新增 8）。
+- 原问题与复现样例：审计细则存于建库技能（单装审计技能拿不到）；`staged-deep-repair.md` 与台账参考整篇英文；多份 multimodal 文档残留重复英文一级标题与理工示例；两个 SKILL 常驻篇幅过大。
+- 实际改动：三件审计参考迁入审计技能并更新全部引用（先改测试与引用、不删断言）；`staged-deep-repair`、`systematic-ledger` 全文中译（保留 `OPT-001`、`RULE-CANDIDATE-XXX`、`P0`—`P3` 等术语）；CVPR/ICCV/SIGGRAPH/Stable Diffusion/CVF 等示例替换为法学示例（保留 arXiv 预印本示例）；瘦身 research −23.7%（23,313→17,788 字节）、audit −32.1%（32,551→22,109 字节），迁移明细见对照文档。
+- 验收命令或评估场景：归属回归（4）、语言回归（6）、瘦身回归（4）；`--check` 与全套。
+- 实际结果：通过。RED 4/4、6/6 → GREEN；全套 213/213 双环境。
+- 兼容性与恢复验证：`git mv` 保留历史；跨技能引用按技能名解析；受保护关键词有测试守护。
+- 剩余问题：无。
+
+## WIKI-08 精确证据定位与行为回归体系
+
+- 状态：已完成
+- 实施提交：`34d3996`
+- 修改文件：`legal-research-wiki/assets/templates/SCHEMA.md`（新增“证据最小记录”）、`paper.md`、`case.md`（注入提示）；`legal-wiki-audit-repair/references/academic-usability-checklist.md`（证据定位抽查）；`legal-wiki-audit-repair/evals/behavior-runs.md`（新增）；两份 `evals/pressure-tests.md`（运行记录规范）；`tests/test_fixture_edge_cases.py`、`tests/test_template_end_to_end.py`、`tests/test_behavior_records.py`（新增 6）。
+- 原问题与复现样例：精确定位只写在方法论、未落到摄入结果与审计输入；行为评估只有场景描述、没有记录格式与实例；模板端到端与边界夹具没有成套回归。
+- 实际改动：证据最小记录（原件与稳定来源标识；定位＝PDF 页码/DOCX 章节段/音频时间戳；摘录标注原文或归纳；核验状态与时间、规范版本；受影响页面），优先用于条文、数字、裁判结果与论文核心主张；行为评估记录规范（输入/产物差异/判定/证据），Hermes 机器回归 4 项 + 五项核心行为抽测清单；三组测试（边界夹具、模板端到端、行为记录）。
+- 验收命令或评估场景：`tests/test_template_end_to_end.py`（摄入→检查→同步→幂等→恢复）；`tests/test_fixture_edge_cases.py`；`tests/test_behavior_records.py`。
+- 实际结果：通过。模板端到端全链路与备份原样回滚实测通过；全套 219/219 双环境（无依赖显式跳过 73）。
+- 兼容性与恢复验证：备份可原样回滚；行为“真实会话抽测”未执行，已在 `behavior-runs.md` 列为待执行（未写成已通过）。
+- 剩余问题：真实会话与其他宿主的抽测按行为清单执行；块锚点“待核”沿用。
+
+## WIKI-13（第三批收尾）发布元数据与措辞一致性
+
+- 状态：已完成
+- 实施提交：`36f3fbc`、`0713085`（补刷 `law-paper-writing/bundle-lock.json`）
+- 修改文件：三个 `bundle-lock.json` 与 `bundle-release.json`（刷新，含 WIKI-12b 的 citation-format 变更）。
+- 验收命令或评估场景：`python3 tools/prepare_bundle_release.py --check`。
+- 实际结果：通过（`Bundle 2610.9.0 is consistent`）。
+- 兼容性与恢复验证：同版本刷新由工具设计支持。
+- 剩余问题：版本号与 CHANGELOG 条目留待发布决定。
+
+## 第三批小结（WIKI-07、12、08、13-3）
+
+- 已解决任务：WIKI-07、WIKI-12、WIKI-08、WIKI-13（第三批收尾）。
+- 变更文件：见上方各任务条目与 `docs/WIKI-12-规则迁移对照.md`（瘦身逐条对照）。
+- 测试命令及结果：`python3 -X utf8 -m unittest discover -s tests` → 219/219（依赖齐全）；`/usr/bin/python3` 同命令 → `OK (skipped=73)`（显式跳过、无导入错误）；`prepare_bundle_release.py --check` 一致。
+- 已知限制：块锚点“待核”；真实 vault 只读回归未执行（未获授权）；宿主加载实测未执行；行为评估真实会话抽测待执行（清单与格式已备）。
+- 未实施：无。13 项任务与三批收尾全部完成。
+- 总体核对：基线 `84dab85` 起共 19 个本地提交（至 `0713085`）；全程未执行 `git push`（分支 `work/wiki-audit-v2610.9` 仅本地）。
