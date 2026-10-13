@@ -1,65 +1,70 @@
-# Wiki Content Completeness — Mandatory Discipline
+# Wiki 内容完整性 — 证据驱动的纪律
 
-> 来源：原独立技能 `wiki-content-completeness` v1.0.0，于 v3.0.0 合并入 `legal-research-wiki`（内容一条未删）。
-> 本文件是**强制纪律**：摄入任何素材建 Wiki 时，每页必须写满实质内容，不允许空壳页面。
+> 来源：原独立技能 `wiki-content-completeness` v1.0.0，于 v3.0.0 合并入 `legal-research-wiki`；2026-10 按“证据驱动”修正——移除诱导补写的硬指标（字数、链接数、“必须有反例”），保留并强化最高纪律：每页必须有来源支撑的实质内容。
 
-**CRITICAL RULE**: Every wiki page created during ingestion MUST contain substantive, detailed content. Empty pages with only metadata are worthless for academic work. This is non-negotiable.
+**核心规则**：页面的合格依据是**原文覆盖与具体证据**，不是字数、长度或链接数量——这些只作复核信号（见下）。空壳页面（只有元数据、占位文字或空章节）无价值；为通过检查而补写的内容同样是缺陷。
 
 ## When This Rule Applies
-- ALWAYS — when ingesting any file, paper, case, or document into a wiki
-- When creating concept pages, entity pages, comparison pages, or any wiki page
-- When the user says "摄入" (ingest), "建wiki", or "添加到知识库"
 
-## Content Requirements by Page Type
+- 摄入任何文件、论文、案例或文书时；
+- 创建概念页、实体页、比较页或任何正式页面时；
+- 用户说“摄入”“建 wiki”“添加到知识库”时。
 
-### Case Pages (案例实体页)
-Each case page MUST include:
-- 裁判日期 (date of judgment)
-- 来源 (source: 公报/指导案例/典型案例 etc.)
-- 案号 (case number)
-- 基本案情 (facts — full or summarized)
-- 裁判结果 (outcome)
-- 裁判要旨 (holding/key legal rule — the MOST important field)
-- 裁判依据 (legal basis — statutes cited)
-- Cross-references to at least 2 concept pages
+## 内容要求（按页面类型）
 
-### Paper Pages (论文实体页)
-Each paper page MUST include:
-- Author and affiliation
-- Full abstract or detailed content overview (not just one line)
-- Key arguments and conclusions
-- Research method used
-- Relevance to the wiki's domain
-- Cross-references to at least 2 concept pages
+### 案例页
 
-### Concept Pages (概念页)
-Each concept page MUST include:
-- Clear definition/explanation of the concept
-- Current state of knowledge from ingested sources
-- Specific examples from cases or papers
-- Contradictions or debates (if any)
-- Cross-references to at least 2 other pages
+裁判日期、来源、案号、基本案情、裁判结果、裁判要旨（最重要）、裁判依据、与相关概念页的关联；来源事实与研究分析分开。
+
+### 论文页
+
+作者与单位、完整摘要或详细内容概览、核心论点与结论、研究方法、与本库领域的相关性、与相关概念页的关联。
+
+### 概念页
+
+概念定义与规范基础、当前认识、代表文献、案例证据（正例必列；反例与边界例逐一检查——未找到时写明检索范围与结论限制）、学理争议、与其他页面的关联。
+
+## 合法状态词（如实表达优先）
+
+无法按理想结构写全时，使用明确状态，**不补造内容**：
+
+- **已核验**：逐项回读原文核对；
+- **原文未载明**：来源确实没有该信息（与“没去找”区分）；
+- **未发现材料**：检索范围内没有找到（须写明检索范围与结论限制）；
+- **待核验**：有线索但未核对；
+- **不适用**：该页类型不需要此部分（如方法论页无案例层）。
+
+**缺口记录与空壳页面分开**：带状态词的缺口记录是合格产出；“原文未载明／未发现材料”不得成为不读原文的借口——先穷尽来源，再如实标注。原文有明确要旨时摘录；没有时只写**标明身份的研究者归纳**，不补造“法院要旨”。
+
+## 复核信号（不是验收门槛）
+
+- 完整页通常有可观篇幅，过薄页面多半缺论点或结论——**体量只作筛查信号**；
+- 正式页一般有多个带理由的关联；材料本身只有一项可靠关联时，如实写并说明检索范围，不为凑数硬加；
+- 短篇批复、无独立结语的论文、暂未找到反例的比较、历史法版本：按实际内容如实表达即为合格。
 
 ## Anti-Patterns (NEVER DO)
-- ❌ Creating a page with only title + "详见原始文件"
-- ❌ Using placeholder text like "_待评估_" or "_待分类_"
-- ❌ One-line summaries for papers with rich content available
-- ❌ Batch-creating hundreds of empty shells
+
+- ❌ 只有标题 +“详见原始文件”的页面；
+- ❌ `_待评估_`、`_待分类_` 之类占位文字；
+- ❌ 为达到字数／链接数／反例数增写无出处内容；
+- ❌ 批量创建空壳页面；
+- ❌ 把“未发现材料”当作不检索的挡箭牌。
 
 ## Workflow for Filling Pages
 
-1. Read the source file completely
-2. Extract all substantive content
-3. Write the page with full details
-4. Add cross-references
-5. Verify the page has at least 500 characters of meaningful content
+1. 完整读取来源文件（含附录、脚注）；
+2. 提取全部实质内容（原文要旨摘录；其余为标明身份的归纳）；
+3. 写页面：必需章节写实；无法写实的用合法状态词；
+4. 建立有理由的关联（不为凑数）；
+5. 对照原文自查覆盖与证据落点，再进入验收。
 
 ## Verification Command
+
 ```bash
-# Find thin pages that need enrichment
+# 先筛薄页（信号），再逐页对照原文核查
 find wiki/entities wiki/concepts -name "*.md" -exec wc -c {} \; | sort -n | head -20
 ```
 
-## 六维质量检查（与主技能正文联动）
+## 与论文六维（质量信号）的关系
 
-合并自原技能后，主技能正文的六维标准继续适用（摘要≥50字纯中文 / 结论≥200字无碎片 / 无PDF残留 / 关键词干净 / YAML无引号嵌套 / 标题后空行）。本文件的"至少500字符"是底线，六维是质量门禁，两者都执行。
+论文页的六维检查（[pdf-paper-ingestion.md](pdf-paper-ingestion.md) 第六节）为**信号＋真实解析核验**：摘要与结论对照原文核验完整（外文术语、合法标点保留，不按“纯中文”机械删改）；YAML 按真实解析结果核验。字数与体量不作验收门槛；“原文未载明”“未发现材料”等状态是合格表达。
