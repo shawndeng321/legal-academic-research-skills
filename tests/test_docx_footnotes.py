@@ -7,10 +7,18 @@ import tempfile
 import unittest
 import zipfile
 
-from docx import Document
-from docx.enum.style import WD_STYLE_TYPE
-from docx.shared import Mm, Pt
-from lxml import etree
+try:
+    from docx import Document
+    from docx.enum.style import WD_STYLE_TYPE
+    from docx.shared import Mm, Pt
+    from lxml import etree
+except ImportError:  # pragma: no cover - 缺依赖时整体跳过，而不是模块导入失败
+    Document = WD_STYLE_TYPE = Mm = Pt = etree = None
+
+requires_docx = unittest.skipIf(
+    Document is None,
+    "需要 python-docx 与 lxml：python3 -m pip install -r requirements-dev.txt",
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "law-paper-writing/scripts/md2docx_footnotes.py"
@@ -18,6 +26,7 @@ W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS = {"w": W}
 
 
+@requires_docx
 class DocxFootnoteTests(unittest.TestCase):
     def setUp(self):
         self.work = tempfile.TemporaryDirectory(prefix="docx-footnote-test-")

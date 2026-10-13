@@ -1,0 +1,17 @@
+# 开发、测试与发布校验依赖（Python 3.9+）
+#
+# 用法：
+#   python3 -m pip install -r requirements-dev.txt
+#   python3 -X utf8 -m unittest discover -s tests -v
+#
+# 说明：三个技能自身的脚本只依赖 Python 标准库（PDF 提取、DOCX 输出等
+# 按需另行安装，见 README“运行前提与边界”）；本文件供开发、测试与发布
+# 校验使用。缺少以下依赖时，相关测试会以“跳过”列出（不视为通过），
+# 发布校验必须在依赖齐全的环境中运行。
+
+PyYAML>=6.0        # frontmatter / 模板解析与相关测试
+python-docx>=1.1   # DOCX 脚注脚本与测试
+lxml>=4.9          # python-docx 的 XML 后端；DOCX 测试直接使用
+
+# 可选：PDF 文字提取（batch_extract_papers.py 的 PDF 输入）
+# pymupdf>=1.24

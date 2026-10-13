@@ -276,11 +276,19 @@ python -X utf8 $updater apply --skills-root $skillsRoot --staged-root $stagedRoo
 
 ### 开发验证
 
-每次发布都要求兼容性、脚本安全与 Bundle 更新器测试全部通过（Python 3.9+，需要 PyYAML）：
+先安装开发依赖（Python 3.9+）：
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+```
+
+每次发布都要求兼容性、脚本安全与 Bundle 更新器测试全部通过：
 
 ```bash
 python3 -X utf8 -m unittest discover -s tests -v
 ```
+
+未安装开发依赖时，依赖相关测试会以“跳过”（`skipped`，附原因）列出，不计入通过；发布校验必须在依赖齐全的环境中运行。
 
 Claude Code 插件清单校验：
 
@@ -304,8 +312,9 @@ python -X utf8 $validator legal-wiki-audit-repair
 
 ```text
 README.md                    # 总入口、安装、更新内容和验证
+requirements-dev.txt         # 开发、测试与发布校验依赖
 .claude-plugin/              # Claude Code 插件与 marketplace 清单
-law-paper-writing/   # 论文写作与投稿工作稿
+law-paper-writing/           # 论文写作与投稿工作稿
 legal-research-wiki/         # 研究 Wiki 建库与摄入
 legal-wiki-audit-repair/     # Wiki 审计、批量修复与复核
 bundle-release.json          # 技能包发布清单（自动更新读取）

@@ -4,7 +4,10 @@ import re
 import unittest
 from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except ImportError:  # pragma: no cover - 缺依赖时跳过相关测试，而不是模块导入失败
+    yaml = None
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,7 +54,15 @@ MULTIMODAL_FILES = (
 )
 
 
+def _require_yaml() -> None:
+    if yaml is None:
+        raise unittest.SkipTest(
+            "需要 PyYAML：python3 -m pip install -r requirements-dev.txt"
+        )
+
+
 def load_yaml(path: Path) -> dict:
+    _require_yaml()
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise AssertionError(f"{path} must contain a YAML mapping")
@@ -59,6 +70,7 @@ def load_yaml(path: Path) -> dict:
 
 
 def load_skill(path: Path) -> tuple[dict, str]:
+    _require_yaml()
     content = path.read_text(encoding="utf-8")
     match = re.match(r"\A---\r?\n(.*?)\r?\n---\r?\n", content, re.DOTALL)
     if not match:

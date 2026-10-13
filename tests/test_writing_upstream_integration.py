@@ -3,12 +3,17 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except ImportError:  # pragma: no cover - 缺依赖时跳过相关测试，而不是模块导入失败
+    yaml = None
 
 ROOT = Path(__file__).resolve().parents[1]
+_REQUIRE_YAML = "需要 PyYAML：python3 -m pip install -r requirements-dev.txt"
 
 
 class WritingUpstreamIntegrationTests(unittest.TestCase):
+    @unittest.skipIf(yaml is None, _REQUIRE_YAML)
     def test_writing_skill_has_one_canonical_name(self) -> None:
         skill = ROOT / "law-paper-writing" / "SKILL.md"
         self.assertTrue(skill.is_file(), "renamed writing skill is not present")
@@ -16,6 +21,7 @@ class WritingUpstreamIntegrationTests(unittest.TestCase):
         metadata = yaml.safe_load(skill.read_text(encoding="utf-8").split("---", 2)[1])
         self.assertEqual(metadata["name"], "law-paper-writing")
 
+    @unittest.skipIf(yaml is None, _REQUIRE_YAML)
     def test_three_skill_metadata_versions_share_date_release(self) -> None:
         for name in ("law-paper-writing", "legal-research-wiki", "legal-wiki-audit-repair"):
             with self.subTest(skill=name):
