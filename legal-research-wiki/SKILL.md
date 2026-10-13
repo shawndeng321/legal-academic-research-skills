@@ -192,9 +192,7 @@ metadata:
 
 ## 审计与修复
 
-- 对已有语料的只读诊断和小批修复：[literature-audit-and-repair.md](references/literature-audit-and-repair.md)、[staged-deep-repair.md](references/staged-deep-repair.md)；
-- 全库结构与学术可用性审计、模板化检测、图谱形态、整改台账：[systematic-vault-audit-and-optimization-ledger.md](references/systematic-vault-audit-and-optimization-ledger.md)；
-- 系统性的全库体检、P0—P3 分级、批量重命名与链接迁移、每日检修，交给 `legal-wiki-audit-repair`。
+已有的研究库要体检、审计或批量修复时，转交 `legal-wiki-audit-repair` 技能：文献库逐篇审计与分批修复、深度修复的分批推进、全库结构与学术可用性审计、模板化检测、图谱形态、整改台账、P0—P3 分级、批量重命名与链接迁移、每日检修，细则随该技能安装（其 `references/` 下同名参考文件）。传递时带上范围、基线与写入授权；按**技能名**找到该技能再读取，不假设相对路径。
 
 审计默认只读；用户授权修复后，默认每批 5—8 页，超过 10 页先列清单确认；先备份、先试运行，再写入。
 

@@ -43,8 +43,13 @@ metadata:
 |---|---|---|
 | 页面规范与验收标准、链接规则（`references/linking-and-cross-references.md`） | `legal-research-wiki` | 以当前 vault 的 `SCHEMA.md` 为准；链接规则按本技能 4.4 节 |
 | 死链检查脚本 `scripts/check_wikilinks.py` | `legal-research-wiki` | 用本技能的 `scripts/multimodal_audit.py`（含链接完整性检查；两技能共用 `scripts/wiki_links.py` 解析规则，两份字节一致、结论一致） |
-| 全库审计与整改台账细则（`references/systematic-vault-audit-and-optimization-ledger.md`） | `legal-research-wiki` | 按本技能第四至八节执行 |
 | 研究设计页审计用的五问（`references/requirement-decomposition.md`） | `law-paper-writing` | 按本技能 5.5 节检查研究设计页 |
+
+**本技能参考文档**（按需读取，不必每次全部加载）：
+
+- 全库审计与整改台账细则：[systematic-vault-audit-and-optimization-ledger.md](references/systematic-vault-audit-and-optimization-ledger.md)（第四至八节的详细版与方法论）；
+- 文献库逐篇审计与分批修复：[literature-audit-and-repair.md](references/literature-audit-and-repair.md)（论文实体页语料，含引用规范／引用案例的精度修复）；
+- 深度修复的分批推进：[staged-deep-repair.md](references/staged-deep-repair.md)（书目规范化、论文—案例链接、条文级引注）。
 
 ## 何时使用
 

@@ -89,7 +89,7 @@ hermes skills install shawndeng321/legal-academic-research-skills/legal-research
 - 法规范层级与摄入：`references/legal-norm-hierarchy-and-reply-ingestion.md`
 - 链接网络：`references/linking-and-cross-references.md`；全库死链检查：`scripts/check_wikilinks.py`
 - 研究设计与统计：`references/research-design-pages.md`、`references/statistics-landing-and-case-matching.md`
-- 文献库审计与修复：`references/literature-audit-and-repair.md`、`references/staged-deep-repair.md`
+- 文献库审计与修复：转交 `legal-wiki-audit-repair` 技能（细则在其 `references/`：literature-audit-and-repair、staged-deep-repair、systematic-vault-audit-and-optimization-ledger）
 - 多模型与子代理编排：`references/model-orchestrated-legal-research-workflow.md`
 - 易错点清单：`references/pitfalls-and-lessons.md`
 - 页面模板：`assets/templates/`（SCHEMA、index、log，以及案例、论文、概念、比较、法规范含时序版本、研究设计、矩阵、范文、底稿、导航、交接、行文思路页）

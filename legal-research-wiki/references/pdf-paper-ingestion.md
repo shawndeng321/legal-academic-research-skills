@@ -88,7 +88,7 @@ new_content = content[:m.start(2)] + new_text + content[m.end(2):]
 
 长度与数量都只是信号：长结论也可能取错章节；短篇批复、无独立结语的论文按实际内容如实表达。**六个维度一次性全部检查**后再报告“完成”；不要修完一项就宣布完成，让用户逐个发现下一项。
 
-引用规范与引用案例章节的补全方法见 [literature-audit-and-repair.md](literature-audit-and-repair.md)。
+引用规范与引用案例章节的补全方法见 `legal-wiki-audit-repair` 技能的 `references/literature-audit-and-repair.md`（按技能名查找该技能）。
 
 ## 七、并行提取与子代理
 

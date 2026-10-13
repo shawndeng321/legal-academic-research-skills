@@ -82,6 +82,9 @@ hermes skills install shawndeng321/legal-academic-research-skills/legal-wiki-aud
 - `references/batch-operations.md`：批量重命名、编号、链接迁移、反链补齐、论文—案例同步与纯链接核验的安全流程。
 - `references/comparison-page-format.md`：跨案比较页格式与链接纪律。
 - `references/group-case-stats-extraction.md`：群案统计提取流水线。
+- `references/literature-audit-and-repair.md`：文献库语料的四遍审计、引用规范／引用案例精度与分批修复。
+- `references/staged-deep-repair.md`：深度修复的子批次划分、书目证据层级与安全修补模式。
+- `references/systematic-vault-audit-and-optimization-ledger.md`：全库审计方法论与整改台账协议模板。
 - `evals/pressure-tests.md`：15 个评估场景（工作模式与写入权限、证据判断、批量操作、检修与更新、报告），修改核心规则后逐条检查。
 - `references/multimodal-reingest-stubs.md`：空壳来源补全边界。
 - `references/multimodal-sha256-bulk-fix.md`：raw 提取文本的 SHA256 批量修复方法。
