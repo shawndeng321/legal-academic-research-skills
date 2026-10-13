@@ -1,18 +1,16 @@
-# sha256 批量修复（raw 源文件哈希）— 多模态扩展
+# sha256 批量修复与迁移（raw 提取物哈希元数据）— 多模态扩展
 
-> **来源**：multimodal-wiki v1.0.0（kigner/multimodal-wiki）`references/sha256-bulk-fix.md`，2026-08 融合。
-> 用法：检修发现大量 sha256 漂移/占位哈希时，批量重算一次到位。
-> 注意：raw 应不可变——批量漂移优先怀疑系统性原因（占位哈希、行尾符、工具编码），修复前先归因。
+> **来源**：multimodal-wiki v1.0.0（kigner/multimodal-wiki）`references/sha256-bulk-fix.md`，2026-08 融合；2026-10 按统一哈希口径重写。
+> 口径规范见 `legal-research-wiki` 的 `references/multimodal-pdf-extraction.md` 第 0 节；与 `scripts/batch_extract_papers.py --verify` 完全一致。
 
-# Sha256 Bulk Fix for Raw Sources
+## 边界（先读）
 
-When lint reveals many sha256 mismatches (missing, placeholder, or drifted), use this
-pattern through the current host's code-execution facility. It walks every `.md` file
-in `raw/`, computes the body sha256 (everything after the closing `---`), and either
-adds or updates the `sha256:` frontmatter field. The default mode is preview-only;
-writing requires an explicit backup directory.
+- 原件（`raw/` 下的 PDF/DOCX/图片/音频二进制）**永不写入**；本流程只更新提取物（.md）的**哈希元数据字段**。
+- 写入前必须有：明确授权、`BACKUP_DIR`、系统性归因结论；默认预览（DRY_RUN）。
+- **真实漂移不自动重算覆盖**：`text_sha256` 已存在且与当前正文不符 → 只报告，先行归因（人工润色？清洗脚本？编码/换行变更？）；确需重建基线时保留旧值、旧口径与理由，记入台账。
+- 本流程只做三类写入：① 缺 `text_sha256` → 按统一口径补齐；② 占位值（`<placeholder>`/`PLACEHOLDER`）→ 替换；③ 旧字段 `sha256` → 追加 `text_sha256`（**旧值保留为历史，不删**）。
 
-## Script
+## Script（预览为首选；写入需 `BACKUP_DIR` 且 `DRY_RUN=0`）
 
 ```python
 import os, re, hashlib, shutil
@@ -29,6 +27,21 @@ if not DRY_RUN and not BACKUP_DIR:
 if BACKUP_DIR:
     BACKUP_DIR = os.path.abspath(BACKUP_DIR)
 
+
+def canonical_body(text):
+    return text.replace('\r\n', '\n').replace('\r', '\n').lstrip('\n')
+
+
+def sha256_text(text):
+    return hashlib.sha256(canonical_body(text).encode('utf-8')).hexdigest()
+
+
+def rebuild(fm_text, body):
+    if not fm_text.endswith('\n'):
+        fm_text += '\n'
+    return '---' + fm_text + '---' + body
+
+
 def write_with_backup(path, new_content):
     if DRY_RUN:
         return
@@ -41,95 +54,77 @@ def write_with_backup(path, new_content):
     with open(path, 'w', encoding='utf-8') as fh:
         fh.write(new_content)
 
-stats = {'added': 0, 'updated': 0, 'skipped': 0}
+
+stats = {'added': 0, 'migrated': 0, 'placeholder_fixed': 0,
+         'ok': 0, 'drift_report': 0, 'skipped': 0}
 
 for root, dirs, files in os.walk(raw_dir):
-    for f in files:
+    for f in sorted(files):
         if not f.endswith('.md'):
             continue
         path = os.path.join(root, f)
         with open(path, 'r', encoding='utf-8') as fh:
             original = fh.read()
-
-        # Must have frontmatter
         if not original.startswith('---'):
             stats['skipped'] += 1
             continue
-
         end = original.find('---', 3)
         if end == -1:
             stats['skipped'] += 1
             continue
-
         fm = original[3:end]
-        body = original[end+3:]  # everything after closing ---
+        body = original[end + 3:]
+        current = sha256_text(body)
 
-        # Compute current body sha256
-        current_sha = hashlib.sha256(body.encode('utf-8')).hexdigest()
+        m_text = re.search(r'^text_sha256:\s*(\S+)\s*$', fm, re.M)
+        m_legacy = re.search(r'^sha256:\s*(\S+)\s*$', fm, re.M)
+        m_placeholder = re.search(r'^text_sha256:\s*(<placeholder>|PLACEHOLDER)\s*$', fm, re.M)
 
-        # Check existing sha256
-        sha_match = re.search(r'sha256:\s*(\S+)', fm)
-
-        if sha_match:
-            stored = sha_match.group(1)
-            if stored == current_sha:
-                stats['skipped'] += 1
+        if m_text and not m_placeholder:
+            if m_text.group(1) == current:
+                stats['ok'] += 1
                 continue
+            # 真实漂移：只报告，不覆盖
+            stats['drift_report'] += 1
+            print(f"[DRIFT] {os.path.relpath(path, raw_dir)} — 正文与 text_sha256 不符，先归因（不自动重算）")
+            continue
 
-            # Update sha256 — replace the stored value with current
-            new_fm = fm.replace(f'sha256: {stored}', f'sha256: {current_sha}')
-            new_content = '---\n' + new_fm + '\n---' + body
-            write_with_backup(path, new_content)
-            stats['updated'] += 1
+        if m_placeholder:
+            new_fm = fm[:m_placeholder.start()] + f'text_sha256: {current}' + fm[m_placeholder.end():]
+            stats['placeholder_fixed'] += 1
+        elif m_legacy:
+            new_fm = fm.rstrip() + '\n' + f'text_sha256: {current}\n'
+            stats['migrated'] += 1
+            legacy_now_raw = hashlib.sha256(body.encode('utf-8')).hexdigest()
+            if m_legacy.group(1) not in (current, legacy_now_raw):
+                print(f"[NOTE] {os.path.relpath(path, raw_dir)} — 旧 sha256 与当前正文也不符，请人工核对后再依此迁移")
         else:
-            # No sha256 field — add one after ingested line
-            ingested_match = re.search(r'ingested:.*', fm)
-            if ingested_match:
-                insert_pos = ingested_match.end()
-                new_fm = fm[:insert_pos] + '\nsha256: ' + current_sha + fm[insert_pos:]
-            else:
-                new_fm = fm.rstrip() + '\nsha256: ' + current_sha
-
-            new_content = '---\n' + new_fm + '\n---' + body
-            write_with_backup(path, new_content)
+            ingested = re.search(r'^ingested:.*$', fm, re.M)
+            insert_at = ingested.end() if ingested else len(fm.rstrip())
+            new_fm = fm[:insert_at] + '\n' + f'text_sha256: {current}' + fm[insert_at:]
             stats['added'] += 1
 
+        write_with_backup(path, rebuild(new_fm, body))
+
 mode = "DRY-RUN" if DRY_RUN else "WRITE"
-print(f"{mode}: {stats['added']} added, {stats['updated']} updated, {stats['skipped']} skipped")
+print(f"{mode}: {stats}")
 ```
 
-先只设置 `WIKI_PATH` 运行，确认预览计数和抽样文件；确认后再设置一个新的 `BACKUP_DIR`，并显式设置 `DRY_RUN=0`。备份目标已有同名文件时脚本会停止，不会覆盖旧备份。
+先只设置 `WIKI_PATH` 运行预览，确认计数与抽样文件；确认后设置一个新的 `BACKUP_DIR` 并显式 `DRY_RUN=0`。备份目标已有同名文件时脚本停止，不会覆盖旧备份。
 
 ## Verification
 
-After running, verify with a drift re-check:
+一键复核（推荐；只读，drift 时退出码 1）：
 
-```python
-drifts = 0
-for root, dirs, files in os.walk(raw_dir):
-    for f in files:
-        if not f.endswith('.md'):
-            continue
-        path = os.path.join(root, f)
-        with open(path, 'r', encoding='utf-8') as fh:
-            text = fh.read()
-        end = text.find('---', 3)
-        if end == -1:
-            continue
-        fm = text[3:end]
-        sha = re.search(r'sha256:\s*(\S+)', fm)
-        if not sha:
-            continue
-        body = text[end+3:]
-        current = hashlib.sha256(body.encode('utf-8')).hexdigest()
-        if current != sha.group(1):
-            drifts += 1
-
-print(f"Drifts remaining: {drifts}")  # should be 0
+```bash
+python3 scripts/batch_extract_papers.py raw/papers --verify   # 在 legal-research-wiki 技能目录下运行
 ```
+
+输出每条 .md 的 `ok / legacy_ok / missing_hash / drift / source_drift`。批量修复完成后应无 `drift`/`source_drift`；`legacy_ok` 表示旧口径哈希仍然相符，可在下一轮迁移为 `text_sha256`。
 
 ## When to Use
 
-- After initial wiki creation where placeholder hashes were used
-- After discovering systemic sha256 drift across many files
-- As part of the lint workflow when sha256 mismatches exceed ~10 files (bulk-fix is faster than per-file patches)
+- 初始建库时用了占位哈希 → 批量替换（第 ② 类写入）；
+- 旧文件缺 `text_sha256` 或仍是旧字段 `sha256` → 批量补齐/迁移（第 ①③ 类写入）；
+- 检修发现大量漂移（10 个以上）先归因（占位哈希、行尾符、编码、批量清洗脚本），确认系统性原因后才修；
+- 单个漂移先核对是否真实变更，确认后更新并记入台账；**不得**静默重算覆盖。

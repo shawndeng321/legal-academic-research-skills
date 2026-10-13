@@ -50,7 +50,7 @@ Write `raw/screenshots/<topic>.md`:
 source: raw/screenshots/<topic>.png          # the original this was extracted from
 source_url: ''                               # if the image came from a web page, put it here
 ingested: YYYY-MM-DD
-sha256: <hex digest of the description BODY below>
+text_sha256: <hex digest of the description body — 口径见 multimodal-pdf-extraction.md 第 0 节>
 extracted_by: <model id>                     # which model read it — provenance
 confidence: medium                           # vision can misread diagrams — see caveat
 ---
@@ -61,9 +61,10 @@ confidence: medium                           # vision can misread diagrams — s
 ```
 
 - Keep the text extract even though the model can look at the image again later: the extract is what makes the image searchable, citable and linkable in the wiki, and it records exactly what was read at ingestion time.
-- **`sha256` must be REAL** — compute it over the description body (everything after the
-  closing `---`). Do NOT fabricate a placeholder. (Observed failure: a fake `a1b2c3…` hash
-  silently breaks drift detection.)
+- **`text_sha256` must be REAL** — compute it over the description body with the unified rule
+  (`multimodal-pdf-extraction.md` §0: normalize CRLF/CR → LF, strip leading newlines; the
+  legacy `sha256:` field is still accepted and marked legacy_ok). Do NOT fabricate a placeholder.
+  (Observed failure: a fake `a1b2c3…` hash silently breaks drift detection.)
 - The `.md` is the **working copy** for downstream weaving; the `.png` is the evidence.
 
 ### 4. Weave into Layer 2 (normal Ingest steps ③④⑤⑥)

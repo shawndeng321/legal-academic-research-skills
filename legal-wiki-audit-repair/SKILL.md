@@ -95,7 +95,7 @@ metadata:
 
 审计前列出：正式内容目录；根目录元文件；`raw/` 原始材料目录；脚本、配置和隐藏目录；本轮是否检查 Obsidian 配置；本轮是否核对原始 PDF/DOCX 内容；本轮唯一允许写入的文件（如有）。
 
-`raw/` 永远只读。发现凭据时只报告“发现凭据”，值写成 `[REDACTED]`。
+`raw/` 只读：原件（二进制）永不写入；提取物的正文在摄入完成后不再改，其哈希元数据字段的更新属于修复动作（先授权、备份、归因，见第八至九节与 `references/multimodal-sha256-bulk-fix.md`）。发现凭据时只报告“发现凭据”，值写成 `[REDACTED]`。
 
 ## 四、技术健康轨
 
@@ -281,7 +281,7 @@ metadata:
 ## 十一、通用巡检增强
 
 - **LOG-ROTATE**：`log.md` 超过 500 条 `## [YYYY-MM-DD]` 条目时轮转：改名为 `log-YYYY.md` 存档，新建 `log.md`（保留头部说明）。
-- **SHA256-DRIFT**：`raw/` 下提取文件的 frontmatter 带 `sha256:` 时，重算正文哈希比对；或把原始文件的大小与哈希集中记录在 `raw/MANIFEST.md` 的“机器核验指纹”一节，每日检修对照重算。批量漂移（10 个以上文件同时）优先怀疑系统性原因（占位哈希、行尾符、编码）；单个漂移核对是否真实变更，确认后更新并记入台账。摄入新材料更新 MANIFEST 时顺手计算哈希。法学库原始材料多为 DOCX/PDF，没有 `sha256:` 字段不报错。
+- **SHA256-DRIFT**：`raw/` 下提取文件的 frontmatter 带 `text_sha256:`（或旧字段 `sha256:`）时，按统一口径重算正文哈希比对（口径见 `legal-research-wiki` 的 `references/multimodal-pdf-extraction.md` 第 0 节；一键只读复核 `scripts/batch_extract_papers.py <raw/papers> --verify`）；或把原始文件的大小与哈希集中记录在 `raw/MANIFEST.md` 的“机器核验指纹”一节，每日检修对照重算。批量漂移（10 个以上文件同时）优先怀疑系统性原因（占位哈希、行尾符、编码、批量清洗），先归因；单个漂移核对是否真实变更，确认后更新并记入台账；**真实漂移不自动重算覆盖**。摄入新材料更新 MANIFEST 时顺手计算哈希。法学库原始材料多为 DOCX/PDF，没有哈希字段不报错。
 - **CONTESTED**：列出 frontmatter 中 `contested: true` 和 `contradictions:` 的页面供用户审阅。学术分歧正是适用场景：保留双方立场、日期和来源，不静默覆盖一方；提交论文前逐页核验是否已处理。
 - **CLOSED-WORLD QUERY**：查询和写作支撑只用库内内容；库内没有的如实说明并标 `[来源不明]`，提供摄入方案；空壳页面不算覆盖；联网检索属于摄入环节；来源性主张必须能回溯到库内页面与原始材料。
 

@@ -75,7 +75,7 @@ Write `raw/transcripts/<topic>.md`:
 source: raw/transcripts/<topic>.m4a           # the audio this was transcribed from
 source_url: ''                                # if it came from somewhere online
 ingested: YYYY-MM-DD
-sha256: <hex digest of the transcript BODY below>
+text_sha256: <hex digest of the transcript body — 口径见 multimodal-pdf-extraction.md 第 0 节>
 transcribed_by: whisper (<model>, faster-whisper, local)   # provenance
 language: zh                                  # info.language
 duration_sec: <info.duration>
@@ -91,7 +91,7 @@ confidence: medium                            # ASR misreads names/terms — see
   say. Summary / polish / structuring / enrichment belongs in **Layer-2 pages, NEVER in
   this raw note** — keep the raw layer a faithful, diffable record so ASR misreads can be
   caught later. (`source_url`/`title` may go in frontmatter; the body stays verbatim.)
-- **`sha256` must be REAL** — computed over the transcript body. Never fabricate.
+- **`text_sha256` must be REAL** — computed over the transcript body（口径与 `multimodal-pdf-extraction.md` 第 0 节一致：CRLF/CR→LF、去掉全部前导换行；旧布局 `sha256:` 字段仍被复核接受，标记 legacy_ok）. Never fabricate.
 - The `.md` is the working copy for weaving; the audio file is the evidence.
 - `raw/assets/` is NOT involved — audio is not embedded for display.
 

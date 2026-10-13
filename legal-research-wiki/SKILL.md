@@ -115,7 +115,7 @@ metadata:
 | 材料 | 目标页面 | 读取 |
 |---|---|---|
 | 学术论文 PDF | `entities/引用文献/` + 概念页更新 | [pdf-paper-ingestion.md](references/pdf-paper-ingestion.md)；脚本 [batch_extract_papers.py](scripts/batch_extract_papers.py)、[clean_pdf_artifacts.py](scripts/clean_pdf_artifacts.py) |
-| 本地 PDF 的哈希与双文件保存 | `raw/papers/` | [multimodal-pdf-extraction.md](references/multimodal-pdf-extraction.md) |
+| 本地 PDF 的哈希、双文件保存与复核 | `raw/papers/`（新提取物也可放派生目录） | [multimodal-pdf-extraction.md](references/multimodal-pdf-extraction.md)（统一哈希口径；批量提取 `--format md`、只读复核 `--verify`） |
 | 案例、裁判文书、案例汇编 | `entities/案例/` | [case-ingestion.md](references/case-ingestion.md)、[docx-case-parsing-lessons.md](references/docx-case-parsing-lessons.md)、[docx-scope-and-mapping.md](references/docx-scope-and-mapping.md)、[docx-case-compilation-revalidation.md](references/docx-case-compilation-revalidation.md) |
 | 法律法规、司法解释、批复答复、会议纪要、审判答疑 | `entities/法规范/` | [legal-norm-hierarchy-and-reply-ingestion.md](references/legal-norm-hierarchy-and-reply-ingestion.md)；需要研究规范在不同时期的版本与历史案件适用时，见 [norm-versioning.md](references/norm-versioning.md) |
 | 用户初稿与思路文件 | `drafts/` | [case-ingestion.md](references/case-ingestion.md) 第八节；脚注提取 [docx-footnote-extraction.md](references/docx-footnote-extraction.md)；稿件出新版本时的同步流程 [draft-version-sync.md](references/draft-version-sync.md) |
