@@ -2,117 +2,88 @@
 
 > **来源**：multimodal-wiki v1.0.0（kigner/multimodal-wiki）`references/reingest-stubs.md`，2026-08 融合。
 > 法学库用法：批量抓取参考文献生成的空壳（只有 frontmatter 或占位符）按此流程补全。
-> 与法学纪律一致：补全是 Ingest 动作，查询（Query）阶段不得补全；sha256 只算正文。
+> 与法学纪律一致：补全是摄入动作，查询阶段不得补全；哈希只算正文。
 
-# Re-ingesting Stub Files
+深检发现 `raw/papers/` 有占位空壳（只有 frontmatter 没有正文，或正文是 `*Content extracted via web_extract — full text available at the source URL.*` 一类占位串）时，按以下流程补成真实内容。
 
-When a lint reveals placeholder stubs in `raw/papers/` (frontmatter only, no body text, or
-`*Content extracted via web_extract — full text available at the source URL.*`), convert them
-to real content with this workflow.
+## 1. 识别空壳
 
-## 1. Identify stubs
+空壳来源：
 
-Stubs are born from:
-- **Bulk arXiv bibliography downloads** (`legal-research-wiki` 技能的 `references/multimodal-bulk-refs.md`): a web/research tool on
-  `/pdf/` URLs returns LLM-summarized content that's often truncated. The raw note gets
-  frontmatter + `sha256` but an empty or placeholder body.
-- **Failed extractions**: `/abs/` returns metadata only; `/html/` often 404s.
+- **批量下载参考文献**（建库技能 `references/multimodal-bulk-refs.md`）：对 `/pdf/` 链接取回的是摘要式内容，raw 笔记只有 frontmatter + `sha256`，正文空或占位；
+- **提取失败**：`/abs/` 只返回元数据页；`/html/` 常 404。
 
-Lint detection: search (e.g. `grep -rl`) for files with `sha256` but fewer than ~5 non-frontmatter
-body lines, plus the `*Content extracted via*` placeholder string.
+检测：搜（如 `grep -rl`）正文不足约 5 行非 frontmatter 行、且带 `*Content extracted via*` 占位串的文件。
 
-## 2. Extract arXiv IDs from filenames
+## 2. 从文件名提取来源编号
 
-Stubs follow the naming convention:
-```
-<Author> [<refnum>] - <ShortTitle> [<arxiv_id>].md
-```
-Parse the `[<arxiv_id>]` suffix (e.g., `[2112.10752]`) from the filename.
+空壳命名：`<文献标签> [<编号>] - <短题名> [<预印本编号>].md`——解析文件名末尾的编号后缀（如 `[2112.10752]`）。
 
-## 3. Fetch real content
+## 3. 抓取真实内容
 
-**URL priority order:**
+**来源优先级：**
 
-| Priority | URL | Behaviour | When to use |
-|----------|-----|-----------|-------------|
-| 1st | `https://arxiv.org/pdf/<id>` | LLM-summarized markdown (~3-5K chars) | **Default — works for most papers** |
-| 2nd | CVF open-access page | Full abstract + metadata | CVPR/ICCV/ECCV papers that fail `/pdf/` |
-| 3rd | Available web search on blog/article | Third-party summaries | Discovery only; never legal evidence |
+| 优先级 | 渠道 | 行为 | 适用 |
+|---|---|---|---|
+| 1 | `https://arxiv.org/pdf/<id>`（预印本示例） | 摘要式 markdown（约 3—5K 字符） | 默认，多数预印本可用 |
+| 2 | 期刊官网/机构库的开放页 | 摘要 + 元数据 | 有开放页的论文 |
+| 3 | 网页检索到的解读/博客 | 第三方转述 | **仅作发现线索，永不作为法律证据** |
 
-If the host exposes batch extraction, pass only a small set of `/pdf/` URLs per call; otherwise process them through the available browser/download workflow.
+宿主支持批量提取时每次只传一小批链接；否则用浏览器/下载流程。示例：21 个空壳 → 5 批（5+5+5+4+2）。
 
-Example: 21 stubs → 5 batches of 5+5+5+4+2.
+对中文期刊论文、裁判文书等**没有开放渠道**的材料：只保留“待获取”清单，由用户提供授权全文或官方导出件后再补全；不得用第三方转述替代一次文献，也不得标成已完整摄入。
 
-### CVF fallback pattern
+## 4. 写正文内容
 
-For CVPR papers: `https://openaccess.thecvf.com/content_CVPR_<YEAR>/html/<Author>_<Title>_CVPR_<YEAR>_paper.html`
+每份空壳补一段浓缩概要：
 
-For ICCV: same pattern with `ICCV`.
+- **题名、作者、出处（期刊/发布机构）、年份**；
+- **摘要**（1—2 句）；
+- **关键论点**（要点列表）；
+- **方法/论证路径**（3—5 条）；
+- **意义/影响**（对所在研究主题的意义）。
 
-This returns the abstract and metadata, sufficient for a reference-level summary.
+每份保持可扫读（约 15—25 行）。raw 笔记是索引，不替代阅读原文；法律命题、引文、案号、条文、日期与页码，必须以官方或授权一次文献取得并核验。
 
-### web_search fallback
+## 5. 重算 sha256 并写入
 
-When both URL formats fail, search for the paper title + "summary" or "explained":
-```
-web_search("<paper title> <first author> summary key contributions")
-```
-Record the top blog/article result only as a discovery lead. Do not replace a legal primary source with a third-party summary or mark the item fully ingested.
+用当前宿主的代码执行能力批量处理：
 
-## 4. Write body content
-
-Each stub gets a condensed summary covering:
-- **Title, Authors, Venue/Year**
-- **Abstract** (1-2 sentences)
-- **Key Contributions** (bullet list)
-- **Method** (core technical approach, 3-5 bullets)
-- **Significance/Impact** (why it matters in the wiki's domain context)
-
-Keep each summary scannable (~15-25 lines). The raw note is a reference index, not a replacement for reading the source. For legal propositions, quotations, case numbers, statutory text, dates and page references, the official or authorized primary document must be acquired and verified first.
-
-## 5. Update sha256 and write
-
-Use the current host's code-execution facility to batch-process:
 ```python
 import hashlib, re, os
 
-# For each stub file:
-# 1. Read current content, extract frontmatter
-# 2. Replace body with new content
-# 3. Recompute sha256 over body only
-# 4. Update sha256 in frontmatter: sha256: <new_hash>
-# 5. Write file
+# 对每个空壳文件：
+# 1. 读现内容，取出 frontmatter
+# 2. 用新内容替换正文
+# 3. 只对正文重算 sha256
+# 4. 更新 frontmatter：sha256: <新哈希>
+# 5. 写回文件
 
 sha = hashlib.sha256(new_body.encode('utf-8')).hexdigest()
 new_content = re.sub(r'sha256:.*', f'sha256: {sha}', new_content)
 ```
 
-**Do NOT recompute sha256 over frontmatter + body** — only the body. This matches the
-original ingest convention and prevents false drift detection.
+**绝不要**对 frontmatter + 正文一起重算——那会与原始摄入口径产生不同哈希，日后触发假漂移。
 
-## 6. Log the re-ingest
+## 6. 记录重摄入日志
 
-Single log entry covering the batch, grouped by category:
+一条日志覆盖整批，按类别分组：
 
 ```markdown
-## [YYYY-MM-DD] ingest | 重新摄入 N 篇 arXiv 引用论文存根
-- 来源: [date] <original batch> 的 N 个存根
-- 方法: web_extract /pdf/ + CVF 补充
+## [YYYY-MM-DD] ingest | 重新摄入 N 份引用文献空壳
+- 来源: [日期] 原始批次的 N 个空壳
+- 方法: web_extract /pdf/ + 开放页补充
 - 类别分组:
-  基础架构 (M): paper1, paper2, ...
-  方法前提 (M): paper3, ...
-- 更新: raw/papers/ 中 N 个 .md 文件（正文替换 + sha256 重算）
-- 验证: N/N 全部通过（body 行数 M-N，sha256 已重算）
+  规范依据 (M): 文件1, 文件2, ...
+  实证前提 (M): 文件3, ...
+- 更新: raw/papers/ 中 N 个 .md（正文替换 + sha256 重算）
+- 验证: N/N 全部通过（正文行数 M-N，sha256 已重算）
 ```
 
-## Pitfalls
+## 常见坑
 
-- **`/abs/` is useless for content** — it only returns the arXiv landing page (navigation,
-  submission history, bibtex). Never use it for re-ingest; go straight to `/pdf/`.
-- **`/html/` often 404s** — arXiv HTML rendering is inconsistent. Don't spend time
-  debugging 404s; fall through to web_search.
-- **sha256 must be body-only** — recomputing over frontmatter + body creates a different
-  hash than the original ingest, triggering false drift in future lints.
-- **Batch writes** — for many files, use the current host's code-execution facility with an explicit Wiki root, a backup, and a dry-run/preview before changing the batch.
-- **Do NOT create new Layer-2 pages during re-ingest** — these papers already have
-  entity/concept pages. Re-ingest only updates the raw source, not the wiki layer.
+- **`/abs/` 页面没有内容**——只有导航、提交历史、bibtex；补全永远走 `/pdf/`；
+- **`/html/` 常 404**——不稳定，不排查，直接走下一渠道；
+- **sha256 只算正文**——连 frontmatter 一起算会与原始摄入口径不一致，触发假漂移；
+- **批量写入**——用代码执行并显式指定 Wiki 根目录，先备份、先试运行再改批；
+- **补全不新建 Layer-2 页面**——这些文献都已有实体/概念页；补全只更新 raw 源文件，不动 Wiki 层。

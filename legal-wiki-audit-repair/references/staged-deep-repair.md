@@ -1,88 +1,88 @@
-# Staged Deep Repair for Literature Wikis
+# 深度修复的分批推进
 
-Use this reference when an existing literature corpus has already passed basic completeness checks and needs deeper maintenance such as bibliography normalization, paper–case links, or article-level statute citations.
+用于文献语料已通过基础完整性检查、还需深度维护（书目规范化、论文—案例链接、条文级引注）的情形。
 
-## 1. Split a large third batch before editing
+## 一、大“第三批”先拆分再动手
 
-Do not treat “third batch” as permission to rewrite all 25 pages at once. Split it into independently verifiable sub-batches:
+不要把“第三批”理解为可以一次重写 25 页。拆成独立可验收的子批次：
 
-- **A — Bibliography metadata:** preferably no more than five pages; add issue/volume, printed page range, DOI or article number.
-- **B — Paper–case graph:** build a page-to-case mapping first, then add bidirectional links in a small reviewed batch.
-- **C — Statute precision:** extract cited instruments from the source PDF, classify each citation, and add `第X条` only when the PDF supports it.
+- **A — 书目元数据**：一子批不超过 5 页；补期卷号、印刷页码、DOI 或文章编号；
+- **B — 论文—案例图谱**：先做页面到案例的映射，再以小批加双向链接并复核；
+- **C — 条文精度**：从源 PDF 提取被引规范，逐条分类，只有 PDF 支持时才补 `第X条`。
 
-Before any 10+ page edit, produce an affected-page list and a field/link mapping. A user’s approval of the broad phase does not remove the need for a visible mapping.
+任何 10 页以上的编辑前，先产出受影响页面清单与字段/链接映射。用户对“大阶段”的批准不等于可以省掉可见的映射。
 
-## 2. Bibliography evidence hierarchy
+## 二、书目证据层级
 
-For each target paper, verify fields in this order:
+对每篇目标论文，按以下顺序核验字段：
 
-1. PDF first page: title, author(s), affiliation, journal, year, volume/issue, article number, DOI.
-2. PDF printed page footer on the first and last article pages: page range.
-3. DOI or article number printed in the PDF, preserving the source’s exact identifier.
-4. External catalog/search results only as secondary corroboration, never as a substitute for the PDF.
+1. PDF 首页：标题、作者、单位、期刊、年份、卷期、文章编号、DOI；
+2. 文章首页与末页的印刷页脚：页码范围；
+3. PDF 中印出的 DOI 或文章编号（保留来源处的精确写法）；
+4. 外部目录/检索结果只作二次佐证，绝不替代 PDF。
 
-Do not trust PyMuPDF metadata or a filename alone for affiliation, volume, issue, or pages. Search output can be irrelevant or incomplete.
+不要信任 PyMuPDF 元数据或文件名来断定单位、卷期、页码；检索结果可能无关或不完整。
 
-### Page-range conflict rule
+### 页码冲突规则
 
-An article number may contain a suffix that looks like a page count, while the PDF’s printed page footers show a different span. Keep the evidence separate:
+文章编号可能带一个看起来像页数的后缀，而 PDF 页脚显示的区间不同。证据分开记录：
 
-- record the **printed page range** from the PDF footer;
-- record the **article number** exactly as printed;
-- do not infer a missing page or silently replace one field with the other;
-- if uncertainty remains, mark it for later manual review rather than guessing.
+- 记 **PDF 页脚的印刷页码区间**；
+- 记 **文章编号**，按印刷原样；
+- 不推断缺失页码，不拿一个字段静默替换另一个；
+- 仍有不确定就标出待人工复核，不猜。
 
-## 3. Where to write bibliographic fields
+## 三、书目字段写在哪里
 
-If the vault's paper pages keep bibliography in a body metadata block, extend the body metadata block rather than silently inventing new YAML fields:
+vault 的论文页把书目放在正文元数据块时，扩展该块，不要静默发明新的 YAML 字段：
 
 ```markdown
 > **作者**：作者（单位）
 > **期刊**：期刊 | **年份**：YYYY | **卷期**：第X卷第Y期 | **页码**：起—止 | **DOI**：...
 ```
 
-Use `**期号**` when there is no volume, and `**文章编号**` when the source provides an article number but no DOI. Preserve total-issue information such as `总第283期` when printed. Correct an affiliation in the same surgical edit when the PDF disproves the existing value.
+没有卷时用 `**期号**`；来源给了文章编号而没有 DOI 时用 `**文章编号**`；印刷了总期信息（如 `总第283期`）就保留。PDF 推翻现有单位时，同一次外科式编辑一并更正。
 
-Do not add bibliographic YAML keys unless `SCHEMA.md` is updated to define them and all affected pages will use the same schema.
+除非在 `SCHEMA.md` 中定义了新字段且所有受影响页面统一使用，否则不加书目 YAML 键。
 
-## 4. Safe edit pattern
+## 四、安全修改模式
 
-1. Read the current page and the relevant PDF evidence.
-2. Write each replacement metadata block to a temporary file.
-3. Replace only the exact current metadata block with a targeted patch.
-4. Update `updated` only on pages that actually changed.
-5. Preserve abstract, key arguments, methods, conclusions, links, and sources unless they are in the declared sub-batch.
-6. Re-read the changed pages before moving to the next sub-batch.
+1. 重读当前页面与相关 PDF 证据；
+2. 每个替换用的元数据块先写入临时文件；
+3. 只对当前确切的元数据块做定向替换；
+4. 只给实际改动的页面更新 `updated`；
+5. 除声明的子批次外，保留摘要、核心论点、方法、结论、链接与来源不动；
+6. 进入下一子批次前重读改动页。
 
-This same surgical pattern applies to link and statute repairs: map first, patch only the declared section, and never reconstruct a full page from a partial read.
+同一外科式模式适用于链接与条文修复：先映射，只补声明过的章节，绝不根据局部读取重建整页。
 
-## 5. Acceptance checks after every sub-batch
+## 五、每子批之后的验收
 
-Run both target-level and recursive vault-level checks:
+目标级与全库递归两级都跑：
 
-- every target metadata block matches the planned mapping;
-- each DOI/article number/page range is present in the cited PDF evidence;
-- all `sources:` paths exist;
-- YAML parses for all literature pages;
-- required headings remain present and formatted as `## Heading\n\nText`;
-- conclusions remain substantive and unchanged unless declared otherwise;
-- no PDF artifacts (`］［】【` or replacement characters);
-- no malformed or dead wikilinks, using `Path.rglob('*.md')` because entity pages are nested;
-- no nested links such as `[[[[...]]]]` after link repair.
+- 每个目标元数据块与计划映射一致；
+- 每个 DOI/文章编号/页码范围都能在所引 PDF 证据中找到；
+- 所有 `sources:` 路径存在；
+- 全部文献页 YAML 可解析；
+- 必需章节在位且格式为 `## 标题` 后接空行与正文；
+- 结论保持实质且未声明时不变；
+- 无 PDF 残留（`］［】【` 或替换字符）；
+- 无畸形或死链（实体页嵌套，用递归扫描而不是顶层 glob）；
+- 链接修复后无嵌套链接（`[[[[...]]]]`）。
 
-Report counts, not just a statement that the batch “looks good.” A phase is complete only when the checks pass and the log entry is appended.
+报告要给出计数，而不是一句“看起来没问题”。检查通过并追加日志后，一个阶段才算完成。
 
-## 6. Log discipline and user-facing reporting
+## 六、日志纪律与向用户报告
 
-`log.md` is append-only and may contain entries written by other sessions. Read the true tail immediately before appending; do not patch against a remembered last line. Keep the entry for the completed sub-batch separate from the next pending sub-batch.
+`log.md` 只追加，可能含其他会话写的条目。追加前立即读真实末尾，不按记忆里的最后一行打补丁。完成的子批次与下一个待办子批次分开记。
 
-Report in this order and keep it short:
+报告按此顺序、保持简短：
 
-1. sub-batch size and exact target class;
-2. one concrete change per page or grouped field type;
-3. key verification counts;
-4. the next sub-batch, explicitly not yet started.
+1. 子批次规模与确切目标类别；
+2. 每页一项具体改动（或按字段类型分组）；
+3. 关键验收计数；
+4. 下一子批次（明确尚未开始）。
 
-## Session-derived example
+## 会话来源示例
 
-In the first metadata sub-batch, five papers were enough to expose a source-level affiliation correction and a page-range/article-number distinction. That is why metadata normalization should be staged and PDF-verified before broad paper–case linking or statute enrichment.
+元数据子批次做到第 5 篇时就能暴露一处单位更正与一处“页码 vs 文章编号”的区分——这就是为什么书目规范化要分批、以 PDF 为证，先于大规模的论文—案例链接和条文补全。

@@ -5,68 +5,41 @@
 > 与 [citation-integrity.md](citation-integrity.md)（来源核验）互补：本格式规定“回答如何呈现来源”，citation-integrity 规定“来源如何核验”。
 > 与法学纪律一致：来源性主张（法条/案号/文献页码）必须能回溯到库内页面 + raw 原始材料；禁止编造路径。
 
-# Citation Format for Query Answers (note-level provenance)
-
-Default Query behavior (Core Operations → Query, step ④) only cites `[[page]]`
-wikilinks: "Based on [[page-a]]...". That tells the reader *which wiki page* an
-answer used, but not *which source paper* a specific claim came from — so answers
-end up with floating quotes like `§3.3: "..."` and no path back to the original.
-
-This doc upgrades Query answers to **note-level provenance**: every factual claim
-carries the raw source note it traces to, as a copy-pasteable absolute path.
+查询的默认行为只给 `[[页面]]` 维基链接（“据 [[页面甲]]……”）：读者知道答案用了**哪个页面**，但不知道某句具体主张来自**哪份源文件**——于是出现 `§3.3：“……”` 这类悬空引用，找不到回去的路。本文把查询答案升级为 **note-level 溯源**：每个事实主张都带上它所依据的 raw 源笔记，以可复制粘贴的绝对路径呈现。
 
 ## 宿主呈现差异
 
-不同代理宿主（Hermes、Claude Code、Codex 等）与终端的链接渲染能力不同：有的界面只显示纯文本，有的界面能打开 Markdown 本地文件链接。因此统一采用以下最低兼容格式：
+不同代理宿主（Hermes、Claude Code、Codex 等）与终端的链接渲染能力不同：有的界面只显示纯文本，有的能打开 Markdown 本地文件链接。统一采用以下最低兼容格式：
 
-- The anchor is a **copy-pasteable absolute native path** the reader can paste into
-  a file manager / an editor. This is the required, load-bearing part.
-- 不依赖 `file:///`；只有宿主明确支持时，才额外提供 Markdown 可点击路径。
-- **Do NOT use `^[raw/...]` footnotes** in answers — page-internal, also plain text.
-- Click-to-open lives in **Obsidian** (open the same vault): the `[[entity-page]]`
-  wikilink in each source line is the jump-in point for the graph.
+- 锚点是**可复制粘贴的绝对原生路径**，读者能粘进文件管理器/编辑器打开——这是必需的、承重部分。
+- 不依赖 `file:///`；只有宿主明确支持时才额外提供 Markdown 可点击路径。
+- 回答中**不要用 `^[raw/...]` 脚注**——那是页面内部写法，同样以纯文本为准。
+- 点击打开在 **Obsidian**（打开同一 vault）：来源行里的 `[[实体页]]` 就是图谱跳转入口。
 
-## Rules
+## 规则
 
-1. **Trace before you write.** For each relevant Layer-2 page, read its `sources:`
-   frontmatter and inline `^[raw/...]` markers — these hold the real raw-note
-   filenames. Map each claim to the specific raw note it comes from. Never invent a
-   path or a section number.
+1. **先溯源再落笔。** 对每个相关 Layer-2 页面，读它的 `sources:` frontmatter 与正文里的 `^[raw/...]` 标记——真实 raw 笔记文件名都在那里；把每条主张映射到具体 raw 笔记。绝不编造路径或章节号。
 
-2. **Every claim carries a source.** No statement of fact may appear without a
-   source. A bare section quote with no path (e.g. `§3.3: "uses a CLIP text
-   encoder"`) is **not acceptable** — that is the exact failure this doc prevents.
+2. **每条主张都带来源。** 没有来源的事实陈述不出现。裸章节引用（如 `§3.3：“使用 CLIP 文本编码器”`）**不可接受**——本文档正是为消灭这种失败而写。
 
-3. **Source line format** — one per numbered marker, in a `## Sources` block
-   (localize the heading, e.g. `## 来源`):
+3. **来源行格式**——每个编号标记一行，放在 `## 来源` 区块：
 
    ```
-   [1] [[entity-page]] · `<WIKI_PATH>/raw/papers/<file>.md` · §x.y (optional short quote)
+   [1] [[实体页]] · `<WIKI_PATH>/raw/papers/<文件>.md` · §x.y（可选短引文）
 
-   [2] [[entity-page]] · `<WIKI_PATH>/raw/papers/<other>.md` · §x.y
+   [2] [[实体页]] · `<WIKI_PATH>/raw/papers/<另一文件>.md` · §x.y
    ```
 
-   - **One BLANK LINE between every entry (hard break — required).** Markdown 渲染器可能折叠连续单换行；空行可以让每个 `[n]` 在各类宿主和纯文本环境中都保持独立。
-   - **`[[entity-page]]`** — the Layer-2 page, for Obsidian navigation.
-   - **Backticked absolute native path** — *required, the anchor.* Use the native path form of the
-     user's OS (Windows `C:\...`, macOS/Linux `/...`), as recorded at ingestion (see `legal-research-wiki` → `references/multimodal-pdf-extraction.md`). Raw filenames contain `[hash]` brackets, so keep
-     the path in backticks — never wrap it in `[[ ]]` or `^[ ]`.
-   - **§x.y** — *only if it actually appears in the raw note.* Sections are
-     best-effort: ingestion concatenates page text without reliable section markers,
-     so never manufacture a section you cannot see.
+   - **每条之间空一行（硬换行——必须）。** 渲染器可能折叠连续单换行；空行让每个 `[n]` 在各宿主与纯文本环境都保持独立。
+   - **`[[实体页]]`**——Layer-2 页面，供 Obsidian 导航。
+   - **反引号包裹的绝对原生路径**——必需，锚点本体。用用户系统的原生路径形式（Windows `C:\...`，macOS/Linux `/...`），按摄入时记录（见 `legal-research-wiki` 的 `references/multimodal-pdf-extraction.md`）。raw 文件名含 `[hash]` 方括号，路径务必放反引号里——不要写成 `[[ ]]` 或 `^[ ]`。
+   - **§x.y**——只有 raw 笔记里确实存在该章节时才写。章节是尽力而为：摄入拼接页面文本时没有可靠的章节标记，看不到的章节绝不捏造。
 
-4. **Every entry repeats its own path.** Do NOT write a bare "同上" / "same" /
-   "ditto" that omits the path. If two claims share a source, repeat the full
-   backticked path on each line — it's cheap and keeps every line self-resolving.
+4. **每行都重复完整路径。** 不写省略路径的“同上/同前”。两条主张同一来源也各写一整行反引号路径——成本低，且每行自洽可解析。
 
-5. **Resolve Layer-2 to the raw note.** If a claim is supported by a Layer-2 page
-   (a `queries/`, `comparisons/`, or `concepts/` page rather than a paper), follow
-   that page's `sources:` down to the underlying raw note and cite the **raw-note
-   path** — never stop the chain at the Layer-2 page. (Failure example: citing
-   `[[arc2face-improvements]] §2.2` with no `raw/papers/...md` behind it.)
+5. **Layer-2 要解析到 raw 笔记。** 主张由 Layer-2 页面（`queries/`、`comparisons/`、`concepts/` 等）支持时，顺着该页 `sources:` 落到最底层 raw 笔记，引用 **raw 笔记路径**——不要停在 Layer-2 页面。（失败例：只引 `[[某概念页]] §2.2`，背后没有 `raw/papers/….md`。）
 
-6. **Untraceable claims.** If a claim cannot be traced to a specific raw note, drop
-   it or mark it `[来源不明]`. Do not fabricate a citation to fill the slot.
+6. **无法溯源的主张。** 追溯不到具体 raw 笔记的，删掉或标 `[来源不明]`；不要为填空位编造引注。
 
 ## 格式示例
 
@@ -81,9 +54,8 @@ carries the raw source note it traces to, as a copy-pasteable absolute path.
 [2] [[某案例页]] · `<WIKI_PATH>/raw/papers/<judgment-file>.md` · §裁判结果
 ```
 
-## Key points
+## 要点
 
-- **The absolute native path is the contract.** Even when the host cannot render a clickable link, the reader can copy the path to open the source.
-- **Note-level, not page-level:** the anchor is the specific extracted source note under `raw/`; from it the reader reaches the adjacent original file or recorded source URL.
-- **Don't invent.** Copy paths verbatim from `sources:` / `^[...]`; copy sections
-  only if present. An honest "[来源不明]" beats a fabricated citation.
+- **绝对原生路径就是契约。** 即使宿主无法渲染可点击链接，读者也能复制路径打开来源。
+- **note-level 而非 page-level**：锚点是 `raw/` 下具体的提取源笔记；由它到达相邻原件或记录的来源 URL。
+- **不编造。** 路径从 `sources:`／`^[...]` 逐字复制；章节只照实复制。诚实的“[来源不明]”好过伪造引注。

@@ -1,80 +1,70 @@
 # 批量下载参考文献（arXiv 等来源）
 
 > **来源**：multimodal-wiki v1.0.0（kigner/multimodal-wiki）`references/bulk-arxiv-refs.md`，2026-08 融合。
-> 用途：把论文引用的参考文献批量下载入库。原文档以 arXiv 为例（理工科预印本），
-> 方法通用——知网/北大法宝等法学来源可套用同一"批量抓取→存 stub→后续补全"流程。
+> 用途：把论文引用的参考文献批量下载入库。原文档以 arXiv（理工预印本）为例，方法通用——
+> 法学来源（期刊官网、SSRN 等预印本、知网/北大法宝的授权导出）套用同一“批量抓取 → 存 stub → 后续补全”流程。
+> 关键边界：摘要式内容只能当发现线索/索引 stub，**不能**作为法律命题、条文、案例与页码的证据；授权数据库只走用户自己的合法访问。
 
-# Bulk arXiv Reference Download
+用户要求“把这篇论文引用的论文下载下来”，或要充实 `raw/papers/` 的参考文献时，按以下流程。
 
-When the user asks to download all papers that a wiki-ingested paper references,
-or to populate `raw/papers/` with the bibliography of a key source, follow this workflow.
+## 1. 定位参考文献
 
-## Workflow
+源论文的提取物在 `raw/papers/<源论文>.md`，读它的参考文献部分（通常在文末）。逐条得到作者、题名、出处；有预印本编号的（如 `arXiv:YYMM.NNNNN`）记录编号。
 
-### 1. Locate arXiv IDs from the source paper's bibliography
+没有公开编号的条目，用宿主可用的学术检索或浏览器能力查找，查询示例：
 
-The source paper's raw extract is in `raw/papers/<source>.md`. Read its references
-section (usually the last ~300 lines). Each entry gives: author, title, venue, and
-often an arXiv ID in the form `arXiv:YYMM.NNNNN`.
-
-For any reference without an explicit arXiv ID, use the host's available scholarly-search or browser capability:
 ```
-search_query=all:"<paper title keywords>"+<first author last name>
+search_query=all:"<题名关键词>"+<第一作者姓>
 ```
 
-### 2. Batch-acquire with the available web/research capability
+## 2. 小批量获取
 
-If the current host exposes `web_extract`, it can process arXiv PDF URLs in small batches; otherwise use the available browser/download workflow:
+宿主暴露 `web_extract` 时，可小批量处理预印本 PDF 链接；否则用可用的浏览器/下载流程：
+
 ```
 https://arxiv.org/pdf/<id>
 ```
 
-If the tool returns summarized Markdown rather than the full text, treat it only as a discovery/index stub. It cannot support legal propositions, quotations, page references, or a `VERIFIED` source status; acquire and verify the primary document before using it as evidence.
+返回的是摘要式 Markdown（而非全文）时，只当**发现/索引 stub**：它不能支撑法律命题、引文、页码或“已核验”来源状态；用作证据前必须取得并核验一次文献。
 
-### 3. Save stubs to raw/papers/
+知网、北大法宝等授权法学数据库：只用用户自己的授权访问，保留官方导出件或原件；**不得**绕过登录、付费墙或验证码。
 
-Each downloaded paper gets a stub `.md` file with:
+## 3. 存 stub 到 raw/papers/
+
+每个下载件生成一个 stub `.md`：
+
 ```yaml
 ---
 source_url: https://arxiv.org/abs/<id>
 ingested: YYYY-MM-DD
 arxiv_id: <id>
-ref_label: <Paper Name> [<ref number from source>]
+ref_label: <文献标签> [<源论文中的编号>]
 ---
 ```
 
-File naming convention:
-```
-<RefLabel> - <ShortTitle> [<arxiv_id>].md
-```
-For example: `Stable Diffusion [62] - High-Resolution Image Synthesis with Latent Diffusion [2112.10752].md`
+命名：`<文献标签> - <短题名> [<编号>].md`，如 `[62] - <预印本短题名> [2112.10752].md`。中文期刊文献若无公开下载渠道，只登记到批次清单与日志，等用户提供全文后再走正式论文摄入。
 
-**Note on content:** `web_extract` on arXiv PDFs returns LLM-summarized markdown
-(since papers are typically >5000 chars). This is acceptable for reference indexing.
-The full text is always available at the `source_url`. These stubs are NOT the same
-as full paper extracts from local PDFs (which use pymupdf via [multimodal-pdf-extraction.md](multimodal-pdf-extraction.md)).
+**内容提示：** 对预印本 PDF 的 `web_extract` 返回摘要式 markdown（论文通常超过 5000 字符），用于文献索引可以接受；全文始终以 `source_url` 为准。这类 stub **不等于**本地 PDF 的完整提取物（后者用 pymupdf，见 [multimodal-pdf-extraction.md](multimodal-pdf-extraction.md)）。
 
-For CNKI, PKULaw and other licensed legal databases, use only the user's authorized access and preserve the official export/original file. Do not attempt to bypass authentication or paywalls.
+## 4. 记录批次日志
 
-### 4. Log the batch
+一条日志覆盖整批，按类别分组：
 
-Single log entry covering all downloaded papers, grouped by category:
 ```markdown
-## [YYYY-MM-DD] ingest | <Source Paper> 引用论文 (arXiv 批量下载)
-- 来源: <source paper> 论文参考文献列表
-- 入库: raw/papers/ (N 篇 arXiv 论文)
-- 论文清单:
-  架构基座: ...
-  方法前提: ...
-  对比基线: ...
+## [YYYY-MM-DD] ingest | 《源论文》引用文献批量下载
+- 来源: 《源论文》参考文献列表
+- 入库: raw/papers/（N 篇）
+- 类别分组:
+  规范依据: ...
+  实证前提: ...
+  对比研究: ...
 ```
 
-### 5. Not found handling
+## 5. 找不到的条目
 
-Some papers (conference-only, non-arXiv venues like SIGGRAPH) won't be on arXiv.
-Note them explicitly in the log entry.
+会议论文、书籍、未开放期刊等没有开放渠道的，在日志中逐一列明“未获取＋原因”，不要静默跳过。
 
-## When This is Triggered
-- "把这篇论文引用的论文下载下来"
-- "download all papers referenced by X"
-- User points to a paper in the wiki and wants its bibliography ingested
+## 触发场景
+
+- “把这篇论文引用的论文下载下来”；
+- 用户指向库内某篇论文，想摄入它的参考文献。

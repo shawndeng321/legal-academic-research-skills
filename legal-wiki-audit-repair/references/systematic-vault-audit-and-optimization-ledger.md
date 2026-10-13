@@ -1,94 +1,94 @@
-# Systematic Vault Audit and Optimization Ledger
+# 全库审计与优化台账
 
-Use this reference when the user asks for a whole-vault diagnosis, classification/architecture review, representative page sampling, or an optimization plan that later agents can execute.
+用于用户要求**全库诊断**、分类/架构评审、代表性页面抽样，或需要后续代理可直接执行的优化方案时。
 
-## 1. Scope contract: diagnose before repairing
+## 一、范围契约：先诊断、后修复
 
-A request such as “先不要改，只是排查” means existing content, source files, scripts, and Obsidian configuration are read-only. If the user separately requests an audit/optimization file, that new artifact is the only allowed write. State this exception before working and record it in the artifact.
+“先不要改，只是排查”意味着现有内容、来源文件、脚本与 Obsidian 配置全部只读。只有用户另行明确要求产出审计/优化文件时，该新文件才是唯一允许的写入；开始前说明这一例外，并在产物中记录。
 
-Do not silently repair findings during the audit. A clean audit must preserve evidence for user review and prevent scope creep.
+审计中不得顺手修复发现的问题。干净的审计必须为用户复核保留证据，并防止范围蔓延。
 
-## 2. Orientation and corpus boundaries
+## 二、定向与语料边界
 
-Read, in order:
+按顺序读：
 
-1. `SCHEMA.md`
-2. `index.md`
-3. recent `log.md`
-4. the existing optimization ledger, if present
-5. directory inventory, including vault root and hidden operational directories
+1. `SCHEMA.md`；
+2. `index.md`；
+3. `log.md` 最近部分；
+4. 既有整改台账（若有）；
+5. 目录盘点，含 vault 根目录与隐藏的运行目录。
 
-Classify files before counting:
+计数前先分类文件：
 
-- formal content pages
-- root metadata (`SCHEMA.md`, `index.md`, logs)
-- immutable `raw/` sources
-- scripts and generated reports
-- Obsidian configuration
-- zero-byte/root ghost notes
+- 正式内容页；
+- 根目录元文件（`SCHEMA.md`、`index.md`、日志）；
+- 不可变的 `raw/` 原始材料；
+- 脚本与生成的报告；
+- Obsidian 配置；
+- 0 字节/根目录幽灵笔记。
 
-Do not mix schema examples or historical log links with live content defects. Do not count a newly requested optimization ledger as a formal content page unless the schema explicitly says so.
+SCHEMA 示例与日志历史链接不得混入真实内容缺陷；用户新要的优化台账，除非 SCHEMA 明确如此规定，不计入正式内容页。
 
-## 3. Two separate audit tracks
+## 三、两条分开的审计轨
 
-### A. Technical health
+### A 技术健康
 
-Check recursively:
+递归检查：
 
-- YAML parse and required fields
-- actual source-path existence
-- index coverage and count accuracy
-- live dead links
-- empty or thin pages and empty sections
-- root-level zero-byte notes
-- duplicate filenames/titles and naming anomalies
-- `updated` dates versus known edit records
-- raw-source coverage, duplicate hashes, and persistent manifest availability
+- YAML 可解析与必填字段；
+- 实际来源路径存在性；
+- index 覆盖与计数准确性；
+- 真实死链；
+- 空壳/薄页与空章节；
+- 根目录 0 字节笔记；
+- 重名文件/标题与命名异常；
+- `updated` 日期与已知编辑记录；
+- raw 来源覆盖率、重复哈希与常驻清单（MANIFEST）可用性。
 
-### B. Academic usefulness
+### B 学术可用性
 
-Technical correctness is not enough. Also check:
+技术正确不等于可用。还要检查：
 
-- whether claims are traceable to raw sources or verified entity pages
-- whether a research hypothesis is incorrectly written as an established empirical fact
-- whether factual/case-source sections are separated from agent-authored analysis
-- whether concept pages contain specific literature and case examples
-- whether paper, case, concept, draft, research-design, and comparison layers form useful paths
-- whether cross-links state a concrete relation rather than “related/relevant”
-- whether comparison/synthesis pages exist for group-case research
-- whether confidence/status fields distinguish verified facts, provisional synthesis, and unresolved controversy
+- 主张能否追溯到 raw 来源或已核验实体页；
+- 研究假说是否被误写成已证实的实证事实；
+- 事实/案例来源部分是否与代理撰写的分析分开；
+- 概念页是否有具体文献与案例例证；
+- 论文、案例、概念、底稿、研究设计与比较层是否形成有用的路径；
+- 交叉链接是否说明具体关系，而非“相关/有关”；
+- 群案研究是否有比较/综合页面；
+- confidence/status 字段是否区分已核验事实、暂时综合与未决争议。
 
-A page can be long, have valid YAML, and contain zero dead links while still being academically unsafe.
+**页面可以很长、YAML 合法、零死链，却仍学术上不安全。**
 
-## 4. Graph audit: distinguish reachability from research structure
+## 四、图谱审计：可达性与研究结构分开
 
-Build the inbound map from **formal content pages only**. Index links prove reachability but should not count as substantive inbound edges. Logs and documentation examples should be reported separately.
+入站图只从**正式内容页**构建。index 链接证明可达性，不算实质入站边；日志与文档示例单独报告。
 
-Measure at least:
+至少测量：
 
-- paper → draft and draft → paper
-- paper ↔ paper
-- paper ↔ case
-- concept ↔ case
-- research-design ↔ content
-- comparison → evidence pages
-- category-to-category edge matrix
-- formal-content orphans
+- 论文 → 底稿、底稿 → 论文；
+- 论文 ↔ 论文；
+- 论文 ↔ 案例；
+- 概念 ↔ 案例；
+- 研究设计 ↔ 内容；
+- 比较页 → 证据页；
+- 分类间边矩阵；
+- 正式内容层孤岛。
 
-Inspect graph shape, not just edge counts. A star graph where dozens of cases point to the same 2–3 anchors can look dense but provide little differentiated knowledge. Never add links merely to reduce the orphan count; every edge needs a stated doctrinal, factual, procedural, temporal, or methodological relation.
+看图谱形态，不只看边数。几十个案例指向同 2—3 个锚点的星形图看着稠密，知识区分度却很低。绝不要为降低孤岛数而加链接；每条边都要说明教义、事实、程序、时间或方法上的具体关系。
 
-## 5. Detect templated analysis and false density
+## 五、检测模板化分析与假性稠密
 
-For each repeated page type, compare section bodies after normalizing whitespace, numbers, and wikilinks. Useful signals:
+对每种重复页面类型，归一化空白、数字与 wikilinks 后比较章节正文。有用信号：
 
-- number of unique normalized bodies per section
-- largest duplicate group
-- repeated long paragraphs across many files
-- duplicate “facts” and “procedural history” sections within the same case
-- the same related-paper or related-case bundle across unrelated entities
-- boilerplate phrases claiming comparability without naming the actual shared issue
+- 每章节归一化后的唯一正文数量；
+- 最大重复组；
+- 跨大量文件的重复长段落；
+- 同一案例内重复的“基本案情”“程序历程”章节；
+- 无关实体共用同一组相关论文/案例；
+- 声称可比却不指明共同争点的套话。
 
-Minimal section-fingerprint pattern:
+最小章节指纹示例：
 
 ```python
 import re, hashlib
@@ -100,93 +100,91 @@ def normalize_section(text):
     return hashlib.sha256(text.encode()).hexdigest()
 ```
 
-Counts only locate risk; they do not prove a substantive error. Confirm by reading one high-quality benchmark and one suspicious outlier, then compare both with the source material where factual or legal accuracy is at issue.
+计数只能定位风险，不能证明实质错误：读一页高质量基准 + 一页可疑离群页，事实与法律准确性问题再与原始材料对照。
 
-## 6. Sampling protocol
+## 六、抽样规程
 
-For each major category, inspect 1–2 pages:
+每个主要类别抽 1—2 页：
 
-- one benchmark/representative page
-- one outlier chosen by thinness, size, unusual headings, low links, high template similarity, or source irregularity
+- 一页基准/代表性页；
+- 一页离群页（按薄、大、标题异常、链接少、模板相似度高或来源不规范选）。
 
-For empty categories, report the architectural implication instead of inventing a sample. In group-case research, an empty `comparisons/` layer is often a meaningful gap; an empty `queries/` layer may be harmless.
+空类别报告它的架构含义，不编造样本。群案研究中空的 `comparisons/` 层通常是有意义的缺口；空的 `queries/` 层可能无害。
 
-Use sampled pages to illustrate system findings, but do not generalize a content error to the full category without corpus-level evidence.
+抽样页用于说明系统发现，但没有全库级证据时不得把一页的内容错误推广到整个类别。
 
-## 7. Schema-drift and provenance rules
+## 七、Schema 漂移与来源规则
 
-Compare actual frontmatter types, tags, and source values against SCHEMA. Distinguish:
+对照 SCHEMA 检查实际 frontmatter 类型、标签与来源值。区分：
 
-- missing raw path: path-like value points to no file
-- semantic schema drift: `sources:` contains author names, user oral input, directories, or wiki entities rather than raw files
+- **缺 raw 路径**：像路径的值指向不存在的文件；
+- **语义 schema 漂移**：`sources:` 里装的是作者名、用户口述、目录或 wiki 实体，而不是 raw 文件。
 
-Do not call semantic drift “source files missing.” A durable schema may separate:
+不要把语义漂移报成“源文件缺失”。耐久 schema 可分流出：
 
-- `sources:` immutable raw files
-- `references:` wiki entities or published authorities
-- `source_note:` user-provided explanation
-- `derived_from:` synthesis pages
-- `corpus:` aggregate directories/datasets
+- `sources:` 不可变 raw 文件；
+- `references:` wiki 实体或公开权威；
+- `source_note:` 用户提供的说明；
+- `derived_from:` 综合页；
+- `corpus:` 聚合目录/数据集。
 
-For legal corpora, type-specific metadata is usually necessary for Obsidian Properties/Bases: case number, decision date, court, source level, outcome, issues; and paper author, journal, year, pages, DOI/article number.
+法学语料通常需要类型专属元数据才能用好 Obsidian Properties/Bases：案例的案号、裁判日期、法院、来源层级、结果、争点；论文的作者、期刊、年份、页码、DOI/文章编号。
 
-## 8. Generator-script safety audit
+## 八、生成脚本安全审计
 
-Any in-vault batch generator should be treated as part of the knowledge architecture. Check for:
+vault 内的任何批量生成器都属于知识架构的一部分。检查：
 
-- hard-coded absolute paths
-- stale output directories
-- direct `open(..., 'w')` overwrite
-- absent `--dry-run`, `--no-clobber`, backup, manifest, mapping list, and acceptance tests
-- automatic generation of analytical sections or generic links
+- 硬编码绝对路径；
+- 过期输出目录；
+- `open(..., 'w')` 直接覆盖；
+- 缺 `--dry-run`/不覆盖保护/备份/清单/映射/验收测试；
+- 自动生成分析性章节或通用链接。
 
-Until fixed and tested in a temporary directory, mark unsafe generators “do not run.” Generators should extract source facts and structure; research judgments such as dispute focus, adjudication method, group-case position, and cross-case relations require evidence-based review.
+修复并在临时目录测过之前，不安全生成器标记“禁止运行”。生成器负责抽取来源事实与结构；争点、裁判方法、群案定位、跨案关系等研究判断，必须有证据支撑的人工复核。
 
-## 9. Obsidian-specific audit
+## 九、Obsidian 专项审计
 
-Inspect graph configuration and root-note behavior:
+检查图谱配置与根笔记行为：
 
-- color groups by directory/category
-- unresolved-link and orphan display
-- direction arrows for QA
-- default location for new notes
-- root-level zero-byte notes created from unresolved links
+- 按目录/分类的颜色分组；
+- 未解析链接与孤岛显示；
+- 质检用的方向箭头；
+- 新笔记默认位置；
+- 未解析链接在根目录生成的 0 字节笔记。
 
-Recommend separate research and QA graph views. For multi-dimensional legal cases, prefer topic maps/MOCs, Bases, and faceted Chinese tags over physically moving each case into a single topic folder.
+建议研究视图与质检视图分开。多维法学案例优先用主题地图/MOC、Bases 与中文分面标签，而不是把每个案例物理移进单一主题文件夹。
 
-## 10. Severity and sequencing
+## 十、分级与顺序
 
-Use:
+- **P0**：数据丢失、raw 被改、YAML 大面积损坏、大量真实死链；
+- **P1**：错误事实、来源错配、误导性法律分析、不安全覆盖脚本；
+- **P2**：schema 漂移、溯源薄弱、孤岛/星形图、缺比较层、元数据过期；
+- **P3**：格式、命名、index 呈现、图谱外观。
 
-- **P0**: data loss, raw-source modification, mass YAML breakage, widespread live dead links
-- **P1**: false facts, wrong source mapping, misleading legal analysis, unsafe overwrite script
-- **P2**: schema drift, provenance weakness, orphan/star graph, missing comparison layer, stale metadata
-- **P3**: formatting, naming, index presentation, graph appearance
+修复顺序：
 
-Repair order:
+1. 先立安全边界；
+2. 试点 5—8 个高风险页；
+3. 小范围改/测 schema；
+4. 重建有证据支撑的关系；
+5. 建比较/导航层；
+6. 统一标签、日期、格式与图谱设置；
+7. 法条级工作等权威法规材料与范围确认后再做。
 
-1. establish safety boundaries
-2. pilot 5–8 high-risk pages
-3. update/test schema on a small set
-4. rebuild evidence-backed relationships
-5. create comparison/navigation layers
-6. standardize tags, dates, formatting, and graph settings
-7. defer statute-level work until authoritative law materials and scope are confirmed
+## 十一、优化台账设计
 
-## 11. Optimization ledger design
+根目录优化台账应只追加，含：
 
-A root optimization ledger should be append-only and contain:
+- 范围与非修改声明；
+- 基线计数与已通过项；
+- 代表性页面发现；
+- 编号发现（`OPT-001` 等）：证据、风险、修复方案、验收条件；
+- 分阶段执行顺序；
+- 确切的小批试点；
+- 全局验收清单；
+- 追加式执行记录。
 
-- scope and non-modification statement
-- baseline counts and passed checks
-- representative-page findings
-- numbered findings (`OPT-001`, etc.) with evidence, risk, proposed repair, and acceptance criteria
-- phased execution order
-- exact small pilot batch
-- global acceptance checklist
-- append-only execution records
-
-Future run template:
+未来运行模板：
 
 ```markdown
 ## [YYYY-MM-DD] OPT-XXX | 状态：完成/部分完成/阻塞
@@ -201,27 +199,27 @@ Future run template:
 - 对未来建库规则的新增经验：
 ```
 
-Keep the global action log concise; keep detailed evidence and acceptance results in the optimization ledger. Each optimization should update both without duplicating the full narrative.
+全局操作日志保持简短；详细证据与验收结果放优化台账。每次优化两边都更新，不重复整篇叙述。
 
-### Three maintenance files, not two duplicate logs
+### 三份维护文件，不是两份重复日志
 
-When reorganizing a vault's audit/optimization records, give each file one role:
+整理 vault 的审计/优化记录时，每份文件只给一个角色：
 
-1. **排查修复流程与整改台账** (process manual + issue ledger): how to inspect, open findings (OPT-001-style numbered items with acceptance criteria), and a rule write-back zone. Renaming a bare `优化log.md` to this name makes the dual role explicit.
-2. **`log.md`** (timeline): one line per action pointing to the ledger and `.maintenance/`; never duplicate the full execution narrative.
-3. **`.maintenance/OPT-编号/`** (evidence): backups, diffs, hashes and manifests per batch.
+1. **排查修复流程与整改台账**（流程手册 + 问题台账）：怎么排查、未决发现（OPT-001 式编号 + 验收条件）、规则回写区；把光秃秃的 `优化log.md` 改成这个名字，让双重角色显式化；
+2. **`log.md`**（时间线）：一行一事，指向台账与 `.maintenance/`；绝不重复完整执行叙述；
+3. **`.maintenance/OPT-编号/`**（证据）：每批的备份、diff、哈希与清单。
 
-Detailed narratives live in exactly one place. Historical log entries that mention an old filename are intentional false positives: keep them and update only live references.
+详细叙述只住在一个地方。历史日志提到旧文件名是有意的误报：保留原文，只更新在用的引用。
 
-### Rule write-back discipline
+### 规则回写纪律
 
-The agent may register rule candidates (`RULE-CANDIDATE-XXX`) but never self-confirm them. Promotion to a confirmed rule requires all of: (1) recurrence in at least two independent batches; (2) page plus raw-source evidence; (3) a passing full-vault regression; (4) no change to the research question, core classification, source credibility, legal validity or statistical definitions; (5) user confirmation, or membership in quality rules the user has already approved. This keeps project-level learning auditable without letting the model silently change the research contract.
+代理可以登记规则候选（`RULE-CANDIDATE-XXX`），但永不自行确认。升级为已确认规则须同时满足：(1) 至少两个独立批次复现；(2) 页面 + raw 来源证据；(3) 全库回归通过；(4) 不改变研究问题、核心分类、来源可信度、法律有效性或统计定义；(5) 用户确认，或属于用户已批准的质量规则。这样项目级学习可审计，而模型不会悄悄改掉研究契约。
 
-## 12. Durable lessons
+## 十二、耐久教训
 
-- “No empty pages” is only the first quality layer. Plausible-looking templated analysis is more dangerous than an obvious blank page.
-- “Zero dead links” does not prove a meaningful network.
-- “Every case has outbound links” does not prove bidirectionality or non-orphan status.
-- “Every raw file is referenced” does not prove paragraph-level provenance.
-- Automated relationship generation should default to no link when evidence is insufficient.
-- Audit findings should be actionable by another agent: exact scope, examples, acceptance checks, and a safe batch order—not merely prose criticism.
+- “没有空壳页”只是第一层质量；看起来合理的模板化分析比明显的空白更危险。
+- “零死链”不证明网络有意义。
+- “每个案例都有出链”不证明双向或非孤岛。
+- “每个 raw 文件都被引用”不证明段落级溯源。
+- 自动生成关系在证据不足时应默认不加链接。
+- 审计发现要能被其他代理执行：确切范围、例子、验收检查与安全批次顺序——而不只是散文式批评。

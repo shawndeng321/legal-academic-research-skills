@@ -4,99 +4,83 @@
 > 法学库用法：裁判文书扫描件、证据图表、网页截图等图片素材按此流程摄入。
 > 与法学摄入纪律一致：raw/ 不可变、sha256 漂移检测、note-level 溯源。
 
-# Image Source Ingestion (screenshots, diagrams, figures)
+单张图片——粘贴进对话的截图、存到 `raw/screenshots/` 的图表、文章里的插图——是**一等来源**，不是被动的 `raw/assets/` 附件；与 PDF 同等对待：原件不可变地存档，文本提取物存在旁边。
 
-A standalone image — a screenshot pasted in chat, a diagram saved to `raw/screenshots/`,
-or a figure pulled from an article — is a **first-class source**, NOT a passive
-`raw/assets/` attachment. It gets the same treatment as a PDF: the original is archived
-immutably and a text extract is saved beside it. This doc defines that flow.
-
-## Directory roles (keep these SEPARATE)
+## 目录分工（必须分开）
 
 ```
 raw/screenshots/
-    <topic>.png   # ORIGINAL image — immutable Layer-1 source / evidence. Never embedded directly, never edited.
-    <topic>.md    # text extract — saved beside the original (mirrors raw/papers/ .pdf + .md)
+    <主题>.png   # 原件图片——不可变的 Layer-1 来源/证据。不直接嵌入、不编辑。
+    <主题>.md    # 文本提取物——存在原件旁边（对应 raw/papers/ 的 .pdf + .md）
 raw/assets/
-    <topic>.png   # DISPLAY copy — created ONLY when a Layer-2 page embeds the image via ![[...]]
+    <主题>.png   # 展示副本——仅当 Layer-2 页面用 ![[...]] 嵌入图片时才创建
 ```
 
-- `raw/screenshots/` is the **source archive**: original PNG + its text extract. Immutable.
-- `raw/assets/` holds only images actually **displayed** inside wiki pages. Copy the original
-  here when (and only when) a Layer-2 page needs to show it.
-- **Don't dump the source screenshot straight into `assets/`** — that conflates evidence with
-  display. The original lives in `raw/screenshots/`.
+- `raw/screenshots/` 是**来源归档**：原件 PNG + 它的文本提取物，不可变。
+- `raw/assets/` 只放确实在页面里**展示**的图片；只有 Layer-2 页面需要展示时才把原件复制过来。
+- **不要把来源截图直接丢进 `assets/`**——那会把证据与展示混在一起；原件始终在 `raw/screenshots/`。
 
-## Steps
+## 流程
 
-### 1. Archive the original
-Save the source image to `raw/screenshots/<topic>.png` (descriptive, lowercase-hyphen name).
-If it was pasted in chat, first resolve the real local or exported attachment path provided by the host, then copy it to `raw/screenshots/` with a real name. Never modify it afterward.
+### 1. 归档原件
 
-### 2. Read the image
-Open the saved PNG directly with the model (current models read images natively) and describe it thoroughly, e.g.:
+把源图片存为 `raw/screenshots/<主题>.png`（描述性、小写连字符）。若图片是粘贴进对话的，先向宿主解析真实本地/导出路径，再以真实文件名复制到 `raw/screenshots/`；之后永不修改。
 
-> "Describe everything in this image in exhaustive detail: all text, labels, numbers,
-> modules/boxes, arrows and their direction, colors, and overall layout. Transcribe any
-> diagram structurally (list each block and what connects to what)."
+### 2. 读图
 
-Capture the full returned description **verbatim** — that text is the extract.
+用模型直接打开保存的 PNG（当前模型原生读图）并详尽描述，例如：
 
-### 3. Save the text extract beside the original
-Write `raw/screenshots/<topic>.md`:
+> “请极其详尽地描述这张图片：所有文字、标签、数字、模块/方框、箭头及方向、颜色与整体布局。结构化图表按结构转述（逐块列出，并说明各块之间的连接）。”
+
+把返回的完整描述**逐字**保留——这段文字就是提取物。
+
+### 3. 文本提取物存在原件旁边
+
+写 `raw/screenshots/<主题>.md`：
 
 ```yaml
 ---
-source: raw/screenshots/<topic>.png          # the original this was extracted from
-source_url: ''                               # if the image came from a web page, put it here
+source: raw/screenshots/<主题>.png          # 提取自哪张原图
+source_url: ''                               # 若图片来自网页则填写
 ingested: YYYY-MM-DD
-text_sha256: <hex digest of the description body — 口径见 multimodal-pdf-extraction.md 第 0 节>
-extracted_by: <model id>                     # which model read it — provenance
-confidence: medium                           # vision can misread diagrams — see caveat
+text_sha256: <描述正文的十六进制摘要——口径见 multimodal-pdf-extraction.md 第 0 节>
+extracted_by: <模型 id>                      # 由哪个模型读取——溯源
+confidence: medium                           # 视觉会误读图表，见下
 ---
 
-![[<topic>.png]]
+![[<主题>.png]]
 
-<full description, verbatim>
+<完整描述，逐字>
 ```
 
-- Keep the text extract even though the model can look at the image again later: the extract is what makes the image searchable, citable and linkable in the wiki, and it records exactly what was read at ingestion time.
-- **`text_sha256` must be REAL** — compute it over the description body with the unified rule
-  (`multimodal-pdf-extraction.md` §0: normalize CRLF/CR → LF, strip leading newlines; the
-  legacy `sha256:` field is still accepted and marked legacy_ok). Do NOT fabricate a placeholder.
-  (Observed failure: a fake `a1b2c3…` hash silently breaks drift detection.)
-- The `.md` is the **working copy** for downstream weaving; the `.png` is the evidence.
+- 即使模型之后还能再看图，也要保留提取物：它是图片在 Wiki 中可搜索、可引用、可链接的依据，并记录摄入当时实际读到的内容。
+- **`text_sha256` 必须真实**——按第 0 节口径对描述正文计算（CRLF/CR 归一为 LF、去前导换行；旧字段 `sha256:` 仍接受并标 legacy_ok）。不得写占位符（曾见：伪造的 `a1b2c3…` 会让漂移检测静默失效）。
+- `.md` 是后续编织的**工作副本**；`.png` 是证据。
 
-### 4. Weave into Layer 2 (normal Ingest steps ③④⑤⑥)
-Proceed with the standard flow: check existing pages, create/update entity & concept pages,
-cross-link (≥2 `[[wikilinks]]`), update `index.md` + `log.md`.
+### 4. 编织进 Layer 2（常规摄入步骤 ③④⑤⑥）
 
-- Cite the image in page frontmatter: `sources: [raw/screenshots/<topic>.md]`.
-- Provenance markers on synthesized claims: `^[raw/screenshots/<topic>.md]` (per
-  `law-paper-writing` 技能的 `references/multimodal-citation-format.md` — the raw-note path is the traceable anchor).
-- To **display** the diagram in a Layer-2 page, copy the PNG to `raw/assets/<topic>.png` and
-  embed `![[<topic>.png]]`. The source copy in `raw/screenshots/` stays untouched.
+按标准流程：检查已有页面，新建/更新实体页与概念页，交叉链接（≥2 个 `[[wikilinks]]`），更新 `index.md` + `log.md`。
 
-## Discovery (folder-drop path)
-The Ingest discovery pass keys on missing frontmatter — but a `.png` is binary and can't
-carry frontmatter. For images the uningested signal is different:
+- 页面 frontmatter 引用：`sources: [raw/screenshots/<主题>.md]`。
+- 综合论断加溯源标记 `^[raw/screenshots/<主题>.md]`（见 `law-paper-writing` 技能的 `references/multimodal-citation-format.md`）。
+- 要在 Layer-2 页面**展示**图：把 PNG 复制到 `raw/assets/<主题>.png` 并嵌 `![[<主题>.png]]`；`raw/screenshots/` 的原件保持不动。
 
-> **a `.png` in `raw/screenshots/` with no sibling `.md` of the same basename.**
+## 发现未摄入图片（文件夹投递情形）
 
-List `raw/screenshots/*.png`, check each for a matching `.md`; any PNG without one was
-dropped but never ingested → run steps 2–4 on it.
+摄入的发现环节依赖缺失 frontmatter——但 `.png` 是二进制，带不了 frontmatter。图片的未摄入信号是：
 
-## Accuracy caveat
-Vision models can confidently invent diagram details (exact layer counts, specific numbers,
-label text). Set `confidence: medium` on pages built from a single image, and **flag precise
-figures for human verification** rather than asserting them as fact. An honest "approx."
-beats a fabricated specific.
+> **`raw/screenshots/` 下有 `.png` 但没有同名基名的 `.md`。**
 
-## Inline images inside an article
-When `web_extract` returns an article with figure URLs (`![cap](https://…png)`), those are
-left un-read by default. For the **key** diagrams worth keeping: download the image to
-`raw/screenshots/`, run steps 2–3, and fold the description into the article's wiki pages.
-Don't leave load-bearing figures as remote hotlinks that rot.
+列出 `raw/screenshots/*.png` 逐个核对；没有同名 `.md` 的就是投递了但未摄入 → 补跑第 2—4 步。
 
-## Windows paths
-Use native paths (`<WIKI_PATH>\raw\screenshots\…`, where `<WIKI_PATH>` is your wiki root) in the current host's file and image-analysis tools—not bash `/d/…` paths on Windows.
+## 准确性注意
+
+视觉模型会自信地编造图表细节（层数、具体数字、标签文字）。单一图片建的页面标 `confidence: medium`，**精确数字须标记待人工核验**，不直接当事实断言；诚实的“约”好过编造的具体值。
+
+## 文章中的内嵌图片
+
+`web_extract` 返回的文章带图片链接（`![说明](https://…png)`）时，这些图默认未被读取。**关键**图表值得保留的：下载到 `raw/screenshots/`，跑第 2—3 步，把描述并入该文章的 Wiki 页面。不要留下会腐烂的远程热链。
+
+## Windows 路径
+
+在当前宿主的文件与图像分析工具里使用原生路径（`<WIKI_PATH>\raw\screenshots\…`），不要用 bash 风格的 `/d/…`。

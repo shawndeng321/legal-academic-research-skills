@@ -18,21 +18,21 @@
 
 > 复现过的坑：旧 PDF 示例对“纯提取文本”算哈希，旧复核流程对“分隔符之后的全部内容（含前导换行）”算哈希，两者差一个前导换行，未改动的文件也被判成漂移。第 0 节口径在复核端先做归一化，新文件不再产生该误差。
 
-## Step 1: Copy PDFs to raw/papers/
+## 步骤 1：把 PDF 复制到 raw/papers/
 
 ```powershell
 $wikiPath = 'D:\wiki'
 Copy-Item -Path 'C:\source-dir\*.pdf' -Destination (Join-Path $wikiPath 'raw\papers')
 ```
 
-## Step 2: Install pymupdf (if needed)
+## 步骤 2：安装 pymupdf（如需要）
 
 ```bash
 uv pip install pymupdf
-# or: pip install pymupdf
+# 或者：pip install pymupdf
 ```
 
-## Step 3: Extract text — 首选脚本（默认不覆盖）
+## 步骤 3：提取文本——首选脚本（默认不覆盖）
 
 从 wiki 根目录运行：
 
@@ -54,7 +54,7 @@ import fitz  # pymupdf
 import hashlib, os, re
 from datetime import datetime
 
-papers_dir = os.path.join(os.environ["WIKI_PATH"], "raw", "papers")  # your wiki root
+papers_dir = os.path.join(os.environ["WIKI_PATH"], "raw", "papers")  # 你的 wiki 根目录
 
 for fname in sorted(os.listdir(papers_dir)):
     if not fname.endswith('.pdf'):
@@ -90,16 +90,15 @@ for fname in sorted(os.listdir(papers_dir)):
     print(f"[OK] {title[:80]} ({len(text)} chars)")
 ```
 
-## Step 4: Categorize papers (for bulk ingest)
+## 步骤 4：为批量摄入做论文分类
 
-Use another code-execution pass to classify by keyword matching on titles, then
-group into categories to plan which entity/concept pages to create.
+再用一次代码执行，按标题关键词分类；分组后规划要建的实体页与概念页。
 
-## Key points
+## 要点
 
-- **Always save both** the original `.pdf` AND the extracted `.md`；提取物也可放派生目录（`--out-dir`），旧库保留 `raw/papers/` 同目录布局。
-- **The `.md` is the working copy** — 读取用；正文不在修复流程中改写（补全属摄入动作，见 `multimodal-bulk-refs.md` 与审计技能 `multimodal-reingest-stubs.md`）。
+- **原件与提取物都要保存**：原始 `.pdf` 与提取的 `.md` 并存；提取物也可放派生目录（`--out-dir`），旧库保留 `raw/papers/` 同目录布局。
+- **`.md` 是工作副本**，供读取；正文不在修复流程中改写（补全属摄入动作，见 `multimodal-bulk-refs.md` 与审计技能 `multimodal-reingest-stubs.md`）。
 - **默认不覆盖**：重新提取生成新版本并记录对应原件（`source_path`/`source_sha256`）。
 - **哈希只算正文，不算 frontmatter**；`source_sha256` 只算原件字节；复核随时用 `--verify`。
 - **raw 生命周期**：摄入时写入原件与提取物；摄入完成后 raw 进入只读状态——正文不再改，哈希元数据字段的更新属修复动作（授权、备份、归因后执行）。
-- **Use native Windows paths**（`<WIKI_PATH>\...`，your wiki root）in the current host's file tools, not bash paths。
+- **Windows 使用原生路径**（`<WIKI_PATH>\...`，你的 wiki 根目录），不用 bash 风格路径。

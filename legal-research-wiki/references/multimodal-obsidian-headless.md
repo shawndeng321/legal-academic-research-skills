@@ -5,11 +5,9 @@
 > 场景：AI/agent 在服务器写库，你在笔记本/手机 Obsidian 浏览同一库。
 > 上游与最新参数以 [Obsidian 官方 headless 项目](https://github.com/obsidianmd/obsidian-headless) 为准。
 
-### Obsidian Headless (servers and headless machines)
+### 无头模式（服务器与无显示器机器）
 
-On machines without a display, `obsidian-headless` can sync an Obsidian Sync
-vault without opening the desktop app. It requires Node.js 22 or later and an
-Obsidian account with a Sync subscription.
+没有显示器的机器上，`obsidian-headless` 无需打开桌面端即可同步 Obsidian Sync vault；需要 Node.js 22 或更高版本，以及带 Sync 订阅的 Obsidian 账户。
 
 ### 启用前的安全边界
 
@@ -18,28 +16,28 @@ Obsidian account with a Sync subscription.
 3. **凭据只走交互提示。** 不把邮箱、账户密码或端到端加密密码写入命令参数、脚本、日志、Skill 或仓库；也不要把登录输出提交到 Git。
 4. **先单次、后常驻。** 先执行一次 `ob sync`，人工检查预期文件，再启用 `--continuous`。
 
-**Setup:**
+**安装与连接：**
 ```bash
-# Requires Node.js 22+
+# 需要 Node.js 22+
 npm install -g obsidian-headless
 
-# Interactive login; omit credential flags so secrets are prompted
+# 交互式登录；不要带凭据参数，让密钥走提示输入
 ob login
 
-# Inspect existing remote vaults before creating anything
+# 创建前先查看已有的远程 vault
 ob sync-list-remote
 
-# Create only when no suitable remote vault already exists
+# 只有在没有合适的远程 vault 时才创建
 ob sync-create-remote --name "Legal Research Wiki"
 
-# Connect the intended local directory to the remote vault
+# 把目标本地目录连接到该远程 vault
 cd /srv/legal-wiki
 ob sync-setup --vault "Legal Research Wiki"
 
-# Initial sync
+# 首次同步
 ob sync
 
-# Enable only after the one-time sync is verified and a single writer is designated
+# 单次同步核验通过、且已指定唯一写者后，再启用持续同步
 ob sync --continuous
 ```
 
@@ -67,7 +65,7 @@ WantedBy=default.target
 ```bash
 systemctl --user daemon-reload
 systemctl --user enable --now obsidian-wiki-sync
-# Optional administrative change; confirm scope and obtain authorization first:
+# 可选的系统管理变更；先确认影响范围并取得授权：
 sudo loginctl enable-linger $USER
 ```
 
