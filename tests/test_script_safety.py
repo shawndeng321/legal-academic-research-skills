@@ -1,5 +1,7 @@
 import hashlib
+import json
 import os
+import re
 import zipfile
 import xml.etree.ElementTree as ET
 import subprocess
@@ -311,6 +313,87 @@ class ScriptSafetyTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("WIKI_PATH", result.stderr)
+
+    def test_check_wikilinks_flags_empty_nested_path_anchor(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            wiki = Path(tmp)
+            (wiki / "entities").mkdir()
+            (wiki / "entities" / "空页.md").write_text("", encoding="utf-8")
+            (wiki / "entities" / "甲页.md").write_text("# 甲页\n\n## 标题\n", encoding="utf-8")
+            (wiki / "entities" / "乙页.md").write_text(
+                "[[空页]]\n"
+                "[[甲页#不存在的标题]]\n"
+                "[[错误目录/甲页]]\n"
+                "[[甲页 [[乙页]]]]\n",
+                encoding="utf-8",
+            )
+
+            result = self.run_script(CHECK_LINKS_SCRIPT, wiki, "--strict")
+
+            self.assertEqual(result.returncode, 1, result.stdout)
+            self.assertIn("Dead links: 0", result.stdout)
+            self.assertIn("Empty: 1", result.stdout)
+            self.assertIn("Anchor: 1", result.stdout)
+            self.assertIn("Path prefix: 1", result.stdout)
+            self.assertIn("Malformed: 1", result.stdout)
+            self.assertIn("EMPTY      entities/乙页.md:1", result.stdout)
+            self.assertIn("ANCHOR     entities/乙页.md:2", result.stdout)
+            self.assertIn("PATH       entities/乙页.md:3", result.stdout)
+            self.assertIn("MALFORMED  entities/乙页.md:4", result.stdout)
+
+    @requires_yaml
+    def test_link_checkers_agree_on_links(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            wiki = Path(tmp)
+            entities = wiki / "entities"
+            entities.mkdir()
+            (entities / "甲页.md").write_text(
+                "# 甲页\n\n## 标题\n\n[[乙页]] [[不存在页]]\n", encoding="utf-8"
+            )
+            (entities / "乙页.md").write_text("# 乙页\n\n[[空页]]\n", encoding="utf-8")
+            (entities / "空页.md").write_text("", encoding="utf-8")
+            (entities / "丙页.md").write_text(
+                "# 丙页\n\n[[甲页#不存在的标题]]\n", encoding="utf-8"
+            )
+            (entities / "子目录A").mkdir()
+            (entities / "子目录B").mkdir()
+            (entities / "子目录A" / "同名.md").write_text("# 1\n", encoding="utf-8")
+            (entities / "子目录B" / "同名.md").write_text("# 2\n", encoding="utf-8")
+            (entities / "丁页.md").write_text("# 丁页\n\n[[同名]]\n", encoding="utf-8")
+
+            links = self.run_script(CHECK_LINKS_SCRIPT, wiki, "--strict")
+            audit = self.run_script(MULTIMODAL_AUDIT_SCRIPT, wiki, "--json")
+
+            self.assertEqual(links.returncode, 1, links.stdout)
+            self.assertEqual(audit.returncode, 1, audit.stdout[:800])
+            match = re.search(
+                r"Dead links: (\d+) \| Attachments: (\d+) \| Malformed: (\d+) \| "
+                r"Empty: (\d+) \| Path prefix: (\d+) \| Anchor: (\d+) \| Ambiguous: (\d+)",
+                links.stdout,
+            )
+            self.assertIsNotNone(match, links.stdout)
+            wdead, wattach, wmalformed, wempty, wpath, wanchor, wambiguous = map(int, match.groups())
+
+            data = json.loads(audit.stdout)
+            findings = data["findings"]
+
+            def count(rule, pred=lambda f: True):
+                return len([f for f in findings if f["rule"] == rule and pred(f)])
+
+            self.assertEqual(wdead, count("LINK-01", lambda f: "附件" not in f["message"]))
+            self.assertEqual(wattach, count("LINK-01", lambda f: "附件" in f["message"]))
+            self.assertEqual(wmalformed, count("LINK-04"))
+            self.assertEqual(wempty, count("LINK-02"))
+            self.assertEqual(wpath, count("LINK-05"))
+            self.assertEqual(wanchor, count("LINK-06"))
+            self.assertEqual(
+                wambiguous,
+                count("LINK-03", lambda f: str(f["location"]).startswith("L")),
+            )
+            self.assertTrue(
+                any(str(f["location"]).startswith("同名")
+                    for f in findings if f["rule"] == "LINK-03")
+            )
 
 
 if __name__ == "__main__":

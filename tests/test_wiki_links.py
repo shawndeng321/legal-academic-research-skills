@@ -125,5 +125,15 @@ class VaultIndexTests(unittest.TestCase):
             self.assertEqual(index.resolve("不存在").status, "missing")
 
 
+class CopyIdentityTests(unittest.TestCase):
+    def test_shared_module_copies_are_byte_identical(self):
+        research = (ROOT / "legal-research-wiki" / "scripts" / "wiki_links.py").read_bytes()
+        audit = (ROOT / "legal-wiki-audit-repair" / "scripts" / "wiki_links.py").read_bytes()
+        self.assertEqual(
+            research, audit,
+            "wiki_links.py 的两份副本必须字节相同（改一份后必须同步复制）",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

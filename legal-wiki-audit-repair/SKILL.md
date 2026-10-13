@@ -42,7 +42,7 @@ metadata:
 | 用到的内容 | 所在技能 | 未安装时 |
 |---|---|---|
 | 页面规范与验收标准、链接规则（`references/linking-and-cross-references.md`） | `legal-research-wiki` | 以当前 vault 的 `SCHEMA.md` 为准；链接规则按本技能 4.4 节 |
-| 死链检查脚本 `scripts/check_wikilinks.py` | `legal-research-wiki` | 用本技能的 `scripts/multimodal_audit.py`（含链接完整性检查） |
+| 死链检查脚本 `scripts/check_wikilinks.py` | `legal-research-wiki` | 用本技能的 `scripts/multimodal_audit.py`（含链接完整性检查；两技能共用 `scripts/wiki_links.py` 解析规则，两份字节一致、结论一致） |
 | 全库审计与整改台账细则（`references/systematic-vault-audit-and-optimization-ledger.md`） | `legal-research-wiki` | 按本技能第四至八节执行 |
 | 研究设计页审计用的五问（`references/requirement-decomposition.md`） | `law-paper-writing` | 按本技能 5.5 节检查研究设计页 |
 
@@ -118,7 +118,7 @@ metadata:
 
 ### 4.4 链接与 index
 
-建立全部页面 stem 集合，扫描 `[[目标|别名]]`、`[[目标\|别名]]`、`[[目标#锚点]]`，分别报告：正式内容页真实死链；指向 0 字节页的“空目标”；`SCHEMA.md` 规则示例；`log.md` 历史链接；index 缺页或多余。示例和历史记录不计入死链总数；`drafts/` 中的链接（包括初稿工作版的 `[[脚注N]]` 标记）列为容忍类，单独报告、不“修复”。验收口径是“正式内容页死链为零”，而不是原始总数为零；可直接运行 `legal-research-wiki` 的 `scripts/check_wikilinks.py <vault> --strict`。Obsidian 能打开 0 字节目标不代表链接健康。
+解析规则与 `legal-research-wiki` 共用（`scripts/wiki_links.py`，两份字节一致）。分别报告：正式内容页真实死链与缺失附件（附件按全库文件名核对，不混入笔记死链）；指向 0 字节页的“空目标”；同名歧义（同名页面不静默合并，DUP 节单列）；显式路径前缀不符；标题/块锚点不存在（块锚点待核）；畸形写法（`&#124;`、嵌套方括号、吞标题、缺右括号、空链接目标）；`SCHEMA.md` 规则示例与 `log.md` 历史链接（误报单列）、index 缺页或多余。示例和历史记录不计入死链总数；`drafts/` 中的链接（包括初稿工作版的 `[[脚注N]]` 标记）列为容忍类，单独报告、不“修复”。验收口径是“正式内容页死链为零”（`--strict` 下畸形、空目标、附件缺失、路径前缀、锚点缺失与同名歧义同为零），而不是原始总数为零；可直接运行 `legal-research-wiki` 的 `scripts/check_wikilinks.py <vault> --strict`。Obsidian 能打开 0 字节目标不代表链接健康。
 
 **Obsidian 真实解析规则**（详见 `legal-research-wiki` 的 `references/linking-and-cross-references.md`）：
 

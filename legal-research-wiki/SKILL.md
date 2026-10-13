@@ -169,7 +169,7 @@ metadata:
 
 1. **内容**：无空壳、无占位文字、无结论碎片；
 2. **六维论文质量**：摘要纯中文、结论完整、无 PDF 残留、关键词干净、YAML 可解析、标题后空行（见 [pdf-paper-ingestion.md](references/pdf-paper-ingestion.md)）；
-3. **死链**：全库递归扫描为零（`python3 scripts/check_wikilinks.py <vault> --strict`，见 [check_wikilinks.py](scripts/check_wikilinks.py)），畸形链接为零，示例和历史引用单列；
+3. **死链**：全库递归扫描为零（`python3 scripts/check_wikilinks.py <vault> --strict`，见 [check_wikilinks.py](scripts/check_wikilinks.py)）；`--strict` 口径下畸形链接、空目标、缺失附件、路径前缀不符、锚点缺失与同名歧义同为零，示例和历史引用单列；
 4. **交叉引用**：实体页之间有带理由的链接，锚点页连到相关页面；
 5. **YAML 与 index**：全库可解析，每个正式页面都在 `index.md` 中；
 6. **研究设计同步**：材料状态、门禁、口径与现状一致。
