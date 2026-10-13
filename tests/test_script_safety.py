@@ -20,6 +20,14 @@ MULTIMODAL_AUDIT_SCRIPT = (
     ROOT / "legal-wiki-audit-repair" / "scripts" / "multimodal_audit.py"
 )
 
+try:
+    import yaml as _yaml  # noqa: F401  （缺依赖时，深检相关测试显式跳过）
+    HAVE_YAML = True
+except ImportError:
+    HAVE_YAML = False
+
+requires_yaml = unittest.skipUnless(HAVE_YAML, "需要 PyYAML（见 requirements-dev.txt）")
+
 
 class ScriptSafetyTests(unittest.TestCase):
     def run_script(self, script, *args):
@@ -239,6 +247,7 @@ class ScriptSafetyTests(unittest.TestCase):
             self.assertIn("1", ids)
             self.assertIn("判决书，第1页。", footnotes_xml.decode("utf-8"))
 
+    @requires_yaml
     def test_multimodal_audit_normalizes_windows_raw_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
             wiki = Path(tmp) / "wiki"
@@ -284,8 +293,8 @@ class ScriptSafetyTests(unittest.TestCase):
             result = self.run_script(MULTIMODAL_AUDIT_SCRIPT, wiki)
 
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("All raw .md referenced in log", result.stdout)
-            self.assertIn("sample.png — extract has 3 body lines", result.stdout)
+            self.assertIn("raw 的 .md 均已登记到 log.md", result.stdout)
+            self.assertIn("提取正文 3 行", result.stdout)
 
     def test_multimodal_audit_requires_an_explicit_wiki_path(self):
         env = os.environ.copy()

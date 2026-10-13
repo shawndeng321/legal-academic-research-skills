@@ -267,7 +267,7 @@ metadata:
 4. 在 `log.md` 追加一条当日检修记录（各计数与发现）；台账只在发生实际修改时追加；
 5. 发现 P1 及以上问题 → 列修复方案，等用户确认（默认每批 5—8 页）。
 
-每周至少运行一次深检脚本 `scripts/multimodal_audit.py`：它的宽容解析能抓到轻量检修漏掉的畸形链接。
+每周至少运行一次深检脚本 `scripts/multimodal_audit.py`（加 `--strict` 时提示项也计入失败）：它能抓到轻量检修漏掉的畸形链接、空目标（0 字节页面）与同名歧义。
 
 **迭代规则**：连续检修满 3 天后，依据最近 3 天的检修记录更新检修方法（检查项增减、回归脚本改进、新易错点、口径变化），结果写入台账规则回写区（候选 → 确认），并同步 `methodology/` 中的版本说明。某天漏检时，迭代顺延至补齐连续 3 天。
 
@@ -287,7 +287,7 @@ metadata:
 
 **脚本**：
 
-- `scripts/multimodal_audit.py "<WIKI_PATH>"`：六项全库深检——索引一致性、未摄入原始材料、frontmatter 质量、链接完整性、文件卫生与惯例、日志格式。已按法学库适配：二层目录包含 `methodology`、`research-design`；页面类型包含 case、paper、norm、concept、comparison、query、moc、handoff、research-design、methodology、draft、model-article；标签词表兼容分类标题式 SCHEMA，只对单次使用且不在词表中的标签提示；链接解析处理 `\|` 转义别名；跳过 `.maintenance`、`drafts`、`_scripts` 和隐藏目录；`raw/papers`、`raw/articles` 中的二进制原件不强制要求同名 `.md`；`sha256` 为可选，只对占位哈希报警。不要用上游 multimodal-wiki 的脚本覆盖。
+- `scripts/multimodal_audit.py "<WIKI_PATH>" [--json] [--strict]`：六项全库深检——索引一致性、未摄入原始材料、frontmatter 质量、链接完整性、文件卫生与惯例、日志格式。中文报告，每条发现含规则编号（IDX/RAW/FM/LINK/HYG/LOG）、路径、定位、严重程度与检查范围；退出码 0=通过、1=存在阻断项（`--strict` 下提示项也计入）、2=执行失败或扫描不完整，未扫描到对象时不输出“通过”。需要 PyYAML（见 `requirements-dev.txt`）；链接解析与 `legal-research-wiki` 的 `check_wikilinks.py` 共用 `scripts/wiki_links.py`（两份字节一致）。已按法学库适配：页面以 vault 相对路径为身份、同名文件单独报告；默认扫描整个 `raw/`（含 `cases/`、`法规范/`），仅 `raw/transcripts`、`raw/screenshots` 强制同名提取；frontmatter 用真实 YAML 解析并检查字段类型、空值与重复键（解析失败单列）；标签词表兼容分类标题式 SCHEMA，只对单次使用且不在词表中的标签提示；跳过 `.maintenance`、`drafts`、`_scripts`、备份与隐藏目录（备份不得掩盖死链）；正式目录、排除目录与必填字段可用 vault 根的 `wiki-audit.config.json` 覆盖。不要用上游 multimodal-wiki 的脚本覆盖。
 - 用户环境中若已有自己的每日检修脚本，优先使用；没有时由本技能按需执行，或把等价脚本放入 vault 的 `_scripts/`，由用户用系统定时任务（cron、launchd、Windows 任务计划程序）运行。
 - 空壳来源补全：`references/multimodal-reingest-stubs.md`（补全属于摄入动作，查询阶段禁止补全）；哈希批量修复：`references/multimodal-sha256-bulk-fix.md`。
 

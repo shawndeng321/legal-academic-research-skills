@@ -320,13 +320,13 @@ legal-wiki-audit-repair/     # Wiki 审计、批量修复与复核
 bundle-release.json          # 技能包发布清单（自动更新读取）
 tools/                        # 发布清单生成与校验
 docs/superpowers/             # 设计与实施记录
-tests/                        # 兼容性、脚本安全与更新器回归测试
+tests/                        # 兼容性、脚本安全、深检/链接解析与更新器回归测试
 ```
 
 ## 运行前提与边界
 
 - Hermes Agent、Claude Code、OpenAI Codex 或其他支持标准 `SKILL.md` 的宿主。
-- Python 3.9+（macOS 自带的 `python3` 即可；技能包更新器、各脚本、发布工具与测试均兼容 3.9）；DOCX 脚注脚本需要 `python-docx` 与 `lxml`；PDF 文字提取按需安装 `pymupdf`；扫描件与图片由模型直接读取。
+- Python 3.9+（macOS 自带的 `python3` 即可；技能包更新器、各脚本、发布工具与测试均兼容 3.9）；DOCX 脚注脚本需要 `python-docx` 与 `lxml`；PDF 文字提取按需安装 `pymupdf`；六项深检脚本（multimodal_audit）需要 `PyYAML`（见 `requirements-dev.txt`）；扫描件与图片由模型直接读取。
 - 默认不扫描整个 Obsidian Vault，也不写回用户资料；只有用户明确授权并指定目标文件后才允许修改。
 - 不编造法条、案号、页码、期刊规则或统计数字；资料不完整时必须保留待核状态。
 - 不适用于合同、诉状、法律意见书、客户法律建议、学位论文或声称保证录用的内容。
