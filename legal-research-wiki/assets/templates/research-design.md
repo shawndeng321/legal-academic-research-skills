@@ -40,6 +40,7 @@ analysis_status: in_progress
 | 〈学术论文〉 | `raw/papers/` → `entities/引用文献/` | 〈N〉 | 〈已摄入 / 待摄入〉 | YYYY-MM-DD |
 
 <!-- 更新本表前先对照 log.md 与 raw/ 实际内容，不凭记忆写状态。 -->
+<!-- 与 Wiki 设计书的分工：材料进度表与五问细节以本页为准；设计书只写结论并链接过来。 -->
 
 ### 样本选取标准
 

@@ -40,6 +40,20 @@ metadata:
 | 实证与群案材料在论文中的表述限制（`references/empirical-case-research.md`） | `law-paper-writing` | 比例一律限定为“样本内”，不把样本分布写成趋势 |
 | 批量同步、缺漏扫描、规范依据插入等脚本；幽灵文件清理；每日检修 | `legal-wiki-audit-repair` | 按本技能 `references/linking-and-cross-references.md` 的手工流程小批执行，先备份 |
 
+## 任务入口（先判定入口，再按需加载参考文档）
+
+先判定本次任务属于哪一类；参考文档按入口与材料类型路由读取（下表与“按材料类型摄入”表），不必每次加载全部经验规则：
+
+| 入口 | 触发 | 做法 | 先读 |
+|---|---|---|---|
+| 1 新建 | 要建新研究库 | 复用用户已提供的信息，只追问影响库设计的缺项；少量试点后将设计书交用户确认 | [wiki-design-interview.md](references/wiki-design-interview.md)、模板 `assets/templates/wiki-design-brief.md` |
+| 2 增量摄入 | 已有库追加材料 | 读已有 SCHEMA 与设计书，盘点差量，按材料类型摄入；**不重启整套访谈、不重新设计** | “按材料类型摄入”表的对应参考文件 |
+| 3 查询 | 提问题、要出处 | 检索库内页面与原始材料，给出处和缺口；**不顺带建页、改库或写日志** | [linking-and-cross-references.md](references/linking-and-cross-references.md) |
+| 4 加深 | 围绕一个争点补材料与关联 | 先只读了解现状，再问痛点、新维度与试点范围（访谈“加深模式”）；明确试点范围，验收后扩展 | [content-completeness.md](references/content-completeness.md)、[linking-and-cross-references.md](references/linking-and-cross-references.md) |
+| 5 审计/修复 | 已有库体检、批量修复 | 转交 `legal-wiki-audit-repair` 技能，并传递范围、基线与写入授权；默认只读，修复先备份、小批推进 | 审计技能的 `SKILL.md` |
+
+用户已经说明目的、材料和范围时，直接进入执行，不重复提问；只在范围有缺口时补问对应的问题。
+
 ## 核心纪律
 
 ### 1. 范围先于速度
@@ -68,19 +82,19 @@ metadata:
 
 页面中的事实、日期、案号、条文、裁判理由只能来自原始材料；研究分析另写并可追溯。证据不足时写“暂不形成结论”或标待核，不用模板或推测填满。
 
-## 新建研究库的顺序
+## 新建研究库的推荐顺序（入口 1 详细流程）
 
 1. **确认 vault 路径与项目边界**；
 2. **建库访谈与研究设计**：按 [wiki-design-interview.md](references/wiki-design-interview.md) 提问 → 写《Wiki 设计书》并请用户确认 → 写 `research-design/` 研究设计页（见 [research-design-pages.md](references/research-design-pages.md)）；
 3. **SCHEMA、index、log**：从 [assets/templates/](assets/templates/README.md) 复制 `SCHEMA.md`、`index.md`、`log.md`，与用户确定目录、页面类型、标签词表（中文标签）和必填字段；
 4. （可选）**期刊风格观察**：用户有目标期刊时，请其提供 2—3 篇该刊近期范文，摄入为 `entities/范文/`，在 `methodology/` 写风格观察卡（只作写作参考，不作期刊正式要求）；
-5. **论文**：先摄入论文，建立概念骨架；
-6. **案例**：再摄入案例，挂到已有概念上；
+5. **首批材料（按研究类型定顺序）**：论文导向与群案研究一般先摄入论文（建立概念骨架），再案例、再法规范；纯案例实证型可从案例先行，概念页由案例归纳；规范解释型从法规范先行；文献争议型从论文与争议文献先行；
+6. **案例**：挂到已有概念上；
 7. **法规范**：按效力层级摄入相关条文；
 8. **比较层与网络**：`comparisons/` 跨案比较、论文—案例—法规范互联；
 9. 之后才进入论文写作（交给 `law-paper-writing`）。
 
-用户问“先摄入论文还是案例”时，建议**先论文**：论文搭建概念骨架，案例才有可挂接的概念页；论文也揭示哪些维度值得打标签，避免返工。
+用户问“先摄入论文还是案例”时，按研究类型给建议：论文导向与群案研究**推荐先论文**（论文搭建概念骨架，案例才有可挂接的概念页，也揭示哪些维度值得打标签，避免返工）；纯案例实证、规范解释、文献争议型项目按上一条的首批材料顺序执行。这是推荐顺序，不是固定规则。
 
 ## 目录与页面类型
 
