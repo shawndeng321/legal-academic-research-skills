@@ -56,7 +56,7 @@ contradictions: [其他页面]       # 可选：与之矛盾的页面
 
 ### 类型专属字段
 
-- `case`：逐步补充 `case_id`、`decision_date`、`court`、`docket`、`outcome`、`issues`；按需 `usage`（详析 / 脚注 / 统计 / 不用）、`sample_role`。
+- `case`：逐步补充 `case_id`、`decision_date`、`court`、`docket`、`outcome`、`issues`；按需 `usage`（详析 / 脚注 / 统计 / 不用）、`sample_role`、`authority`（权威层级：指导性案例 / 公报案例 / 典型案例 / 案例库入库案例 / 检察案例 / 一般裁判文书，便于按层级筛选统计）。
 - `norm`：必须有 `规范层级`；涉及现行法判断时补 `效力状态`、`生效日期`、`失效日期`、`核验日期`；做时序研究时按 `legal-research-wiki` 的 norm-versioning 参考文件增加版本字段。
 - `paper`、`model-article`：作者、刊物、年份等书目信息写在正文“基本信息”，不塞进 `sources`。
 - `query`、`moc`、`handoff`：`sources` 可以为空，必须用 `source_note` 说明是库内导航或工作记录。

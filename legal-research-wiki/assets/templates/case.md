@@ -5,6 +5,7 @@ updated: YYYY-MM-DD
 type: case
 case_id: 〈N，与文件名编号一致〉
 docket: 〈案号；来源未载明写“原文未载明”〉
+authority: 〈指导性案例 / 公报案例 / 典型案例 / 案例库入库案例 / 检察案例 / 一般裁判文书；可选，按权威层级筛选用〉
 court: 〈法院〉
 decision_date: 〈YYYY-MM-DD；终审或最后生效裁判日期〉
 outcome: 〈按本项目口径清单填写的结果类别〉

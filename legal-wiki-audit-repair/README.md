@@ -78,7 +78,7 @@ hermes skills install shawndeng321/legal-academic-research-skills/legal-wiki-aud
 - `scripts/sync_paper_case_links.py`：把案例页“与论文的关联”同步到论文页（先 `--dry-run`）。
 - `scripts/scan_missing_paper_case_links.py`、`scripts/verify_case_link_sections.py`：论文—案例关联的缺漏扫描与章节验收。
 - `scripts/insert_norm_sections.py`：按确认范围给概念页插入“规范依据”小节。
-- `scripts/multimodal_audit.py`：对指定 Wiki 执行索引、raw 摄入、frontmatter、wikilink、文件卫生和 log 六项只读深检。
+- `scripts/multimodal_audit.py`：对指定 Wiki 执行索引、raw 摄入、frontmatter、wikilink、文件卫生、log 与法学专项（法规范时效／案件去重／隐私格式，`--privacy` 可选）七项只读深检。
 - `references/batch-operations.md`：批量重命名、编号、链接迁移、反链补齐、论文—案例同步与纯链接核验的安全流程。
 - `references/comparison-page-format.md`：跨案比较页格式与链接纪律。
 - `references/group-case-stats-extraction.md`：群案统计提取流水线。

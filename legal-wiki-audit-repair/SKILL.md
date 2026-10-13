@@ -266,7 +266,7 @@ metadata:
 **流程（约 10 分钟）**：
 
 1. 定向：读 `log.md` 最近 30—80 行和台账最近三条执行记录；
-2. 全库回归（一个脚本扫完）：页面总数与台账基线对比；frontmatter 缺失与 YAML 错误为零；正式页死链为零（含畸形链接）；标签全部在 SCHEMA 词表内；类型专属字段覆盖率；论文 ↔ 案例双向对称；原始材料哈希核验（见下）；
+2. 全库回归（一个脚本扫完）：页面总数与台账基线对比；frontmatter 缺失与 YAML 错误为零；正式页死链为零（含畸形链接）；标签全部在 SCHEMA 词表内；类型专属字段覆盖率；论文 ↔ 案例双向对称；法规范时效（缺 效力状态/核验日期、核验过期、失效规范被引用）与案件去重（案号规范化后重复）；原始材料哈希核验（见下）；
 3. 对照台账最近的 OPT，检查验收缺口和未闭环事项；
 4. 日志：默认只读——拟追加的当日记录（各计数与发现）先附在报告末尾；仅在**已有既定授权**（用户明确同意过每日检修写日志，或该惯例已记入交接页／台账）时才直接追加到 `log.md`。台账只在发生实际修改时追加；
 5. 发现 P1 及以上问题 → 列修复方案，等用户确认（默认每批 5—8 页）。
@@ -291,7 +291,7 @@ metadata:
 
 **脚本**：
 
-- `scripts/multimodal_audit.py "<WIKI_PATH>" [--json] [--strict]`：六项全库深检——索引一致性、未摄入原始材料、frontmatter 质量、链接完整性、文件卫生与惯例、日志格式。中文报告，每条发现含规则编号（IDX/RAW/FM/LINK/HYG/LOG）、路径、定位、严重程度与检查范围；退出码 0=通过、1=存在阻断项（`--strict` 下提示项也计入）、2=执行失败或扫描不完整，未扫描到对象时不输出“通过”。需要 PyYAML（见 `requirements-dev.txt`）；链接解析与 `legal-research-wiki` 的 `check_wikilinks.py` 共用 `scripts/wiki_links.py`（两份字节一致）。已按法学库适配：页面以 vault 相对路径为身份、同名文件单独报告；默认扫描整个 `raw/`（含 `cases/`、`法规范/`），仅 `raw/transcripts`、`raw/screenshots` 强制同名提取；frontmatter 用真实 YAML 解析并检查字段类型、空值与重复键（解析失败单列）；标签词表兼容分类标题式 SCHEMA，只对单次使用且不在词表中的标签提示；跳过 `.maintenance`、`drafts`、`_scripts`、备份与隐藏目录（备份不得掩盖死链）；正式目录、排除目录与必填字段可用 vault 根的 `wiki-audit.config.json` 覆盖。不要用上游 multimodal-wiki 的脚本覆盖。
+- `scripts/multimodal_audit.py "<WIKI_PATH>" [--json] [--strict] [--privacy]`：七项全库深检——索引一致性、未摄入原始材料、frontmatter 质量、链接完整性、文件卫生与惯例、日志格式、法学专项（法规范时效、案件去重、隐私格式）。中文报告，每条发现含规则编号（IDX/RAW/FM/LINK/HYG/LOG/NORM/DUP/PRIV）、路径、定位、严重程度与检查范围；退出码 0=通过、1=存在阻断项（`--strict` 下提示项也计入）、2=执行失败或扫描不完整，未扫描到对象时不输出“通过”。需要 PyYAML（见 `requirements-dev.txt`）；链接解析与 `legal-research-wiki` 的 `check_wikilinks.py` 共用 `scripts/wiki_links.py`（两份字节一致）。已按法学库适配：页面以 vault 相对路径为身份、同名文件单独报告；默认扫描整个 `raw/`（含 `cases/`、`法规范/`），仅 `raw/transcripts`、`raw/screenshots` 强制同名提取；frontmatter 用真实 YAML 解析并检查字段类型、空值与重复键（解析失败单列）；标签词表兼容分类标题式 SCHEMA，只对单次使用且不在词表中的标签提示；跳过 `.maintenance`、`drafts`、`_scripts`、备份与隐藏目录（备份不得掩盖死链）；正式目录、排除目录、必填字段、`norm_verify_max_age_days` 与 `privacy{enabled, extra_patterns}` 可用 vault 根的 `wiki-audit.config.json` 覆盖（`--privacy` 启用可选隐私检查，命中值打码、只报告不改动）。不要用上游 multimodal-wiki 的脚本覆盖。
 - 用户环境中若已有自己的每日检修脚本，优先使用；没有时由本技能按需执行，或把等价脚本放入 vault 的 `_scripts/`，由用户用系统定时任务（cron、launchd、Windows 任务计划程序）运行。
 - 空壳来源补全：`references/multimodal-reingest-stubs.md`（补全属于摄入动作，查询阶段禁止补全）；哈希批量修复：`references/multimodal-sha256-bulk-fix.md`。
 

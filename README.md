@@ -26,7 +26,7 @@
 |---|---:|---|---|
 | [`law-paper-writing`](law-paper-writing/) | **v2610.9** | 选题、研究、起草、修订、审核或期刊适配 | 七种任务模式、五项硬门禁、按命题类型检查论证、正文表达与作者声音、材料边界、实证材料细则、期刊适配、DOCX 真实脚注 |
 | [`legal-research-wiki`](legal-research-wiki/) | **v2610.9** | 新建、扩充或重新整理研究库 | 研究思路先行、范围优先摄入、PDF/DOCX/图片/音频摄入、法规范分层、论文—案例双轨关联、研究设计层、六维质量门禁、闭世界查询 |
-| [`legal-wiki-audit-repair`](legal-wiki-audit-repair/) | **v2610.9** | 已有 Wiki 出现死链、字段缺失、批量操作或技能包更新需求 | AUDIT_ONLY、P0—P3 分级、备份/DRY_RUN、小批修复、模板化检测、每日检修与迭代、六项深检脚本 |
+| [`legal-wiki-audit-repair`](legal-wiki-audit-repair/) | **v2610.9** | 已有 Wiki 出现死链、字段缺失、批量操作或技能包更新需求 | AUDIT_ONLY、P0—P3 分级、备份/DRY_RUN、小批修复、模板化检测、每日检修与迭代、七项深检脚本（含法学专项） |
 
 ## 2026-09 更新内容
 
@@ -326,7 +326,7 @@ tests/                        # 兼容性、脚本安全、深检/链接解析�
 ## 运行前提与边界
 
 - Hermes Agent、Claude Code、OpenAI Codex 或其他支持标准 `SKILL.md` 的宿主。
-- Python 3.9+（macOS 自带的 `python3` 即可；技能包更新器、各脚本、发布工具与测试均兼容 3.9）；DOCX 脚注脚本需要 `python-docx` 与 `lxml`；PDF 文字提取按需安装 `pymupdf`；六项深检脚本（multimodal_audit）需要 `PyYAML`（见 `requirements-dev.txt`）；扫描件与图片由模型直接读取。
+- Python 3.9+（macOS 自带的 `python3` 即可；技能包更新器、各脚本、发布工具与测试均兼容 3.9）；DOCX 脚注脚本需要 `python-docx` 与 `lxml`；PDF 文字提取按需安装 `pymupdf`；七项深检脚本（multimodal_audit）需要 `PyYAML`（见 `requirements-dev.txt`）；扫描件与图片由模型直接读取。
 - 默认不扫描整个 Obsidian Vault，也不写回用户资料；只有用户明确授权并指定目标文件后才允许修改。
 - 不编造法条、案号、页码、期刊规则或统计数字；资料不完整时必须保留待核状态。
 - 不适用于合同、诉状、法律意见书、客户法律建议、学位论文或声称保证录用的内容。
@@ -334,7 +334,7 @@ tests/                        # 兼容性、脚本安全、深检/链接解析�
 ## 致谢与来源
 
 - 写作技能的 6.x 版本线合并了 [VictorTran1023/law-paper-writing-skill](https://github.com/VictorTran1023/law-paper-writing-skill)（MIT）的写作方法，初始方法源于《关于中国法学类CSSCI期刊发表论文的写作过程与方法》；
-- 多模态摄入、六项深检与 note-level 溯源来自 [kigner/multimodal-wiki](https://github.com/kigner/multimodal-wiki) v1.0.0，并按法学研究适配。
+- 多模态摄入与 note-level 溯源来自 [kigner/multimodal-wiki](https://github.com/kigner/multimodal-wiki) v1.0.0；深检脚本源自其六项结构检查，本包扩展为七项（增法学专项）并按法学研究适配。
 
 ## 版本与许可证
 

@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""法学研究 Wiki 深检脚本（六项结构检查）。
+"""法学研究 Wiki 深检脚本（七项结构检查）。
 
 用法：
-    python3 -X utf8 multimodal_audit.py <WIKI_PATH> [--json] [--strict]
+    python3 -X utf8 multimodal_audit.py <WIKI_PATH> [--json] [--strict] [--privacy]
 
     WIKI_PATH 也可通过环境变量 WIKI_PATH 提供。`--json` 输出机器可读结果
-    （字段名为英文，内容为中文）；`--strict` 下「提示」级发现也计入失败。
+    （字段名为英文，内容为中文）；`--strict` 下「提示」级发现也计入失败；
+    `--privacy` 启用可选的个人信息格式检查（默认关闭，命中值打码显示）。
 
 退出码：
     0 = 通过；1 = 存在阻断项（--strict 下提示项也计入）；
     2 = 执行失败或扫描不完整（参数、配置、依赖错误，或未扫描到任何对象）。
 
-六项检查与规则编号：
+七项检查与规则编号：
     1 索引一致性  IDX-00 缺少 index.md（未检查）/IDX-01 计数不符/
                   IDX-02 缺索引条目/IDX-03 幽灵条目/IDX-04 游离文件
     2 未摄入原始材料 RAW-01 原件缺提取/RAW-02 提取命名不一致/
@@ -24,10 +25,18 @@
                   LINK-07 孤立页/LINK-08 出站不足
     5 文件卫生    HYG-01 素材图未引用/HYG-02 提取正文过短或缺提取
     6 日志格式    LOG-01 日志超阈值
+    7 法学专项    NORM-01 法规范页缺 效力状态/核验日期，NORM-02 核验日期超期限
+                  （默认 365 天，可配置），NORM-03 失效规范被概念或比较页引用，
+                  DUP-01 同一案号（全半角与空格规范化后）疑似重复页面，
+                  PRIV-01 疑似个人信息格式（可选，`--privacy` 启用，打码报告），
+                  NORM-9、PRIV-9 通过标记
 
 约定配置：页面目录、原始目录、排除目录、必填字段默认见下方 DEFAULT_*；
 vault 根目录存在 `wiki-audit.config.json` 时按键覆盖（page_dirs、raw_dir、
-exclude_dirs、meta_files、required_fields）。
+exclude_dirs、meta_files、required_fields、norm_verify_max_age_days、
+privacy{enabled, extra_patterns}）。法规范时效：`核验日期` 超过
+norm_verify_max_age_days 天提示复核；隐私检查的 extra_patterns 用于放入
+设计书约定的脱敏模式（未配置时只做格式检查并说明）。
 
 边界：本脚本只做**结构与来源一致性**检查，不构成学术内容审查；结构检查
 通过不等于学术可用性通过。标题/块锚点按文本近似核对（块锚点与图谱细节
@@ -41,6 +50,7 @@ import os
 import re
 import sys
 from collections import Counter, defaultdict
+from datetime import date, datetime
 from pathlib import Path
 
 # Emoji（🔴🟡✅）在部分 zh-CN 控制台会崩溃；强制 UTF-8 输出。
@@ -115,6 +125,12 @@ class Audit:
         self.exclude_dirs = set(config["exclude_dirs"])
         self.meta_files = list(config["meta_files"])
         self.required_fields = list(config["required_fields"])
+        self.norm_verify_max_age_days = config["norm_verify_max_age_days"]
+        self.privacy = dict(config["privacy"])
+        self._extra_privacy_patterns = [
+            ("自定义模式", re.compile(pattern))
+            for pattern in self.privacy.get("extra_patterns", [])
+        ]
         self.findings = []
         self.unreadable = []
         self.raw_unreadable = []
@@ -620,6 +636,195 @@ class Audit:
             stats["status"] = "pass"
         self.check_stats[6] = stats
 
+    # ---------- 检查 7：法学专项（法规范时效、案件去重、隐私格式） ----------
+    PRIVACY_PATTERNS = (
+        ("身份证号", re.compile(
+            r"(?<!\d)[1-9]\d{5}(?:19|20)\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])\d{3}[\dXx](?!\d)")),
+        ("身份证号", re.compile(
+            r"(?<!\d)[1-9]\d{5}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])\d{3}(?!\d)")),
+        ("银行卡号", re.compile(r"(?<!\d)[1-9]\d{15,18}(?!\d)")),
+        ("手机号", re.compile(r"(?<!\d)1[3-9]\d{9}(?!\d)")),
+    )
+    STALE_NORM_STATUSES = ("已废止", "已修订")
+
+    @staticmethod
+    def _mask(value):
+        if len(value) <= 5:
+            return "*" * len(value)
+        return value[:3] + "*" * (len(value) - 5) + value[-2:]
+
+    @staticmethod
+    def _as_date(value):
+        if isinstance(value, datetime):
+            return value.date()
+        if isinstance(value, date):
+            return value
+        if isinstance(value, str):
+            match = re.match(r"(\d{4})-(\d{1,2})-(\d{1,2})", value.strip())
+            if match:
+                try:
+                    return date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
+                except ValueError:
+                    return None
+        return None
+
+    @staticmethod
+    def _normalize_docket(value):
+        if value is None:
+            return None
+        text = str(value).strip()
+        if not text or text in ("原文未载明", "未载明", "无", "不详", "年份不详"):
+            return None
+        text = text.translate(str.maketrans({
+            "（": "(", "）": ")", "〔": "(", "〕": ")", "【": "(", "】": ")",
+            "［": "(", "］": ")", "\u3000": " ",
+        }))
+        text = re.sub(r"\s+", "", text)
+        return text or None
+
+    def _privacy_hits(self, text):
+        """返回 [(行号, 类别, 打码值)]；重叠命中只取其一（身份证 > 银行卡 > 手机）。"""
+        matches = []
+        for line_no, line in enumerate(text.split("\n"), 1):
+            found = []
+            for index, (category, pattern) in enumerate(self.PRIVACY_PATTERNS):
+                for match in pattern.finditer(line):
+                    found.append((match.start(), match.end(), index, category, match.group(0)))
+            for index, (category, pattern) in enumerate(self._extra_privacy_patterns):
+                for match in pattern.finditer(line):
+                    found.append((match.start(), match.end(),
+                                  len(self.PRIVACY_PATTERNS) + index, category, match.group(0)))
+            found.sort(key=lambda item: (item[0], -(item[1] - item[0]), item[2]))
+            accepted_end = -1
+            for start, end, _priority, category, value in found:
+                if start >= accepted_end:
+                    accepted_end = end
+                    matches.append((line_no, category, self._mask(value)))
+        return matches
+
+    def check_special(self):
+        stats = {"norms": 0, "cases": 0, "privacy_scanned": 0, "privacy_hits": 0}
+        notes = []
+
+        # --- 法规范时效 ---
+        norms = {rel: page for rel, page in self.pages.items()
+                 if isinstance(page["fm"], dict) and page["fm"].get("type") == "norm"}
+        stats["norms"] = len(norms)
+        if not norms:
+            notes.append("未发现 type: norm 页面——法规范时效检查未执行（不视为通过）")
+        stale_status = {}
+        for rel in sorted(norms):
+            fm_data = norms[rel]["fm"]
+            status = fm_data.get("效力状态")
+            verified = fm_data.get("核验日期")
+            missing = [name for name, value in (("效力状态", status), ("核验日期", verified))
+                       if value is None or (isinstance(value, str) and not value.strip())]
+            if missing:
+                self.add("NORM-01", "warning", "专项", rel, "frontmatter",
+                         "法规范页缺少字段：" + "、".join(missing)
+                         + "（建库要求填写 效力状态 与 核验日期）")
+            verified_date = self._as_date(verified)
+            if verified_date is not None:
+                age = (date.today() - verified_date).days
+                if age > self.norm_verify_max_age_days:
+                    self.add("NORM-02", "warning", "专项", rel, "frontmatter",
+                             "核验日期 {} 距今 {} 天（上限 {} 天），请复核效力状态".format(
+                                 verified_date.isoformat(), age, self.norm_verify_max_age_days))
+            if isinstance(status, str) and status.strip() in self.STALE_NORM_STATUSES:
+                stale_status[rel] = status.strip()
+        if stale_status:
+            referenced = {rel: [] for rel in stale_status}
+            for rel in sorted(self.pages):
+                page = self.pages[rel]
+                fm_data = page["fm"] if isinstance(page["fm"], dict) else {}
+                if fm_data.get("type") not in ("concept", "comparison"):
+                    continue
+                for line in page["text"].split("\n"):
+                    for link in parse_links_in_line(line):
+                        if not link.file_part or link.file_part.startswith(("http", "#")):
+                            continue
+                        resolution = self.index.resolve(link.file_part)
+                        if resolution.resolvable and resolution.target in referenced:
+                            if rel not in referenced[resolution.target]:
+                                referenced[resolution.target].append(rel)
+            for rel in sorted(referenced):
+                sources = referenced[rel]
+                if not sources:
+                    continue
+                shown = "、".join(sources[:6]) + ("……" if len(sources) > 6 else "")
+                self.add("NORM-03", "warning", "专项", rel, "frontmatter",
+                         "效力状态为「{}」，但被概念/比较页作为现行依据引用（{} 处）：{}"
+                         "——核对是历史适用，还是误引失效规范".format(
+                             stale_status[rel], len(sources), shown))
+
+        # --- 案件去重 ---
+        cases = {rel: page for rel, page in self.pages.items()
+                 if isinstance(page["fm"], dict) and page["fm"].get("type") == "case"}
+        stats["cases"] = len(cases)
+        if not cases:
+            notes.append("未发现 type: case 页面——案件去重检查未执行（不视为通过）")
+        groups = defaultdict(list)
+        for rel in sorted(cases):
+            docket = self._normalize_docket(cases[rel]["fm"].get("docket"))
+            if docket:
+                groups[docket].append(rel)
+        for docket in sorted(groups):
+            group = groups[docket]
+            if len(group) < 2:
+                continue
+            details = []
+            for rel in group:
+                fm_data = cases[rel]["fm"]
+                court = fm_data.get("court") or "法院未载"
+                decided = self._as_date(fm_data.get("decision_date"))
+                decided_text = decided.isoformat() if decided else (
+                    str(fm_data.get("decision_date")) if fm_data.get("decision_date") else "日期未载")
+                details.append("{}（{}；{}）".format(rel, court, decided_text))
+            common = os.path.commonpath(group)
+            self.add("DUP-01", "warning", "专项", common or "（库根）", "案号",
+                     "疑似同一案件（案号规范化后相同）：「{}」——{}；只报告，不自动合并".format(
+                         docket, "；".join(details)))
+
+        # --- 隐私格式（可选） ---
+        if self.privacy.get("enabled"):
+            scanned = [(rel, self.pages[rel]["text"]) for rel in sorted(self.pages)]
+            for rel in sorted(self.raw_files):
+                if rel.endswith(".md"):
+                    text = self.index.read_text(rel)
+                    if text is not None:
+                        scanned.append((rel, text))
+            stats["privacy_scanned"] = len(scanned)
+            hit_total = 0
+            for rel, text in scanned:
+                in_raw = rel.startswith(self.raw_dir + "/")
+                for line_no, category, masked in self._privacy_hits(text):
+                    hit_total += 1
+                    suffix = "（原始材料只读：只报告，不修改）" if in_raw else "——核对是否应脱敏为「某某」写法"
+                    self.add("PRIV-01", "warning", "专项", rel, "L{}".format(line_no),
+                             "疑似{}（已打码：{}）{}".format(category, masked, suffix))
+            stats["privacy_hits"] = hit_total
+            if not hit_total:
+                self.add("PRIV-9", "pass", "专项", "（全库）", "扫描", "未发现疑似个人信息格式")
+            if not self.privacy.get("extra_patterns"):
+                notes.append("未配置设计书脱敏规则（privacy.extra_patterns）——当前仅做格式检查")
+        else:
+            notes.append("隐私格式检查未启用（可选）——加 --privacy 或在 wiki-audit.config.json 中设 privacy.enabled=true")
+
+        check7_rules = ("NORM-01", "NORM-02", "NORM-03", "DUP-01")
+        has_warning = any(f.rule in check7_rules and f.severity == "warning" for f in self.findings)
+        if (norms or cases) and not has_warning:
+            self.add("NORM-9", "pass", "专项", "（全库）", "扫描",
+                     "法规范 {} 页、案例 {} 页：时效与案号去重检查通过".format(len(norms), len(cases)))
+        if has_warning:
+            stats["status"] = "warn"
+        elif not norms and not cases and not self.privacy.get("enabled"):
+            stats["status"] = "not_checked"
+        else:
+            stats["status"] = "pass"
+        self.check_stats[7] = stats
+        if notes:
+            self.check_notes[7] = "；".join(notes)
+
     # ---------- 汇总 ----------
     def run(self):
         self.collect()
@@ -629,6 +834,7 @@ class Audit:
         self.check_links()
         self.check_hygiene()
         self.check_log()
+        self.check_special()
 
 
 # --- YAML 严格加载（重复键单列） ---
@@ -666,6 +872,8 @@ def load_config(wiki):
         "exclude_dirs": list(DEFAULT_EXCLUDE_DIRS),
         "meta_files": list(DEFAULT_META_FILES),
         "required_fields": list(DEFAULT_REQUIRED_FIELDS),
+        "norm_verify_max_age_days": 365,
+        "privacy": {"enabled": False, "extra_patterns": []},
     }
     config_path = wiki / CONFIG_FILE_NAME
     if not config_path.is_file():
@@ -685,12 +893,35 @@ def load_config(wiki):
         if not isinstance(data["raw_dir"], str):
             raise RuntimeError(f"{CONFIG_FILE_NAME} 的 raw_dir 必须是字符串")
         config["raw_dir"] = data["raw_dir"]
+    if "norm_verify_max_age_days" in data:
+        value = data["norm_verify_max_age_days"]
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            raise RuntimeError(f"{CONFIG_FILE_NAME} 的 norm_verify_max_age_days 必须是非负整数")
+        config["norm_verify_max_age_days"] = value
+    if "privacy" in data:
+        value = data["privacy"]
+        if not isinstance(value, dict):
+            raise RuntimeError(f"{CONFIG_FILE_NAME} 的 privacy 必须是对象")
+        enabled = value.get("enabled", False)
+        patterns = value.get("extra_patterns", [])
+        if not isinstance(enabled, bool):
+            raise RuntimeError(f"{CONFIG_FILE_NAME} 的 privacy.enabled 必须是布尔值")
+        if not isinstance(patterns, list) or not all(isinstance(p, str) for p in patterns):
+            raise RuntimeError(f"{CONFIG_FILE_NAME} 的 privacy.extra_patterns 必须是字符串数组")
+        for pattern in patterns:
+            try:
+                re.compile(pattern)
+            except re.error as exc:
+                raise RuntimeError(
+                    f"{CONFIG_FILE_NAME} 的 privacy.extra_patterns 含非法正则：{pattern}（{exc}）") from exc
+        config["privacy"] = {"enabled": enabled, "extra_patterns": patterns}
     return config
 
 
 CHECK_TITLES = {
     1: "索引一致性", 2: "未摄入原始材料", 3: "frontmatter 质量",
     4: "链接完整性", 5: "文件卫生与惯例", 6: "日志格式",
+    7: "法学专项（法规范时效、案件去重、隐私格式）",
 }
 SEVERITY_LABEL = {"broken": "🔴 阻断", "warning": "🟡 提示"}
 STATUS_LABEL = {"pass": "✅ 通过", "warn": "🟡 有提示", "fail": "🔴 有阻断", "not_checked": "⚪ 未检查"}
@@ -698,7 +929,8 @@ STATUS_LABEL = {"pass": "✅ 通过", "warn": "🟡 有提示", "fail": "🔴 �
 
 def _rule_check(rule):
     prefix = rule.split("-", 1)[0]
-    return {"IDX": 1, "RAW": 2, "FM": 3, "LINK": 4, "HYG": 5, "LOG": 6}.get(prefix, 0)
+    return {"IDX": 1, "RAW": 2, "FM": 3, "LINK": 4, "HYG": 5, "LOG": 6,
+            "NORM": 7, "DUP": 7, "PRIV": 7}.get(prefix, 0)
 
 
 def print_report(audit):
@@ -707,7 +939,7 @@ def print_report(audit):
     print("Wiki：{}".format(audit.wiki))
     print("页面 {} 个｜原始文件 {} 个".format(len(audit.pages), len(audit.raw_files)))
     print("=" * 72)
-    for check_no in range(1, 7):
+    for check_no in range(1, 8):
         stats = audit.check_stats.get(check_no, {})
         label = STATUS_LABEL.get(stats.get("status"), "⚪ 未检查")
         print("\n【检查 {}｜{}】{}".format(check_no, CHECK_TITLES[check_no], label))
@@ -756,7 +988,7 @@ def build_result(audit, strict, exit_code):
         "checks": [
             {"check": n, "title": CHECK_TITLES[n], "note": audit.check_notes.get(n),
              **audit.check_stats.get(n, {"status": "not_checked"})}
-            for n in range(1, 7)
+            for n in range(1, 8)
         ],
         "findings": [f.to_dict() for f in audit.findings if f.severity != "pass"],
         "summary": {"broken": len(broken), "warning": len(warnings), "exit_code": exit_code},
@@ -766,19 +998,20 @@ def build_result(audit, strict, exit_code):
 def main(argv):
     json_mode = "--json" in argv
     strict = "--strict" in argv
-    rest = [a for a in argv if a not in ("--json", "--strict")]
+    privacy = "--privacy" in argv
+    rest = [a for a in argv if a not in ("--json", "--strict", "--privacy")]
     if "--help" in rest or "-h" in rest:
         print(__doc__)
         return 0
     unknown = [a for a in rest if a.startswith("-")]
     if unknown:
-        print("错误：未知参数 {}。用法：python3 multimodal_audit.py <WIKI_PATH> [--json] [--strict]".format(unknown),
+        print("错误：未知参数 {}。用法：python3 multimodal_audit.py <WIKI_PATH> [--json] [--strict] [--privacy]".format(unknown),
               file=sys.stderr)
         return 2
     wiki_input = rest[0] if rest else os.environ.get("WIKI_PATH")
     if not wiki_input:
         print(
-            "错误：未提供 Wiki 根目录。用法：python3 multimodal_audit.py <WIKI_PATH> [--json] [--strict]；"
+            "错误：未提供 Wiki 根目录。用法：python3 multimodal_audit.py <WIKI_PATH> [--json] [--strict] [--privacy]；"
             "也可设置环境变量 WIKI_PATH。(error: pass the Wiki root as an argument or set WIKI_PATH)",
             file=sys.stderr,
         )
@@ -796,6 +1029,8 @@ def main(argv):
     except RuntimeError as exc:
         print("错误：{}".format(exc), file=sys.stderr)
         return 2
+    if privacy:
+        config["privacy"]["enabled"] = True
     audit = Audit(wiki, config)
     audit.run()
     empty_scan = not audit.pages and not audit.raw_files
