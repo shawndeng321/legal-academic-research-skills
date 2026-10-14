@@ -297,5 +297,5 @@
 - 更新器可见性：本机 `check --force --json` 由 `2610.9.0` 检出新版 `2610.14.0`（通道 bundle）——发布对已安装用户生效。
 - 本机更新（用户确认后执行；预览先行）：暂存包与清单逐文件核对 131/131 一致（macOS 用 `ditto` 解压——`unzip` 对仓库中文文件名会误报 disk full 并等待输入而挂起，已记入更新器应用手册）；预演返回 `confirmation_required` + `clean`（无本地改动）；应用返回 `status: updated`（2610.14.0）。
 - 备份：手工备份（与既有备份同位置、固定命名）+ 更新器自动备份（状态目录 `backups/` 最新一份，含 `transaction.json`）。
-- 复核：三处锁均为 2610.14.0；三个安装目录与全新解压逐文件对比 0 差异（忽略缓存）；`tools/prepare_bundle_release.py --check` 一致；宿主技能列表核验见发布会话记录。
+- 复核：三处锁均为 2610.14.0；三个安装目录与全新解压逐文件对比 0 差异（忽略缓存）；`tools/prepare_bundle_release.py --check` 一致；宿主技能列表中三个技能均为 `enabled`，安装目录 `SKILL.md` frontmatter 解析正常。
 - 提示：本机使用新版需开新会话（当前会话仍载旧版 `SKILL.md`）。
