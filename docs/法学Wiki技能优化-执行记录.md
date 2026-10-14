@@ -290,3 +290,12 @@
 - 测试：依赖齐全环境 221/221 通过；无依赖环境（/usr/bin/python3）OK (skipped=74)，无导入错误。
   说明：无依赖基线须在剥离 `PYTHONPATH` 的干净环境取值——Hermes execute_code 内核会把自带环境的 PYTHONPATH 泄漏给子进程，使跳过数假降至 22；已按干净环境复核为 74。
 - 发布件：`bundle-release.json`（2610.14.0）、三份 `bundle-lock.json`、`PR说明.md` 更新；“推送与宿主回执”见下一条记录。
+
+## 发布回执 v2610.14（2026-10-14：推送核验、更新器可见性与本机更新） | 状态：完成
+
+- 推送核验：远端 `main` 与 `release/v2610.14` 均随发布提交推进（main 由 `042b998` 快进，含 v2610.9 更名以来全部内容）；`release/v2610.9` 保持原样；按既定流程直达 main（未创建合并请求）。
+- 更新器可见性：本机 `check --force --json` 由 `2610.9.0` 检出新版 `2610.14.0`（通道 bundle）——发布对已安装用户生效。
+- 本机更新（用户确认后执行；预览先行）：暂存包与清单逐文件核对 131/131 一致（macOS 用 `ditto` 解压——`unzip` 对仓库中文文件名会误报 disk full 并等待输入而挂起，已记入更新器应用手册）；预演返回 `confirmation_required` + `clean`（无本地改动）；应用返回 `status: updated`（2610.14.0）。
+- 备份：手工备份（与既有备份同位置、固定命名）+ 更新器自动备份（状态目录 `backups/` 最新一份，含 `transaction.json`）。
+- 复核：三处锁均为 2610.14.0；三个安装目录与全新解压逐文件对比 0 差异（忽略缓存）；`tools/prepare_bundle_release.py --check` 一致；宿主技能列表核验：{'law-paper-writing': False, 'legal-research-wiki': False, 'legal-wiki-audit-repair': False}（明细见发布会话）。
+- 提示：本机使用新版需开新会话（当前会话仍载旧版 `SKILL.md`）。
