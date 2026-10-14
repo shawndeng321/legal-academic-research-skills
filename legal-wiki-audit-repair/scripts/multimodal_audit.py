@@ -17,7 +17,7 @@
                   IDX-02 缺索引条目/IDX-03 幽灵条目/IDX-04 游离文件
     2 未摄入原始材料 RAW-01 原件缺提取/RAW-02 提取命名不一致/
                   RAW-03 占位片段/RAW-04 未登记日志/
-                  RAW-05 提取文件缺 frontmatter 或无法解析/RAW-06 占位 sha256
+                  RAW-05 提取文件缺 frontmatter 或无法解析（清单 raw/MANIFEST.md 豁免）/RAW-06 占位 sha256
     3 frontmatter 质量 FM-01 解析失败/FM-02 缺必填字段或字段为空/
                   FM-03 类型非法/FM-04 标签问题/FM-05 重复键/FM-06 来源路径不存在
     4 链接完整性  LINK-01 死链/LINK-02 空目标（0 字节）/LINK-03 同名歧义/
@@ -361,8 +361,11 @@ class Audit:
             self.add("RAW-04", "warning", "来源", rel, "文件", "raw 的 .md 未登记到 log.md")
         if raw_md and not missing_log:
             self.add("RAW-9", "pass", "来源", "log.md", "文件", "raw 的 .md 均已登记到 log.md")
-        # 提取物 frontmatter 与占位哈希（原「检查 3」对 raw 的口径，保留）
+        # 提取物 frontmatter 与占位哈希（原「检查 3」对 raw 的口径，保留）；
+        # raw/MANIFEST.md 是原材料登记清单、按约定无 frontmatter，豁免本项。
         for rel in sorted(raw_md):
+            if rel == f"{self.raw_dir}/MANIFEST.md":
+                continue
             text = self.index.read_text(rel)
             if text is None:
                 self.add("RAW-05", "broken", "来源", rel, "文件", "无法读取")

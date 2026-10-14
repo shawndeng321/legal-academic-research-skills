@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import unittest
 from pathlib import Path
@@ -27,20 +28,24 @@ DESCRIPTION_TRIGGERS = {
     "legal-wiki-audit-repair": ("updating its Bundle", "全库体检", "每日检修", "检查法学技能更新"),
 }
 EXPECTED_VERSIONS = {
-    "law-paper-writing": "2610.9.0",
-    "legal-research-wiki": "2610.9.0",
-    "legal-wiki-audit-repair": "2610.9.0",
+    "law-paper-writing": "2610.14.0",
+    "legal-research-wiki": "2610.14.0",
+    "legal-wiki-audit-repair": "2610.14.0",
 }
-PROJECT_SPECIFIC_TERMS = (
-    "工伤",
-    "121案",
-    "政治与法律",
-    "检例205",
-    "王东伟",
-    "Desktop/法学wiki",
-    "/Users/",
-    "~/.hermes/scripts",
-)
+# 项目专属词表放在本机文件 tests/.project_terms.local.json（不入库）：
+# 公开仓库不出现词表内容，每台机器维护自己的词表；文件缺省时词表扫描跳过。
+PROJECT_TERMS_FILE = ROOT / "tests" / ".project_terms.local.json"
+
+
+def _load_project_terms() -> tuple[str, ...]:
+    if not PROJECT_TERMS_FILE.exists():
+        return ()
+    data = json.loads(PROJECT_TERMS_FILE.read_text(encoding="utf-8"))
+    if not isinstance(data, list) or not all(
+        isinstance(item, str) and item for item in data
+    ):
+        raise ValueError("tests/.project_terms.local.json 必须是非空字符串数组")
+    return tuple(data)
 MULTIMODAL_FILES = (
     "law-paper-writing/references/multimodal-citation-format.md",
     "legal-research-wiki/references/multimodal-audio-ingest.md",
@@ -229,7 +234,7 @@ class SkillCompatibilityTests(unittest.TestCase):
         self.assertEqual(entries["legal-academic-research"]["source"], "./")
         self.assertIn("owner", marketplace)
 
-    def test_skills_are_host_neutral_and_project_neutral(self) -> None:
+    def test_skills_are_host_neutral(self) -> None:
         for skill_name in SKILLS:
             with self.subTest(skill=skill_name):
                 body = (ROOT / skill_name / "SKILL.md").read_text(encoding="utf-8")
@@ -240,17 +245,23 @@ class SkillCompatibilityTests(unittest.TestCase):
                 self.assertIn("claude plugin update", body)
                 self.assertIn("Claude Code 插件安装时跳过预检", body)
                 self.assertIn("/plugins/cache/", body)
+
+    def test_skill_files_contain_no_project_specific_terms(self) -> None:
+        terms = _load_project_terms()
+        if not terms:
+            self.skipTest(
+                "未配置 tests/.project_terms.local.json（本机项目词表），词表扫描跳过"
+            )
+        for skill_name in SKILLS:
             for path in sorted((ROOT / skill_name).rglob("*")):
                 if path.suffix not in {".md", ".py", ".yaml"}:
                     continue
                 relative = path.relative_to(ROOT).as_posix()
-                if "/evals/" in relative or relative.endswith(
-                    ("CHANGELOG.md", "legal_skills_update.py")
-                ):
+                if "/evals/" in relative or relative.endswith("legal_skills_update.py"):
                     continue
                 text = path.read_text(encoding="utf-8")
-                for term in PROJECT_SPECIFIC_TERMS:
-                    with self.subTest(path=relative, term=term):
+                for term in terms:
+                    with self.subTest(path=relative):
                         self.assertNotIn(term, text)
 
     def test_wiki_page_templates_are_complete_and_parse(self) -> None:

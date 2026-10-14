@@ -23,3 +23,6 @@ hermes.log
 # 编辑器
 .vscode/
 .idea/
+
+# 本机项目专属词表（不入库；守护测试读取 tests/.project_terms.local.json）
+tests/.project_terms.local.json

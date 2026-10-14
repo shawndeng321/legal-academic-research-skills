@@ -2,6 +2,13 @@
 
 本文件记录本技能的版本与变更。自 v2610.9 起，公开版本按日期 `vYYMM.D` 编号，同日迭代加尾部序号；三技能与 Bundle 机器字段同步为 `YYMM.D.N`。历史能力代际编号原样保留，论文稿件版本不受此规则约束。变更同时更新 `SKILL.md`、锁、清单与当前 README。
 
+## v2610.14（2026-10-14；机器字段 2610.14.0）
+
+- 随技能包批量优化同步：引注格式参考 `multimodal-citation-format.md` 中文化与用语修订（压缩约 40 行，规则不变）。
+- `SKILL.md`「配套技能」引言修正：不再把本技能列入自己的配套技能清单。
+- “更新记录”对历史来源的表述中性化；锁与发布文件随包刷新。
+- 写作方法、DOCX 真实脚注、实证统计、note-level 溯源与稿件管理能力不变；无破坏性变更。
+
 ## v2610.9（2026-10-09；机器字段 2610.9.0）
 
 - 正式名称由 `chinese-law-paper-writing` 改为 `law-paper-writing`，显示名 Law Paper Writing；另两技能保持名称，三个技能一起按日期发布。
@@ -19,11 +26,11 @@
 
 ## 6.0.0（2026-09-25，技能包版本线）
 
-本技能包内的写作技能曾有两条版本线：技能包内的 5.x（Hermes 工伤认定研究项目中迭代而来）与 [VictorTran1023/law-paper-writing-skill](https://github.com/VictorTran1023/law-paper-writing-skill) 的 1.x（通用单技能版）。6.0.0 以 1.2.0-rc.1 的正文与参考文件为主体合并两条线，此后版本号沿用本技能包的 6.x。
+本技能包内的写作技能曾有两条版本线：技能包内的 5.x（在 Hermes 中由一项法学实证研究项目长期迭代而来）与 [VictorTran1023/law-paper-writing-skill](https://github.com/VictorTran1023/law-paper-writing-skill) 的 1.x（通用单技能版）。6.0.0 以 1.2.0-rc.1 的正文与参考文件为主体合并两条线，此后版本号沿用本技能包的 6.x。
 
 - 采用 1.2.0-rc.1 的全部改进：按命题类型检查理由、正文表达与作者声音（`legal-prose.md`）、需求拆解（`requirement-decomposition.md`）、论证诊断与反馈落实、反馈落实表、合成正文对照示例及评估场景。
 - 保留 5.x 中仍然通用的能力：投稿 DOCX 真实脚注与修改标注版（`docx-production.md`、`scripts/md2docx_footnotes.py`）、note-level 溯源格式（`multimodal-citation-format.md`）、技能包自动更新与 `agents/openai.yaml`。
-- 移除项目专属规则：工伤认定群案三维框架、特定样本数量、特定期刊格式实测值、“反说纪律”的策略性表述、作为硬规则的破折号禁令；可复用的部分改写为通用细则：
+- 移除项目专属规则：原项目特有的群案三维分析框架、特定样本数量、特定期刊格式实测值、“反说纪律”的策略性表述、作为硬规则的破折号禁令；可复用的部分改写为通用细则：
   - `argumentation-details.md` → `empirical-case-research.md`（素材库定位、竞争解释、统计口径、样本限制、统计落地同步）；
   - `five-questions-framework.md` 并入 `requirement-decomposition.md`（五问展开提示）；
   - 期刊风格分析改为 `journal-adaptation.md` 中可选的“期刊风格观察卡”。

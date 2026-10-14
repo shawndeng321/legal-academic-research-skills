@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "bundle_id": "hermes-legal-research-skills",
-  "bundle_version": "2610.9.0",
-  "published_at": "2026-10-09T00:00:00+08:00",
+  "bundle_version": "2610.14.0",
+  "published_at": "2026-10-14T00:00:00+08:00",
   "update_level": "major",
-  "summary": "写作技能更名 law-paper-writing 并并入上游 v1.4.0；三个技能与技能包改用日期版本 v2610.9",
+  "summary": "三技能批量优化（深检七项、论文—案例链接工具组、任务入口与证据最小记录、文档中文化与瘦身）与发布面清理；承接 v2610.9 更名",
   "skills": {
-    "law-paper-writing": "2610.9.0",
-    "legal-research-wiki": "2610.9.0",
-    "legal-wiki-audit-repair": "2610.9.0"
+    "law-paper-writing": "2610.14.0",
+    "legal-research-wiki": "2610.14.0",
+    "legal-wiki-audit-repair": "2610.14.0"
   },
   "compatibility": {
     "hermes": true,
@@ -17,19 +17,20 @@
     "python": ">=3.9"
   },
   "changes": [
-    "写作技能由 chinese-law-paper-writing 更名为 law-paper-writing；三个技能与技能包自本版起按日期编号：公开标签 v2610.9（2026-10-09），机器字段 2610.9.0，历史版本号原样保留",
-    "写作技能增量并入 VictorTran1023/law-paper-writing-skill v1.4.0（提交 7a9ad004）：中文与英法德意俄日外文引注体例、逐观点引注、文献综述与概念/常识处理、多轮审读反馈落实、摘要功能位与自查清单；新增 F1—F8、H1—H18 场景与合成摘要例（场景材料不等于运行成绩）",
-    "更新器支持旧名原位迁移与日期版本：旧名目录原地改名更新（保留分类目录、先完整备份、失败自动回滚）、本地修改与缺失技能独立确认、Hub 旧名登记 fail-closed；旧版更新器无法识别新清单，已安装用户按 README“一次性升级”引导迁移",
-    "保留全部既有能力：DOCX 真实脚注与修订标注版、实证统计与群案材料细则、note-level 溯源、宿主中立接口、分目录安装与自动更新",
-    "测试与文档：新增日期版本迁移、DOCX 脚注与上游整合检查，测试夹具改用规范化临时路径（macOS 默认环境直接全绿）；README 增补迁移说明与路径要求，三个技能的 CHANGELOG/README 与插件清单同步"
+    "深检脚本重构并扩展为七项——新增法规范时效（NORM-01～03）、案号去重（DUP-01）与可选隐私格式检查（PRIV-01，默认关闭、命中打码）；新增论文—案例链接同步/扫描/验收与规范依据插入工具组（备份、--plan、--dry-run、哈希核对、只追加）",
+    "建库与写作：任务入口改五种路由、首批材料按研究类型；内容完整性改为证据驱动；SCHEMA 新增“证据最小记录”；引注参考中文化与用语修订；raw/MANIFEST.md 豁免提取物 frontmatter 检查",
+    "文档整理：参考文档全中文化；建库技能 SKILL 瘦身约 23.7%、审计技能约 32.1%（规则原样迁入新参考，逐条对照见 docs/WIKI-12-规则迁移对照.md）",
+    "口径统一：原件/提取物哈希规范（source_sha256/text_sha256）；两技能链接检查共享同一实现；链接工具组统一章节与字数口径",
+    "发布面清理：项目专属词表移入本机文件（公开端不再出现）；测试夹具与 CHANGELOG 中性化",
+    "本版承接 v2610.9 的写作技能更名（law-paper-writing）与上游 v1.4.0 并入；无破坏性变更"
   ],
   "archive_url": "https://github.com/shawndeng321/legal-academic-research-skills/archive/refs/heads/main.zip",
   "files": {
     "law-paper-writing/.gitignore": "6a81b94bd1bead23e3cabf52807afab7d89e3d73023b8da34e226fa951889b54",
-    "law-paper-writing/CHANGELOG.md": "220a1cefbe12c2dfe937967d98b1de25701e6c5190a3de4760172efb31ca819d",
+    "law-paper-writing/CHANGELOG.md": "f6fef9db238d5557eeb23098da333168f2653f1ca50e0a33bfadbd053342634f",
     "law-paper-writing/LICENSE": "911bbb65eefae9246cc68a14856c88c28ba0f965b6e4aa3f901d79ae1fda63e6",
-    "law-paper-writing/README.md": "6d9ed1ed7e8faee9036cf17bf13c103ae01ffde993db6e4921f3f74d1432c0d2",
-    "law-paper-writing/SKILL.md": "e29b0ec4548fe25f639c586e66bf65e3cbdfbfd2a4c863d11857f92fa9f19bdf",
+    "law-paper-writing/README.md": "087d00306a57fb3b729de71c8c791f3201dac9dddf5cf0ed6a46ae2f5e9d6cd8",
+    "law-paper-writing/SKILL.md": "14655b713342367404bd03b78f46779c6152d04a8ee4751c096a747518053453",
     "law-paper-writing/agents/openai.yaml": "293e43ac9fc74fcf926fe76d0eaf1d543e5c7f935dcaccf2babbcc47dcf52007",
     "law-paper-writing/assets/examples/abstract-examples.md": "c4d1d95dfd9fd2289b281c8ffbc20e7f63bb20dc1829c6d759752bb77cc2a59e",
     "law-paper-writing/assets/examples/legal-prose-examples.md": "16abbbb1eccb5c55040c81aeee7c28fd7df4d93d46ce87253eb8f0a9e8499aa3",
@@ -42,7 +43,7 @@
     "law-paper-writing/assets/templates/revision-response.md": "5519efdfece0eb94b44e19a03b6e0924fa85b24614c818d1525d04487813805f",
     "law-paper-writing/assets/templates/source-register.md": "7247ee6ac6f83dbdc29612fa484e427fbab16f46d57b7fbb8bab2656d5a55e24",
     "law-paper-writing/assets/templates/submission-checklist.md": "af70875e8239b92bf8fbdac9b2bcc6687d60d310023c0e7f42e4557560e82bf4",
-    "law-paper-writing/bundle-lock.json": "6f3bfc1f8d2206b3fffb52308a74d51c5e83145647143ea3621fdba6649a1c7a",
+    "law-paper-writing/bundle-lock.json": "b9dc12f171f3e35617aa21d0975dea3bc4597c73b62750a262cd30f58f06bc93",
     "law-paper-writing/evals/2026-09-09-review.md": "a08a875932764f9883c510471dd3bb02cd285246e602b29d831835e040c75841",
     "law-paper-writing/evals/2026-09-18-writing-review.md": "758828912b82fea5773414bc6383c87075d7b3f4166b2a7585d9122de378bf9a",
     "law-paper-writing/evals/argumentation-cases.md": "0f59fc961ea493670e5e46f5a979b5f150179c7bdcb1439f088e51f2241df5bd",
@@ -69,10 +70,10 @@
     "law-paper-writing/references/workflow.md": "0ac02f737b6339d44ea6569f49137ed49401089e8d36b7727e2a62d68e451e6c",
     "law-paper-writing/scripts/legal_skills_update.py": "9ebe4a4f2dce9ad4aa378f856db029a4e7aa6d9eaa8d7c6ec09c5b850988d364",
     "law-paper-writing/scripts/md2docx_footnotes.py": "78a4423c3f3613b137c77c0df232a5d0edf0c2fb0b6c3445331f2adb631419e8",
-    "legal-research-wiki/CHANGELOG.md": "f7781b18c00b5b5c622e12b300f05147bb1778f8205d2e37385545433a57aec6",
+    "legal-research-wiki/CHANGELOG.md": "425d35a7d7e0494eb3e65ee2de17adbedbd765e21bc337bf4e2f6d40f8953657",
     "legal-research-wiki/LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "legal-research-wiki/README.md": "433864a3794e00ae4a2c73c848ee5d382ce5562506b4eeffda80e11bc02394dc",
-    "legal-research-wiki/SKILL.md": "47ccc31740548dd6803977d22fae773e77a47e29bd4ad5f20571de2835f34ac3",
+    "legal-research-wiki/README.md": "713b6f380a098ffa61904feebc5c09ead6fb249b59f85c4757da9ebc2eb7a0e4",
+    "legal-research-wiki/SKILL.md": "be025ca7cf31d8e434845840820a2753c51c175b009c95c7f9e651222c1a5a7d",
     "legal-research-wiki/agents/openai.yaml": "32715f38b3c294e6047531ee661833abff9f33aa927f70a67029405dcc0b7fae",
     "legal-research-wiki/assets/templates/README.md": "89c8a39c53158d89c8b9db8338a3d3ba7fc98b5c142f3254a35b7735e8ac143b",
     "legal-research-wiki/assets/templates/SCHEMA.md": "62e4f9f7e55d6b49cbd2e7eb3fb7cd32816dd15b5d15affbcddc4286a15500b7",
@@ -95,7 +96,7 @@
     "legal-research-wiki/assets/templates/research-design.md": "074d753dc82630328f2f78ee1e5bb4f6607ec14211a429a2b47c452073dc1f6e",
     "legal-research-wiki/assets/templates/wiki-design-brief.md": "079ac942386d54bf17895799a60151458cc3e31af6e54ecb5cd42e2611d2a491",
     "legal-research-wiki/assets/templates/writing-outline.md": "b6494949f573fcc9a045479cb6a3d73fa12b0ac0e4ddf8107f8402b67358cc46",
-    "legal-research-wiki/bundle-lock.json": "05647ed2b524fd78ae35da5184c2158e0763c93336bf1500c846c6fa7ad5192a",
+    "legal-research-wiki/bundle-lock.json": "e0bd0fe5eebd55a984cc8c20c3bcc6ec70617990d8651cfbef46e6576e03f976",
     "legal-research-wiki/evals/pressure-tests.md": "d7e8563c11f8f9318486035d29ce586a6c5ee6a4209dc4b3b109f7cd941cd1a2",
     "legal-research-wiki/references/case-ingestion.md": "f1fba56b6d07961dd30ce120cca9a945468f651dabdb27c1e6ac477145739e26",
     "legal-research-wiki/references/content-completeness.md": "5c48a61039139f6022f8ca662343a73630b54f165b025c481be9962f52f41a95",
@@ -126,12 +127,12 @@
     "legal-research-wiki/scripts/clean_pdf_artifacts.py": "7062295aabf0ba82fa4122bd42116b5fec827171a2ef9a1461a8e99be9aa1443",
     "legal-research-wiki/scripts/legal_skills_update.py": "9ebe4a4f2dce9ad4aa378f856db029a4e7aa6d9eaa8d7c6ec09c5b850988d364",
     "legal-research-wiki/scripts/wiki_links.py": "273091dfa808e3086f9f2733db19f5e32ec5f3f4009413186f47d3e529a1bbe5",
-    "legal-wiki-audit-repair/CHANGELOG.md": "0fd2a74f6a645517aeff535e664326f7c46fc79787fbcdaadbf42a5217f986a6",
+    "legal-wiki-audit-repair/CHANGELOG.md": "a05720040cc59a13a98e689ca036008e83f9cadd5ddb805a69628614e234a076",
     "legal-wiki-audit-repair/LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "legal-wiki-audit-repair/README.md": "b6dd8630575a5d09c752eb407e1fd1f95bff8b86fae4edcb626aaf27508a019e",
-    "legal-wiki-audit-repair/SKILL.md": "861b261e0b8f01fe54df8f88cdd8694d051c1cb33389e2076055218222c05c22",
+    "legal-wiki-audit-repair/README.md": "3c058f5265d07366d54de9abbcebfc7694209617b71e7cbc3d26b801fcc0f1d4",
+    "legal-wiki-audit-repair/SKILL.md": "97d20932fc011bdfad8fab5517aebebd639bc078a2c61895fa91a5beee359124",
     "legal-wiki-audit-repair/agents/openai.yaml": "466d7c1256241fea798dfdfe807de841800c5102164bb22715c6dc1d6f13af0b",
-    "legal-wiki-audit-repair/bundle-lock.json": "437577b9ed019f3f0ac3f492ddd178863286def8952d5cec9b840bf8944840e5",
+    "legal-wiki-audit-repair/bundle-lock.json": "5af36e3cd015a85a4840ad8030fd844303caf051daae2b833f0c2662c99a1e43",
     "legal-wiki-audit-repair/evals/behavior-runs.md": "3b7b972f4cf22c36901167d4a0a728ed158aa0e7d55de1e83f9bbb7cb66490a4",
     "legal-wiki-audit-repair/evals/pressure-tests.md": "5cd86fdc9ad6d457479650e089354df76658d0f24beef81059d57f972fed4083",
     "legal-wiki-audit-repair/references/academic-usability-checklist.md": "1259cc71f65f9a7fcf1a7d023dea1afe64b8270db311a4828cf3866b22a14265",
@@ -150,7 +151,7 @@
     "legal-wiki-audit-repair/scripts/case_link_utils.py": "a76d691e55272ced256a16a2e932924779c88acbcad1a6c07c10b2f4e2b94388",
     "legal-wiki-audit-repair/scripts/insert_norm_sections.py": "d8ebe907038d66eeaade3dc30b34edc72a10c27ef6808c0b20c0504e6a615e01",
     "legal-wiki-audit-repair/scripts/legal_skills_update.py": "9ebe4a4f2dce9ad4aa378f856db029a4e7aa6d9eaa8d7c6ec09c5b850988d364",
-    "legal-wiki-audit-repair/scripts/multimodal_audit.py": "546359a5c3a42d854041cf912f18db24c5694dd396d337a065a433dbec201433",
+    "legal-wiki-audit-repair/scripts/multimodal_audit.py": "9954b7457d84e1895806222555a7a10b8dfc9a5c15aca85848f5db37fb6af204",
     "legal-wiki-audit-repair/scripts/scan_missing_paper_case_links.py": "975ceaccf95ca9add9ae20001845e7ebc4e6ef7c0525aed39a3c4de29f56590c",
     "legal-wiki-audit-repair/scripts/sync_paper_case_links.py": "25a6b450a629d80551efaa71f1327737130a43a4c795087dc05562a050c20e01",
     "legal-wiki-audit-repair/scripts/verify_case_link_sections.py": "5d8cd0a2ef73c89275a9169012dd2a7315a9c6a6d204c149086094aa4c6fb749",
@@ -204,6 +205,20 @@
         "更新器支持旧名原位迁移与日期版本：旧名目录原地改名更新（保留分类目录、先完整备份、失败自动回滚）、本地修改与缺失技能独立确认、Hub 旧名登记 fail-closed；旧版更新器无法识别新清单，已安装用户按 README“一次性升级”引导迁移",
         "保留全部既有能力：DOCX 真实脚注与修订标注版、实证统计与群案材料细则、note-level 溯源、宿主中立接口、分目录安装与自动更新",
         "测试与文档：新增日期版本迁移、DOCX 脚注与上游整合检查，测试夹具改用规范化临时路径（macOS 默认环境直接全绿）；README 增补迁移说明与路径要求，三个技能的 CHANGELOG/README 与插件清单同步"
+      ]
+    },
+    {
+      "bundle_version": "2610.14.0",
+      "published_at": "2026-10-14T00:00:00+08:00",
+      "update_level": "major",
+      "summary": "三技能批量优化（深检七项、论文—案例链接工具组、任务入口与证据最小记录、文档中文化与瘦身）与发布面清理；承接 v2610.9 更名",
+      "changes": [
+        "深检脚本重构并扩展为七项——新增法规范时效（NORM-01～03）、案号去重（DUP-01）与可选隐私格式检查（PRIV-01，默认关闭、命中打码）；新增论文—案例链接同步/扫描/验收与规范依据插入工具组（备份、--plan、--dry-run、哈希核对、只追加）",
+        "建库与写作：任务入口改五种路由、首批材料按研究类型；内容完整性改为证据驱动；SCHEMA 新增“证据最小记录”；引注参考中文化与用语修订；raw/MANIFEST.md 豁免提取物 frontmatter 检查",
+        "文档整理：参考文档全中文化；建库技能 SKILL 瘦身约 23.7%、审计技能约 32.1%（规则原样迁入新参考，逐条对照见 docs/WIKI-12-规则迁移对照.md）",
+        "口径统一：原件/提取物哈希规范（source_sha256/text_sha256）；两技能链接检查共享同一实现；链接工具组统一章节与字数口径",
+        "发布面清理：项目专属词表移入本机文件（公开端不再出现）；测试夹具与 CHANGELOG 中性化",
+        "本版承接 v2610.9 的写作技能更名（law-paper-writing）与上游 v1.4.0 并入；无破坏性变更"
       ]
     }
   ]

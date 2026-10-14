@@ -27,7 +27,7 @@ class WritingUpstreamIntegrationTests(unittest.TestCase):
             with self.subTest(skill=name):
                 text = (ROOT / name / "SKILL.md").read_text(encoding="utf-8")
                 metadata = yaml.safe_load(text.split("---", 2)[1])
-                self.assertEqual(metadata["metadata"]["version"], "2610.9.0")
+                self.assertEqual(metadata["metadata"]["version"], "2610.14.0")
 
     def test_new_citation_formats_are_routed_and_audited(self) -> None:
         writing = ROOT / "law-paper-writing"

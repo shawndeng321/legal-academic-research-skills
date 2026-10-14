@@ -163,6 +163,19 @@ class AuditScanTests(unittest.TestCase):
             self.assertEqual(raw01, [])
 
     @requires_yaml
+    def test_raw_manifest_is_exempt_from_frontmatter_check(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            wiki = Path(tmp)
+            write(wiki, "SCHEMA.md", schema())
+            write(wiki, "raw/MANIFEST.md", "# raw 原始材料清单\n\n- raw/papers/某论文.pdf\n")
+            write(wiki, "raw/papers/无头提取.md", "正文无 frontmatter。\n")
+
+            _result, data = self.run_json(wiki)
+            flagged = {f["path"] for f in data["findings"] if f["rule"] == "RAW-05"}
+            self.assertNotIn("raw/MANIFEST.md", flagged)
+            self.assertIn("raw/papers/无头提取.md", flagged)
+
+    @requires_yaml
     def test_zero_outbound_page_is_flagged(self):
         with tempfile.TemporaryDirectory() as tmp:
             wiki = Path(tmp)
@@ -181,7 +194,7 @@ class AuditScanTests(unittest.TestCase):
             write(
                 wiki,
                 "concepts/源页.md",
-                fm(title="源页", sources="raw/papers/不存在.pdf, 《论工伤认定》") + "# 源页\n",
+                fm(title="源页", sources="raw/papers/不存在.pdf, 《示例论文》") + "# 源页\n",
             )
 
             _result, data = self.run_json(wiki)

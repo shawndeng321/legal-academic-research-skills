@@ -3,7 +3,7 @@ name: legal-research-wiki
 description: "Use when building or querying a Chinese legal wiki. 法学研究Wiki建库（Obsidian/Markdown）：摄入论文PDF/案例汇编/法律法规与司法解释/初稿/图片音频、研究设计、论文—案例—法规范关联、知识库查询. For auditing an existing wiki use legal-wiki-audit-repair."
 license: MIT
 metadata:
-  version: "2610.9.0"
+  version: "2610.14.0"
 ---
 
 # 法学研究 Wiki 建库

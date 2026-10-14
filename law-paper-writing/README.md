@@ -11,7 +11,7 @@
 
 <div align="center">
 
-![Version: v2610.9](https://img.shields.io/badge/Version-v2610.9-5C3D2E?style=flat-square)
+![Version: v2610.9](https://img.shields.io/badge/Version-v2610.14-5C3D2E?style=flat-square)
 ![Hermes: Skill](https://img.shields.io/badge/Hermes-Skill-193B5A?style=flat-square)
 ![Claude Code: Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-B4532A?style=flat-square)
 ![Codex: Skill](https://img.shields.io/badge/Codex-Skill-0F4C5C?style=flat-square)
@@ -31,9 +31,9 @@
   <a href="#检验与能力边界">检验与边界</a>
 </p>
 
-**当前版本：v2610.9（机器字段 2610.9.0；2026-10-09）**
+**当前版本：v2610.14（机器字段 2610.14.0；2026-10-14）**
 
-本版整合上游 v1.4.0：中文与外文引注体例、逐观点引注、综述/概念处理、多方审读反馈和摘要自查；保留 DOCX、实证、溯源及稿件管理。完整保留与未装入清单见 [upstream-integration.md](references/upstream-integration.md)。
+本版承接 v2610.9 的上游 v1.4.0 并入（引注体例、审读反馈、摘要自查等，清单见 [upstream-integration.md](references/upstream-integration.md)），并随技能包批量优化同步引注参考中文化、用语修订与发布面清理；写作规则与既有能力不变。
 
 ## 为什么使用
 

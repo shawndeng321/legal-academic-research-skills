@@ -228,7 +228,7 @@ class ScriptSafetyTests(unittest.TestCase):
                     doc.styles.add_style(name, WD_STYLE_TYPE.PARAGRAPH)
             doc.save(template)
             draft.write_text(
-                "题目\n作者姓名\n摘要：摘要内容\n关键词：工伤；举证\n一、正文\n正文含脚注[1]。\n\n## 脚注\n[1] 判决书，第1页。\n",
+                "题目\n作者姓名\n摘要：摘要内容\n关键词：示例；样例\n一、正文\n正文含脚注[1]。\n\n## 脚注\n[1] 判决书，第1页。\n",
                 encoding="utf-8",
             )
 

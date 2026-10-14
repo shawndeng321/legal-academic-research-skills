@@ -281,3 +281,12 @@
 - 已知限制：块锚点“待核”；真实 vault 只读回归未执行（未获授权）；宿主加载实测未执行；行为评估真实会话抽测待执行（清单与格式已备）。
 - 未实施：无。13 项任务与三批收尾全部完成。
 - 总体核对：基线 `84dab85` 起共 19 个本地提交（至 `0713085`）；全程未执行 `git push`（分支 `work/wiki-audit-v2610.9` 仅本地）。
+
+## 发布 v2610.14（第四批：发布准备与发布） | 状态：完成
+
+- 发布面清理：项目专属词表移入本机文件 `tests/.project_terms.local.json`（由 `.gitignore` 排除，不入库；守护测试改为读取本机词表，未配置时显式跳过）；两处测试夹具与 `law-paper-writing/CHANGELOG.md` 沿革表述中性化；CHANGELOG 纳入词表扫描范围（解除原豁免）。
+- 深检豁免：`raw/MANIFEST.md` 不再要求提取物 frontmatter（检查 2 RAW-05），新增回归测试；修复后真实研究库复检阻断清零。
+- 版本刷新：三技能 `metadata.version`、`.claude-plugin/plugin.json`、根 README（版本表、“2026-10 更新内容”节）、三技能 README“当前版本”、三份 CHANGELOG 新增 `v2610.14` 节；`tools/prepare_bundle_release.py --write` 重建锁与发布清单（`2610.14.0`，历史链保留），`--check` 一致。
+- 测试：依赖齐全环境 221/221 通过；无依赖环境（/usr/bin/python3）OK (skipped=74)，无导入错误。
+  说明：无依赖基线须在剥离 `PYTHONPATH` 的干净环境取值——Hermes execute_code 内核会把自带环境的 PYTHONPATH 泄漏给子进程，使跳过数假降至 22；已按干净环境复核为 74。
+- 发布件：`bundle-release.json`（2610.14.0）、三份 `bundle-lock.json`、`PR说明.md` 更新；“推送与宿主回执”见下一条记录。

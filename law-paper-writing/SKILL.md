@@ -3,7 +3,7 @@ name: law-paper-writing
 description: "Use when writing or reviewing Chinese legal papers. 法学期刊/CSSCI论文：选题、五问需求拆解、提纲、起草、改稿、审稿意见落实、引注与法律时效核查、期刊适配、投稿DOCX脚注; planning, drafting, revising, auditing, journal adaptation. Not for theses, books, contracts, pleadings or client advice."
 license: MIT
 metadata:
-  version: "2610.9.0"
+  version: "2610.14.0"
 ---
 
 # Law Paper Writing（法学论文写作）
