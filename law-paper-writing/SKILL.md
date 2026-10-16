@@ -3,7 +3,7 @@ name: law-paper-writing
 description: "Use when writing or reviewing Chinese legal papers. 法学期刊/CSSCI论文：选题、五问需求拆解、提纲、起草、改稿、审稿意见落实、引注与法律时效核查、期刊适配、投稿DOCX脚注; planning, drafting, revising, auditing, journal adaptation. Not for theses, books, contracts, pleadings or client advice."
 license: MIT
 metadata:
-  version: "2610.14.0"
+  version: "2610.16.0"
 ---
 
 # Law Paper Writing（法学论文写作）
@@ -20,6 +20,14 @@ metadata:
 - 读写文件、运行命令、委派子任务均使用当前宿主自带的工具；本文不绑定任何宿主的工具名。宿主不支持子代理时，按小批次串行执行同样的步骤。
 - Python 命令按系统选择：macOS/Linux 用 `python3`（macOS 默认没有 `python` 命令）；Windows 用 `py`，没有时用 `python`。本文及参考文件中写作 `python3` 的命令，在 Windows 上照此替换。所需版本为 Python 3.9 及以上。临时文件放在系统临时目录（Python `tempfile`、`$TMPDIR` 或 `%TEMP%`），不要写死 `/tmp`。
 - 宿主沙箱拒绝联网或写入时，先向用户说明需要的权限；更新预检失败直接跳过。
+
+### Antigravity 原生能力映射
+
+- **安装路径**：支持全局技能目录 `~/.gemini/config/skills/law-paper-writing` 与工作区目录 `<workspace>/.agents/skills/law-paper-writing`。
+- **结构化五问交互**：在 Google Antigravity 环境下进行“五问”需求拆解或研究计划确认时，优先调用原生 `ask_question` 工具提供结构化单选/多选卡片；简单是非确认直接文字提问。
+- **多模态文献与图表读取**：优先使用 Antigravity 原生 `view_file` 工具直接读取本地 PDF、PNG、JPG、WEBP 文献、统计图表或判决书扫描件，无需外部 CLI 工具转换。
+- **子代理并行检索**：需要跨多篇长文献核查引注或权威法条原文时，可调用 `invoke_subagent` 委派只读的 `research` 子代理并行检索并汇总摘要，保持主写作上下文干净。
+- **沙盒预检规范**：Antigravity 默认沙盒下，`legal_skills_update.py check --json` 返回 `"status": "offline"` 属于沙盒正常现象，静默继续执行写作任务，不得为此申请提权；仅当用户明确指示“更新技能”时才申请网络提权执行更新。
 
 ## 适用范围
 

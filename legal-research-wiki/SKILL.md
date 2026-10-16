@@ -3,7 +3,7 @@ name: legal-research-wiki
 description: "Use when building or querying a Chinese legal wiki. 法学研究Wiki建库（Obsidian/Markdown）：摄入论文PDF/案例汇编/法律法规与司法解释/初稿/图片音频、研究设计、论文—案例—法规范关联、知识库查询. For auditing an existing wiki use legal-wiki-audit-repair."
 license: MIT
 metadata:
-  version: "2610.14.0"
+  version: "2610.16.0"
 ---
 
 # 法学研究 Wiki 建库
@@ -20,6 +20,11 @@ metadata:
 - 读写文件、运行命令、委派子任务均用当前宿主自带工具，不绑定宿主工具名；宿主没有子代理时按小批次串行。
 - Python 3.9+：macOS/Linux 用 `python3`（macOS 默认没有 `python` 命令）；Windows 用 `py`，没有时用 `python`。临时文件放系统临时目录（`tempfile`／`$TMPDIR`／`%TEMP%`），不写死 `/tmp`。
 - 宿主沙箱拒绝联网或写入时先向用户说明所需权限；更新预检失败直接跳过。
+
+### Antigravity 原生能力映射
+
+- **路径**：全局 `~/.gemini/config/skills/legal-research-wiki` 与工作区 `<workspace>/.agents/skills/`。
+- **工具映射**：访谈与确认优先用 `ask_question` 卡片；权威法源检索可调用 `invoke_subagent` 委派 `research` 子代理（主代理汇总写入）；PDF/扫描件优先使用 `view_file` 原生读取。
 
 ## 适用范围
 

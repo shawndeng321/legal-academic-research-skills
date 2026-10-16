@@ -3,7 +3,7 @@ name: legal-wiki-audit-repair
 description: "Use when auditing or repairing a Chinese legal wiki. 法学研究Wiki全库体检、死链/YAML/来源/图谱检查、模板化检测、P0—P3整改台账、分批修复、批量重命名与链接迁移、每日检修; also for updating its Bundle（检查法学技能更新）. Read-only by default; writes only after the user confirms a scope."
 license: MIT
 metadata:
-  version: "2610.14.0"
+  version: "2610.16.0"
   author: shawndeng321
   hermes:
     tags: [legal-wiki, audit, repair, obsidian, quality-control, batch, rename, wikilink, maintenance]
@@ -24,6 +24,11 @@ metadata:
 - 读写文件、运行命令、委派子任务均使用当前宿主自带的工具；本文不绑定任何宿主的工具名。宿主不支持子代理时，按小批次串行执行同样的步骤。
 - Python 命令按系统选择：macOS/Linux 用 `python3`（macOS 默认没有 `python` 命令）；Windows 用 `py`，没有时用 `python`。本文及参考文件中写作 `python3` 的命令，在 Windows 上照此替换。所需版本为 Python 3.9 及以上。临时文件放在系统临时目录（Python `tempfile`、`$TMPDIR` 或 `%TEMP%`），不要写死 `/tmp`。
 - 宿主沙箱拒绝联网或写入时，先向用户说明需要的权限；更新预检失败直接跳过。
+
+### Antigravity 原生能力映射
+
+- **路径**：全局 `~/.gemini/config/skills/legal-wiki-audit-repair` 与工作区 `<workspace>/.agents/skills/`。
+- **工具映射**：体检决策抉择优先用 `ask_question` 卡片；周期性巡检支持配合内置 `schedule` 工具或 `/schedule` 命令配置。
 
 ## 概述
 

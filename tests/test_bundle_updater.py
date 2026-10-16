@@ -2227,6 +2227,51 @@ class UpdateCheckTests(unittest.TestCase):
         self.assertIn("history", json.loads(detailed.stdout))
         self.assertEqual(before, after)
 
+    def test_check_gracefully_degrades_when_lock_dir_is_unwritable(self):
+        module = load_module(UPDATER, "legal_skills_update_lock_perm")
+        with updater_fixture() as fixture:
+            def failing_fetcher(*args, **kwargs):
+                raise OSError("network disabled in sandbox")
+
+            def failing_lock(path):
+                raise PermissionError(1, f"Operation not permitted: '{path}'")
+
+            with patch.object(module, "operation_lock", side_effect=failing_lock):
+                result = module.check_for_update(
+                    fixture.skill_dir,
+                    force=True,
+                    fetcher=failing_fetcher,
+                )
+            self.assertEqual(result["status"], "offline")
+            self.assertFalse(result["fatal"])
+            self.assertIn("network disabled in sandbox", result.get("message", ""))
+
+    def test_detect_install_context_recognizes_antigravity_plugin_path(self):
+        module = load_module(UPDATER, "legal_skills_update_antigravity_channel")
+        with CanonicalTemporaryDirectory() as tmp:
+            plugin_root = (
+                Path(tmp)
+                / ".gemini"
+                / "config"
+                / "plugins"
+                / "legal-academic-research-skills"
+                / "skills"
+                / "law-paper-writing"
+            )
+            plugin_root.mkdir(parents=True)
+            (plugin_root / "bundle-lock.json").write_text(
+                json.dumps({"bundle_version": "1.0.0"}), encoding="utf-8"
+            )
+            self.assertTrue(module.is_antigravity_plugin_path(plugin_root))
+            result = module.check_for_update(
+                plugin_root,
+                fetcher=lambda *_: module.FetchResult(make_manifest("1.0.0"), '"etag"', False),
+            )
+            self.assertEqual(result["update_channel"], "antigravity-plugin")
+            with self.assertRaises(module.ArchiveError) as ctx:
+                module.detect_installation_mode(plugin_root, ["law-paper-writing"])
+            self.assertIn("Antigravity plugin", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()
