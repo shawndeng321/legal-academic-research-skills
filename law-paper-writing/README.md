@@ -102,7 +102,7 @@
 
 ## 安装与更新
 
-本技能属于[法学学术研究技能包](../README.md)，与 `legal-research-wiki`、`legal-wiki-audit-repair` 一起发布，Hermes、Claude Code、Codex 通用。完整安装方式见[根目录的安装说明](../README.md#安装)，自动更新与回滚见[自动更新](../README.md#自动更新)。
+本技能属于[法学学术研究技能包](../README.md)，与 `legal-research-wiki`、`legal-wiki-audit-repair` 一起发布，Claude Code、Codex、Hermes、Devin、Google Antigravity 等支持 `SKILL.md` 的宿主通用。完整安装方式见[根目录的安装说明](../README.md#安装)，自动更新与回滚见[自动更新](../README.md#自动更新)。
 
 Claude Code（一次安装三个技能）：
 
@@ -117,7 +117,7 @@ Hermes Skills Hub（脚本或 CI 环境加 `--yes`）：
 hermes skills install shawndeng321/legal-academic-research-skills/law-paper-writing --yes
 ```
 
-Codex 与其他支持 `SKILL.md` 的宿主：复制完整的 `law-paper-writing` 目录（连同 `references/`、`assets/`、`scripts/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.claude/skills/` 或 `~/.agents/skills/`。
+其他支持 `SKILL.md` 的宿主（Codex、Devin、Antigravity 等）：复制完整的 `law-paper-writing` 目录（连同 `references/`、`assets/`、`scripts/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.claude/skills/`、`~/.config/devin/skills/`、`~/.gemini/config/skills/` 或 `~/.agents/skills/`。
 
 每次加载时，技能会按 6 小时缓存检查技能包更新；只有发现新版本才提示，更新前必须由你确认。安装后在新会话中直接要求使用 `law-paper-writing`。
 
@@ -153,7 +153,7 @@ Word 正文、批注和修订的提取依赖运行环境的文档工具；本技
 
 ### 3. 调用 Skill
 
-在 Hermes 或 Claude Code 的新会话中：
+在 Claude Code、Hermes、Devin 或 Antigravity 的新会话中：
 
 ```text
 使用 law-paper-writing 的 OUTLINE 模式。根据我提供的论文项目卡、来源登记和允许读取的资料，

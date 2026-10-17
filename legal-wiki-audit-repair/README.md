@@ -48,7 +48,7 @@ AUDIT_ONLY → AUDIT_PLAN → 用户确认范围 → 备份 + DRY_RUN → REPAIR
 
 ## 快速安装
 
-本技能属于[法学学术研究技能包](../README.md)，Hermes、Claude Code、Codex 通用；完整说明见[根 README 的安装说明](../README.md#安装)。
+本技能属于[法学学术研究技能包](../README.md)，Claude Code、Codex、Hermes、Devin、Google Antigravity 等支持 `SKILL.md` 的宿主通用；完整说明见[根 README 的安装说明](../README.md#安装)。
 
 ### Claude Code（插件，一次安装三个技能）
 
@@ -69,9 +69,9 @@ hermes skills install shawndeng321/legal-academic-research-skills/legal-wiki-aud
 hermes skills install shawndeng321/legal-academic-research-skills/legal-wiki-audit-repair --yes
 ```
 
-### Codex 与其他宿主（源码复制）
+### 其他宿主（源码复制）
 
-复制完整的 `legal-wiki-audit-repair` 目录（连同 `references/`、`scripts/` 和 `agents/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.claude/skills/`、`~/.hermes/skills/` 或 `~/.agents/skills/`。
+复制完整的 `legal-wiki-audit-repair` 目录（连同 `references/`、`scripts/` 和 `agents/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.claude/skills/`、`~/.config/devin/skills/`、`~/.gemini/config/skills/`、`~/.hermes/skills/` 或 `~/.agents/skills/`。
 
 ## 配套脚本
 

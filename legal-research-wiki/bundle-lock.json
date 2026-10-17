@@ -5,9 +5,9 @@
   "skill_name": "legal-research-wiki",
   "skill_version": "2610.17.0",
   "files": {
-    "CHANGELOG.md": "ce03a7fbe722bfa97d4ffe44634e31fa96123f80087224d1583b1dad590ad015",
+    "CHANGELOG.md": "e51dab82c60b7ec6e588f5c77f43dfe9ac611115ff0f0101b0fe87b11a6dc0d8",
     "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "README.md": "4ff49158ee3607945108bd389217c57bb734ff1133252e7e44e18168cb5e623d",
+    "README.md": "0a733fe5246fae3bbba8dd2cc69cbb24e7b950438c74163af43b457c9b4ceb5e",
     "SKILL.md": "96ca264077fd727c42ab12d37f1496b139aa0168ac9ecb579c8ef8cb94fbe1f7",
     "agents/openai.yaml": "32715f38b3c294e6047531ee661833abff9f33aa927f70a67029405dcc0b7fae",
     "assets/templates/README.md": "89c8a39c53158d89c8b9db8338a3d3ba7fc98b5c142f3254a35b7735e8ac143b",

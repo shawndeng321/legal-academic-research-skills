@@ -5,9 +5,9 @@
   "skill_name": "legal-wiki-audit-repair",
   "skill_version": "2610.17.0",
   "files": {
-    "CHANGELOG.md": "e641c7c04c3a52acac494f6e1a86a49bc50cd674df6308fb73e0184bb69bc070",
+    "CHANGELOG.md": "54f48fed6139b88525ebe47f60415fa3953117a1380c382f2975c18fe0e80bdd",
     "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "README.md": "03e695dc5fc7ccf0306e9edcaba76748851ee7f84a2093742a7fcb2066f28dec",
+    "README.md": "4f541fac340bf50a7ded92491715ce467309f997bef3d8514490e12195fa67ad",
     "SKILL.md": "ed6b6f8fe2b535ad253118644cffec858dbe5ba98ca802e7a6ab00420aec6ca5",
     "agents/openai.yaml": "466d7c1256241fea798dfdfe807de841800c5102164bb22715c6dc1d6f13af0b",
     "evals/behavior-runs.md": "3b7b972f4cf22c36901167d4a0a728ed158aa0e7d55de1e83f9bbb7cb66490a4",

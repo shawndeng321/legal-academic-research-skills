@@ -371,7 +371,7 @@ class SkillCompatibilityTests(unittest.TestCase):
         self.assertIn("SKILL.md", root_readme)
         self.assertIn("agents/openai.yaml", root_readme)
         self.assertIn("X.Y.Z", root_readme)
-        self.assertIn("Hermes、Claude Code 与 Codex", root_readme)
+        self.assertIn("Claude Code、Codex、Hermes、Devin", root_readme)
         self.assertNotIn("兼容性测试 8/8", root_readme)
         self.assertNotIn("脚本安全测试 9/9", root_readme)
         self.assertIn("兼容性、脚本安全与 Bundle 更新器测试", root_readme)

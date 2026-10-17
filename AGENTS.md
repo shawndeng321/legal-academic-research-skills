@@ -4,7 +4,7 @@
 
 本机位置：`~/Desktop/legal academic skills/skills/`。旧路径 `~/Desktop/法学Wiki/skill` 现在是指向这里的符号链接，仅为兼容；新的命令和配置请用真实路径（技能更新器会拒绝祖先目录含符号链接的路径）。
 
-适用于 Hermes、Codex、Claude、DeepSeek 等所有在本机修改法学技能的 agent。
+适用于 Hermes、Codex、Claude、Devin、Antigravity、DeepSeek 等所有在本机修改法学技能的 agent。
 
 上层工作区总规则见 `../AGENTS.md`（目录分工、只读范围、产出位置），与本文件同时适用。
 

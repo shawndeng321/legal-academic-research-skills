@@ -2,7 +2,7 @@
 
 面向中国法学学术研究的三项 AI Skill：把论文、案例和法条整理成来源可追溯的研究 Wiki，对研究库做审计与安全修复，再把研究证据转化为可核验的期刊论文工作稿。适用于任何部门法与研究主题，不绑定特定项目。
 
-> 本技能包 Hermes、Claude Code 与 Codex 通用，也可用于其他支持标准 `SKILL.md` 的代理宿主（如 DeepSeek Harness）。技能正文只保留一份：运行时元数据分别放在 `SKILL.md`（通用 frontmatter）、`agents/openai.yaml`（Codex）与 `.claude-plugin/`（Claude Code 插件）中。
+> 全平台通用：同一份技能正文可在 Claude Code、Codex、Hermes、Devin（CLI / Desktop）、Google Antigravity 以及其他支持标准 `SKILL.md` 的代理宿主（如 DeepSeek Harness）中运行。各宿主的安装路径、工具对应与预检差异集中在每个技能的 `references/host-adapters.md`；运行时元数据分别放在 `SKILL.md`（通用 frontmatter）、`agents/openai.yaml`（Codex）与 `.claude-plugin/`（Claude Code 插件）中。
 
 [快速选择](#先从这里开始) · [更新内容](#2026-10-更新内容) · [安装](#安装) · [自动更新](#自动更新) · [验证](#验证与排错)
 
@@ -30,7 +30,7 @@
 
 ## 2026-10 更新内容
 
-> **v2610.17（2026-10-17；机器字段 2610.17.0）**：适配 Devin（CLI / Desktop）：三技能新增 Devin 原生能力映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`）；预检与脚本按技能 `Base directory` 拼绝对路径、同一会话只预检一次；说明 Devin 技能路径及其自动读取 `~/.claude/skills` 带来的重复安装风险；三技能 SKILL.md 精简（宿主说明外移、预检同会话去重、check 输出瘦身），写作技能移除旧版上游并入说明。
+> **v2610.17（2026-10-17；机器字段 2610.17.0）**：适配 Devin（CLI / Desktop）：三技能新增 Devin 原生能力映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`）；预检与脚本按技能 `Base directory` 拼绝对路径、同一会话只预检一次；说明 Devin 技能路径及其自动读取 `~/.claude/skills` 带来的重复安装风险；三技能 SKILL.md 精简（宿主说明外移、预检同会话去重、check 输出瘦身），写作技能移除旧版上游并入说明；README 安装说明改为全平台口径。
 >
 > **v2610.16（2026-10-16；机器字段 2610.16.0）**：全套适配 Google Antigravity 原生环境（`view_file`、`ask_question`、`invoke_subagent`、`schedule` 原生工具映射；Antigravity 全局与工作区技能路径识别；修复沙盒限制下更新预检锁权限报错并优雅降级为离线安全检查；清理旧版命名冲突）。
 >
@@ -76,6 +76,17 @@
 
 三个技能一起使用效果最好，也可以只装其中一个。无论哪种方式，都要安装**完整技能目录**（`references/`、`scripts/`、`assets/`、`agents/` 一并保留），不要只复制单个 `SKILL.md`。
 
+### 支持的宿主
+
+| 宿主 | 安装方式 | 技能目录 |
+|---|---|---|
+| Claude Code | 插件（见下）或源码复制 | `~/.claude/skills/`；项目内 `.claude/skills/` |
+| Codex | 源码复制 | `~/.codex/skills/` |
+| Hermes | Skills Hub 或源码复制 | `${HERMES_HOME:-~/.hermes}/skills/` |
+| Devin（CLI / Desktop） | 源码复制 | `~/.config/devin/skills/` 或 `~/.agents/skills/`；项目内 `.devin/skills/`。Devin 也读取 `~/.claude/skills/`，已装在那里就不要重复安装 |
+| Google Antigravity | 源码复制 | `~/.gemini/config/skills/`；工作区 `.agents/skills/` |
+| 其他支持 `SKILL.md` 的宿主 | 源码复制 | 宿主扫描的技能目录，常见为 `~/.agents/skills/` |
+
 ### Claude Code
 
 在终端运行（或在 Claude Code 会话中把 `claude plugin` 换成 `/plugin`）：
@@ -114,7 +125,7 @@ hermes skills install shawndeng321/legal-academic-research-skills/legal-wiki-aud
 
 安装后运行 `hermes skills list`，确认三个技能均为 `enabled`。不要把仓库根 URL 或单个 `SKILL.md` 当成完整安装入口。
 
-### 源码安装（Codex / Hermes / Claude Code / 其他宿主）
+### 源码安装（所有宿主）
 
 需要本地审查、离线安装或固定版本时，从 `main` 克隆仓库，再复制完整技能目录到目标宿主的技能目录。
 
@@ -167,7 +178,7 @@ Copy-Item -Recurse -Force "$checkout\legal-wiki-audit-repair" (Join-Path $hermes
 hermes skills list --source local --enabled-only
 ```
 
-Claude Code 或其他宿主：把上面的目标目录换成 `Join-Path $HOME '.claude\skills'` 或 `Join-Path $HOME '.agents\skills'`。
+Claude Code、Devin、Antigravity 或其他宿主：把上面的目标目录换成上表对应目录，例如 `Join-Path $HOME '.claude\skills'`、`Join-Path $HOME '.config\devin\skills'`、`Join-Path $HOME '.gemini\config\skills'` 或 `Join-Path $HOME '.agents\skills'`。
 
 复制安装不要放在 Git 工作树里（自动更新器会拒绝 Git 工作树安装，此时请用 `git pull` 更新源码）。
 
@@ -180,7 +191,7 @@ Claude Code 或其他宿主：把上面的目标目录换成 `Join-Path $HOME '.
 提出本批 5—8 页的摄入计划。不要扫描其他目录，不要写回任何文件。
 ```
 
-Claude Code 中也可以用 `/law-paper-writing` 等斜杠命令直接调用；Codex 中可用 `$law-paper-writing`。
+Claude Code 中也可以用 `/law-paper-writing` 等斜杠命令直接调用；Codex 中可用 `$law-paper-writing`。其他宿主按技能名或描述自动选用。
 
 ## 自动更新
 

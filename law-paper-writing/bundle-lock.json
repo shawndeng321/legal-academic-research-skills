@@ -6,9 +6,9 @@
   "skill_version": "2610.17.0",
   "files": {
     ".gitignore": "6a81b94bd1bead23e3cabf52807afab7d89e3d73023b8da34e226fa951889b54",
-    "CHANGELOG.md": "e5f1773623c30fea95f91522d5ce69f140f7e6f849c68d859285d780aaba8f94",
+    "CHANGELOG.md": "d9715fbf0da17097c555b3dd292bb6fb089e03f0923873084f2402a492a25b87",
     "LICENSE": "911bbb65eefae9246cc68a14856c88c28ba0f965b6e4aa3f901d79ae1fda63e6",
-    "README.md": "4275ca04c57aec7880d28efaab0f3409fc60017ab539960822c5b25d647ad29f",
+    "README.md": "cc103e8e424a8569da53b800052d061f7800788d464d43f91fb5c06bfdc06b24",
     "SKILL.md": "ee3fc08661786847f30d3037a0275b7653bcbe853ccb23d0583c69de714a6a6b",
     "agents/openai.yaml": "293e43ac9fc74fcf926fe76d0eaf1d543e5c7f935dcaccf2babbcc47dcf52007",
     "assets/examples/abstract-examples.md": "c4d1d95dfd9fd2289b281c8ffbc20e7f63bb20dc1829c6d759752bb77cc2a59e",
