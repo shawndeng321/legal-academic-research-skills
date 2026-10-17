@@ -3,7 +3,7 @@ name: law-paper-writing
 description: "Use when writing or reviewing Chinese legal papers. 法学期刊/CSSCI论文：选题、五问需求拆解、提纲、起草、改稿、审稿意见落实、引注与法律时效核查、期刊适配、投稿DOCX脚注; planning, drafting, revising, auditing, journal adaptation. Not for theses, books, contracts, pleadings or client advice."
 license: MIT
 metadata:
-  version: "2610.16.0"
+  version: "2610.17.0"
 ---
 
 # Law Paper Writing（法学论文写作）
@@ -28,6 +28,15 @@ metadata:
 - **多模态文献与图表读取**：优先使用 Antigravity 原生 `view_file` 工具直接读取本地 PDF、PNG、JPG、WEBP 文献、统计图表或判决书扫描件，无需外部 CLI 工具转换。
 - **子代理并行检索**：需要跨多篇长文献核查引注或权威法条原文时，可调用 `invoke_subagent` 委派只读的 `research` 子代理并行检索并汇总摘要，保持主写作上下文干净。
 - **沙盒预检规范**：Antigravity 默认沙盒下，`legal_skills_update.py check --json` 返回 `"status": "offline"` 属于沙盒正常现象，静默继续执行写作任务，不得为此申请提权；仅当用户明确指示“更新技能”时才申请网络提权执行更新。
+
+### Devin 原生能力映射
+
+- **路径**：全局 `~/.config/devin/skills/` 或 `~/.agents/skills/`，项目级 `<workspace>/.devin/skills/` 或 `<workspace>/.agents/skills/`。Devin 还会自动读取 `~/.claude/skills/`，同一技能只保留一处安装；旧名 `chinese-law-paper-writing` 不与本技能并存。
+- **预检**：Devin 在工作区目录执行命令，预检脚本用加载技能时给出的 `Base directory` 拼成绝对路径：`python3 -X utf8 "<Base directory>/scripts/legal_skills_update.py" check --json`；同一会话已预检过的不再重复。返回 `offline`，或命令被沙箱、权限拒绝时，静默继续，不为预检申请权限。
+- **五问与确认**：用 `ask_user_question`（每次至多 4 题、每题 2—4 个选项，自动附“其他”）；五问分两轮提出，简单是非确认直接文字提问。
+- **读取材料**：图片、截图、扫描页用 `read` 直接查看；PDF 与 DOCX 先用本技能脚本或系统工具抽取文本，不凭文件名推断内容。
+- **子代理**：跨多篇文献核对引注或法条原文时，可委派只读的 `subagent_explore` 检索并回报原文定位；写入与核验结论由主会话完成，子代理报告的“已核实”不算核验。
+- **联网与进度**：`web_search`／`webfetch` 取得的材料先登记来源再使用；多阶段任务用 `todo_write` 列出当前模式的阶段。
 
 ## 适用范围
 

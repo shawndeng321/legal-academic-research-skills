@@ -28,9 +28,9 @@ DESCRIPTION_TRIGGERS = {
     "legal-wiki-audit-repair": ("updating its Bundle", "全库体检", "每日检修", "检查法学技能更新"),
 }
 EXPECTED_VERSIONS = {
-    "law-paper-writing": "2610.16.0",
-    "legal-research-wiki": "2610.16.0",
-    "legal-wiki-audit-repair": "2610.16.0",
+    "law-paper-writing": "2610.17.0",
+    "legal-research-wiki": "2610.17.0",
+    "legal-wiki-audit-repair": "2610.17.0",
 }
 # 项目专属词表放在本机文件 tests/.project_terms.local.json（不入库）：
 # 公开仓库不出现词表内容，每台机器维护自己的词表；文件缺省时词表扫描跳过。
@@ -245,6 +245,16 @@ class SkillCompatibilityTests(unittest.TestCase):
                 self.assertIn("claude plugin update", body)
                 self.assertIn("Claude Code 插件安装时跳过预检", body)
                 self.assertIn("/plugins/cache/", body)
+
+    def test_skills_document_devin_host_mapping(self) -> None:
+        for skill_name in SKILLS:
+            with self.subTest(skill=skill_name):
+                body = (ROOT / skill_name / "SKILL.md").read_text(encoding="utf-8")
+                self.assertIn("### Devin 原生能力映射", body)
+                self.assertIn("~/.config/devin/skills/", body)
+                self.assertIn("Base directory", body)
+                self.assertIn("ask_user_question", body)
+                self.assertIn("同一会话", body)
 
     def test_skill_files_contain_no_project_specific_terms(self) -> None:
         terms = _load_project_terms()

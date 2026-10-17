@@ -3,7 +3,7 @@ name: legal-wiki-audit-repair
 description: "Use when auditing or repairing a Chinese legal wiki. 法学研究Wiki全库体检、死链/YAML/来源/图谱检查、模板化检测、P0—P3整改台账、分批修复、批量重命名与链接迁移、每日检修; also for updating its Bundle（检查法学技能更新）. Read-only by default; writes only after the user confirms a scope."
 license: MIT
 metadata:
-  version: "2610.16.0"
+  version: "2610.17.0"
   author: shawndeng321
   hermes:
     tags: [legal-wiki, audit, repair, obsidian, quality-control, batch, rename, wikilink, maintenance]
@@ -29,6 +29,12 @@ metadata:
 
 - **路径**：全局 `~/.gemini/config/skills/legal-wiki-audit-repair` 与工作区 `<workspace>/.agents/skills/`。
 - **工具映射**：体检决策抉择优先用 `ask_question` 卡片；周期性巡检支持配合内置 `schedule` 工具或 `/schedule` 命令配置。
+
+### Devin 原生能力映射
+
+- **路径**：全局 `~/.config/devin/skills/` 或 `~/.agents/skills/`，项目级 `<workspace>/.devin/skills/` 或 `<workspace>/.agents/skills/`；Devin 也读 `~/.claude/skills/`，同一技能只保留一处安装。
+- **预检与脚本**：命令在工作区目录执行，预检与 `scripts/multimodal_audit.py` 等脚本都用 `Base directory` 拼绝对路径；同一会话只预检一次；`offline` 或被沙箱、权限拒绝时静默继续。
+- **工具映射**：模式与范围确认用 `ask_user_question`；`AUDIT_ONLY`、`VERIFY` 下的全库扫描可委派只读 `subagent_explore`，结论须由主会话按文件复核；修复批次用 `todo_write` 跟踪 OPT 与验收项。
 
 ## 概述
 

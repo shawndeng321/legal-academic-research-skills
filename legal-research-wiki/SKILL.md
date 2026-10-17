@@ -3,7 +3,7 @@ name: legal-research-wiki
 description: "Use when building or querying a Chinese legal wiki. 法学研究Wiki建库（Obsidian/Markdown）：摄入论文PDF/案例汇编/法律法规与司法解释/初稿/图片音频、研究设计、论文—案例—法规范关联、知识库查询. For auditing an existing wiki use legal-wiki-audit-repair."
 license: MIT
 metadata:
-  version: "2610.16.0"
+  version: "2610.17.0"
 ---
 
 # 法学研究 Wiki 建库
@@ -25,6 +25,12 @@ metadata:
 
 - **路径**：全局 `~/.gemini/config/skills/legal-research-wiki` 与工作区 `<workspace>/.agents/skills/`。
 - **工具映射**：访谈与确认优先用 `ask_question` 卡片；权威法源检索可调用 `invoke_subagent` 委派 `research` 子代理（主代理汇总写入）；PDF/扫描件优先使用 `view_file` 原生读取。
+
+### Devin 原生能力映射
+
+- **路径**：全局 `~/.config/devin/skills/` 或 `~/.agents/skills/`，项目级 `<workspace>/.devin/skills/` 或 `<workspace>/.agents/skills/`；Devin 也读 `~/.claude/skills/`，同一技能只保留一处安装。
+- **预检与脚本**：命令在工作区目录执行，用 `Base directory` 拼绝对路径：`python3 -X utf8 "<Base directory>/scripts/legal_skills_update.py" check --json`；同一会话只预检一次；`offline` 或被沙箱、权限拒绝时静默继续。本技能其他脚本（如 `scripts/check_wikilinks.py`）同样按 `Base directory` 拼路径。
+- **工具映射**：建库访谈用 `ask_user_question`（每次至多 4 题、每题 2—4 个选项，与访谈“一次 1—3 个问题”一致）；图片、扫描件用 `read` 查看，PDF 用本技能脚本抽取；批量摄入可委派只读 `subagent_explore` 盘点或检索原文，Wiki 写入只由主会话进行；按模块推进时用 `todo_write` 记录批次与验收项。
 
 ## 适用范围
 

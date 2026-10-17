@@ -10,9 +10,9 @@ class SlimmingTests(unittest.TestCase):
     def test_skill_sizes_reduced(self):
         research = len((ROOT / "legal-research-wiki" / "SKILL.md").read_bytes())
         audit = len((ROOT / "legal-wiki-audit-repair" / "SKILL.md").read_bytes())
-        self.assertLessEqual(research, 18_200, f"research SKILL 仍偏大：{research}")
+        self.assertLessEqual(research, 19_400, f"research SKILL 仍偏大：{research}")
         self.assertGreaterEqual(research, 13_000, f"research SKILL 疑似被截断：{research}")
-        self.assertLessEqual(audit, 22_600, f"audit SKILL 仍偏大：{audit}")
+        self.assertLessEqual(audit, 23_400, f"audit SKILL 仍偏大：{audit}")
         self.assertGreaterEqual(audit, 16_000, f"audit SKILL 疑似被截断：{audit}")
 
     def test_moved_rules_are_linked(self):

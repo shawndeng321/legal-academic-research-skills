@@ -307,3 +307,11 @@
 - 版本刷新：三技能 `metadata.version`、`.claude-plugin/plugin.json`、根 README、各技能 README 与 CHANGELOG 刷新至 `v2610.16`（机器字段 `2610.16.0`）。
 - 测试：223 项测试全部通过（含新增沙盒降级与 Antigravity 插件路径识别回归测试）。
 - 本机部署：已清理旧版冲突（`chinese-law-paper-writing`），全局安装至 `~/.gemini/config/skills/` 并实测预检通过。
+
+## 发布 v2610.17（2026-10-17：Devin 适配） | 状态：本地完成（未推送）
+
+- 工具映射与路径：三技能 `SKILL.md` 在 Antigravity 映射节后新增「Devin 原生能力映射」（`ask_user_question`、`read`、`subagent_explore`、`todo_write`）；写明 Devin 全局 `~/.config/devin/skills/`／`~/.agents/skills/` 与项目级 `<workspace>/.devin/skills/`／`<workspace>/.agents/skills/` 路径，及自动读取 `~/.claude/skills/` 带来的重复安装风险（同一技能只装一处）。`model-orchestrated-legal-research-workflow.md` 宿主对照表加 Devin 列。
+- 预检绝对路径与同会话去重：Devin 在工作区目录执行命令，预检与各技能脚本统一用加载技能时给出的 `Base directory` 拼绝对路径运行；同一会话只预检一次；`offline` 或被沙箱、权限拒绝时静默继续、不申请权限。
+- 版本刷新范围：三技能 `metadata.version`、`.claude-plugin/plugin.json`、根 README（版本表、“2026-10 更新内容”节、源码安装 target 列表加 Devin 行）、三技能 README「当前版本」与「本版」句、三份 CHANGELOG 新增 `v2610.17` 节；`tools/prepare_bundle_release.py --write` 重建三份 `bundle-lock.json` 与 `bundle-release.json`（2610.17.0，历史链保留），`--check` 一致。测试同步：`EXPECTED_VERSIONS` 与上游集成测试版本断言升 2610.17.0，新增 Devin 映射回归测试；WIKI-12c 瘦身回归上限随本次新增节上调（research 19,400／audit 23,400）。
+- 测试：`python3 -X utf8 -m unittest discover -s tests -v` → 224 项 OK（skipped=74，本机 `python3` 缺 PyYAML，与 v2610.14 无依赖基线一致；无失败）。
+- 未推送、未打 tag、未部署到本机宿主：改动仅在本地分支 `agent/devin-host-adaptation`。
