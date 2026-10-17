@@ -8,29 +8,11 @@ metadata:
 
 # 法学研究 Wiki 建库
 
-## 技能包更新预检
+## 预检与运行环境
 
-每次加载本技能时，先运行 `python3 -X utf8 scripts/legal_skills_update.py check --json`（Windows 用 `py -X utf8 …` 或 `python -X utf8 …`）。脚本按 **6 小时**缓存；只有返回 `update_available` 时才向用户展示 `[立即更新] [查看更新说明] [稍后提醒] [忽略此版本]`，其他状态（离线、沙箱拒绝联网或状态目录不可写）不打断当前任务。没有用户的明确确认，绝不运行 `apply`；“查看更新说明”只读版本、变更与本地差异，不执行写入。
-
-**Claude Code 插件安装时跳过预检**：宿主给出的基础目录路径含 `/plugins/cache/`（或位于 `.claude/plugins/` 下）时，更新由 Claude Code 负责，不运行预检命令；用户问起更新时，请其运行 `claude plugin marketplace update legal-academic-research` 与 `claude plugin update legal-academic-research@legal-academic-research`，再在会话中运行 `/reload-plugins`。若预检结果的 `update_channel` 为 `claude-plugin`，同样不运行 `apply`，只按上述方式提示。
-
-## 运行环境（Hermes / Claude Code / Codex 通用）
-
-- 本技能是标准 `SKILL.md` 技能目录；正文中的 `references/`、`assets/`、`scripts/` 相对路径以本技能目录为基准；宿主给出的基础目录就是本目录。
-- 读写文件、运行命令、委派子任务均用当前宿主自带工具，不绑定宿主工具名；宿主没有子代理时按小批次串行。
-- Python 3.9+：macOS/Linux 用 `python3`（macOS 默认没有 `python` 命令）；Windows 用 `py`，没有时用 `python`。临时文件放系统临时目录（`tempfile`／`$TMPDIR`／`%TEMP%`），不写死 `/tmp`。
-- 宿主沙箱拒绝联网或写入时先向用户说明所需权限；更新预检失败直接跳过。
-
-### Antigravity 原生能力映射
-
-- **路径**：全局 `~/.gemini/config/skills/legal-research-wiki` 与工作区 `<workspace>/.agents/skills/`。
-- **工具映射**：访谈与确认优先用 `ask_question` 卡片；权威法源检索可调用 `invoke_subagent` 委派 `research` 子代理（主代理汇总写入）；PDF/扫描件优先使用 `view_file` 原生读取。
-
-### Devin 原生能力映射
-
-- **路径**：全局 `~/.config/devin/skills/` 或 `~/.agents/skills/`，项目级 `<workspace>/.devin/skills/` 或 `<workspace>/.agents/skills/`；Devin 也读 `~/.claude/skills/`，同一技能只保留一处安装。
-- **预检与脚本**：命令在工作区目录执行，用 `Base directory` 拼绝对路径：`python3 -X utf8 "<Base directory>/scripts/legal_skills_update.py" check --json`；同一会话只预检一次；`offline` 或被沙箱、权限拒绝时静默继续。本技能其他脚本（如 `scripts/check_wikilinks.py`）同样按 `Base directory` 拼路径。
-- **工具映射**：建库访谈用 `ask_user_question`（每次至多 4 题、每题 2—4 个选项，与访谈“一次 1—3 个问题”一致）；图片、扫描件用 `read` 查看，PDF 用本技能脚本抽取；批量摄入可委派只读 `subagent_explore` 盘点或检索原文，Wiki 写入只由主会话进行；按模块推进时用 `todo_write` 记录批次与验收项。
+- **更新预检**：同一会话里本技能包任一技能已预检过就不再重复；否则运行 `python3 -X utf8 scripts/legal_skills_update.py check --json`（Windows 用 `py`；不在技能目录执行时拼成绝对路径）。结果按 6 小时缓存。只有 `update_available` 才向用户展示 `[立即更新] [查看更新说明] [稍后提醒] [忽略此版本]`；其他状态（含离线、沙箱拒绝）静默继续，不为预检申请权限。没有用户的明确确认，绝不运行 `apply`。
+- **Claude Code 插件安装时跳过预检**：基础目录含 `/plugins/cache/` 或位于 `.claude/plugins/` 下，或 `update_channel` 为 `claude-plugin`／`antigravity-plugin` 时，更新由宿主插件管理器负责，不运行 `apply`；更新命令见 [host-adapters.md](references/host-adapters.md)。
+- `references/`、`assets/`、`scripts/` 均相对本技能目录；需要 Python 3.9+。宿主专属路径与工具名见 [host-adapters.md](references/host-adapters.md)，只读当前宿主那一节。
 
 ## 适用范围
 
@@ -42,7 +24,7 @@ metadata:
 
 ## 配套技能
 
-本技能与 `law-paper-writing`、`legal-wiki-audit-repair` 同属一个技能包，可以单独安装使用。三个技能不一定在同一目录（例如 Hermes 可能把它们分放在不同分类子目录下），引用其他技能的文件时按**技能名**找到该技能再读取，不要假设相对路径。配套技能没有安装时，按下表“未安装时”一列处理，不要假装读取了不存在的文件；需要完整能力时，提示用户安装整个技能包。
+同包技能可单独安装；引用其他技能的文件时按**技能名**找到该技能再读取，不假设相对路径。未安装时：
 
 | 用到的内容 | 所在技能 | 未安装时 |
 |---|---|---|
@@ -70,18 +52,17 @@ metadata:
 1. **范围先于速度**：拿到装满材料的目录，先盘点（列目录、计数、分组、识别重复）→ 展示一两份代表材料的要点 → 问清范围 → 分主题分批处理；用户说“全部摄入”也分批进行、每批汇报。
 2. **材料边界（闭世界查询）**：查询与写作调证据**只用库内页面及其 `raw/` 原始材料**回答，模型记忆不是来源；库内没有的如实说明并标 `[来源不明]`，给出摄入方案；**空壳或占位页面不算覆盖**，未摄入样本不能支撑统计结论；联网检索属**摄入环节**（经授权），新获取材料先入 `raw/` 并登记再进入页面；来源性主张（法条、案号、文献页码、数据）必须能回溯到库内页面和原始材料，回答时标出处（逐条溯源用 `law-paper-writing` 的 note-level 格式）。
 3. **一个项目一个 vault**：不同项目独立 vault，不混扫不混改；不因发现旧路径就恢复或迁移旧库；跨项目方法论放 `methodology/` 或技能中，不共享实体页。
-4. **先问清楚要建什么样的库，由用户主导**：新建或加深前做**建库访谈**（[wiki-design-interview.md](references/wiki-design-interview.md)）：一次 1—3 个问题并附选项；必问目的、研究问题与分析框架、“将来会怎么用这个库”三组；整理成《Wiki 设计书》（`assets/templates/wiki-design-brief.md`），确认后再定 SCHEMA、目录与模板。已有库走“加深模式”：先只读了解现状，再问痛点、新维度与试点范围。论文五问见 `law-paper-writing` 的 `references/requirement-decomposition.md`，答案写入 `research-design/` 后再摄入；用户已有框架以其为准；暂无思路时允许先建库、模块完成时归纳建议。**不把其他项目的框架、分类、标签套到新项目上。**
+4. **先问清楚要建什么样的库，由用户主导**：新建或加深前按 [wiki-design-interview.md](references/wiki-design-interview.md) 访谈（一次 1—3 个问题并附选项），必问目的、研究问题与分析框架、将来怎么用这个库；整理成《Wiki 设计书》确认后再定 SCHEMA、目录与模板。论文五问的答案写入 `research-design/` 后再摄入；用户已有框架以其为准，暂无思路时可先建库、模块完成时归纳建议。**不把其他项目的框架、分类、标签套到新项目上。**
 5. **来源与分析分开，宁缺毋滥**：事实、日期、案号、条文、裁判理由只能来自原始材料；研究分析另写并可追溯；证据不足写“暂不形成结论”或待核，不用模板或推测填满。
+
 ## 新建研究库的推荐顺序（入口 1 详细流程）
 
 1. **确认 vault 路径与项目边界**；
 2. **建库访谈与研究设计**：按 [wiki-design-interview.md](references/wiki-design-interview.md) 提问 → 写《Wiki 设计书》并确认 → 写 `research-design/` 研究设计页（见 [research-design-pages.md](references/research-design-pages.md)）；
 3. **SCHEMA、index、log**：从 [assets/templates/](assets/templates/README.md) 复制，与用户确定目录、页面类型、标签词表（中文标签）与必填字段；
 4. （可选）**期刊风格观察**：用户有目标期刊时，摄入 2—3 篇该刊范文到 `entities/范文/`，在 `methodology/` 写风格观察卡（只作写作参考）；
-5. **首批材料（按研究类型定顺序）**：论文导向与群案研究一般先摄入论文（建立概念骨架），再案例、再法规范；纯案例实证型可从案例先行，概念页由案例归纳；规范解释型从法规范先行；文献争议型从论文与争议文献先行；
+5. **首批材料（按研究类型，属推荐顺序而非固定规则）**：论文导向与群案研究**推荐先论文**（先搭概念骨架，案例才有可挂接的概念页，避免返工），再案例、再法规范；纯案例实证型可案例先行；规范解释型法规范先行；文献争议型论文与争议文献先行；
 6. **案例**：挂到已有概念上；**7. 法规范**：按效力层级摄入相关条文；**8. 比较层与网络**：`comparisons/`、论文—案例—法规范互联；**9. 之后进入写作**（交给 `law-paper-writing`）。
-
-用户问“先摄入论文还是案例”时，按研究类型给建议：论文导向与群案研究**推荐先论文**（论文搭概念骨架，案例才有可挂接的概念页，也揭示标签维度、避免返工）；其余按上条第 5 步。这是推荐顺序，不是固定规则。
 
 ## 目录与页面类型
 

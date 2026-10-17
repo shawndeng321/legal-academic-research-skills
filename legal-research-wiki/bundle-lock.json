@@ -5,10 +5,10 @@
   "skill_name": "legal-research-wiki",
   "skill_version": "2610.17.0",
   "files": {
-    "CHANGELOG.md": "7f5e620bf1f15afb1e62996313fbccd510cbdb1ee79c88766107a93e2d8b6f65",
+    "CHANGELOG.md": "69239e674e3bb977e4ef354f8b86f24231659745dd8ded58cced94cb04bcf708",
     "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "README.md": "9402da83643adbb336f5983c8f21f6a515ff46d7553b288b755fdc45208746d8",
-    "SKILL.md": "8b6a11675fccb2e6e3946afa9ea5a473d9da9b09b80ef7514ddc81c11895e153",
+    "README.md": "4ff49158ee3607945108bd389217c57bb734ff1133252e7e44e18168cb5e623d",
+    "SKILL.md": "96ca264077fd727c42ab12d37f1496b139aa0168ac9ecb579c8ef8cb94fbe1f7",
     "agents/openai.yaml": "32715f38b3c294e6047531ee661833abff9f33aa927f70a67029405dcc0b7fae",
     "assets/templates/README.md": "89c8a39c53158d89c8b9db8338a3d3ba7fc98b5c142f3254a35b7735e8ac143b",
     "assets/templates/SCHEMA.md": "62e4f9f7e55d6b49cbd2e7eb3fb7cd32816dd15b5d15affbcddc4286a15500b7",
@@ -41,6 +41,7 @@
     "references/docx-scope-and-mapping.md": "ea074e04e3a64971eb22e001b862afc89d1ffb0349cdb151ac11763f591c63de",
     "references/draft-version-sync.md": "cc3413c0c80297795368415ef2798955aa2b528d82037c36e77922cc797f3c37",
     "references/dual-track-isolation.md": "74d3a55e77b96aa3a94caa996a04eecc3e607c01c25230c729262d469afce9ab",
+    "references/host-adapters.md": "d5ddb76986b8b8b0c5d8d3dd1042021f0e09f1babb4494a38aa4c1fcb2b0a1a6",
     "references/legal-norm-hierarchy-and-reply-ingestion.md": "14641a3ea9328b5aa8aeb49f66b9e5b20b7539893298eb26a27a0cfb35801d3a",
     "references/linking-and-cross-references.md": "a1fddc17254ac8395f8a0243113725a2adb12d6a430b38b6aa7dcf9079c2b9af",
     "references/material-routing.md": "69c3ed8005cdf859333eaef8f4075ffc70da6c4f5ae85881efc2334c6ca86715",
@@ -59,7 +60,7 @@
     "scripts/batch_extract_papers.py": "551a412c9f438c5ec4509d13052120393b018d11d14ecf46a29ce1cb6144bab6",
     "scripts/check_wikilinks.py": "8c0f8c4714671f6e1bc8231bf09ddef7f0122ace3f7089a553dd01045c2e0910",
     "scripts/clean_pdf_artifacts.py": "7062295aabf0ba82fa4122bd42116b5fec827171a2ef9a1461a8e99be9aa1443",
-    "scripts/legal_skills_update.py": "9482fe1a6aa6506789fd1e15d2732665210ef59867e256ab2281206beb0da958",
+    "scripts/legal_skills_update.py": "7d0e1d5e448f97ba34a8a423c0302ce7beb9d2ca4624c5b730b1922989244c3a",
     "scripts/wiki_links.py": "273091dfa808e3086f9f2733db19f5e32ec5f3f4009413186f47d3e529a1bbe5"
   }
 }

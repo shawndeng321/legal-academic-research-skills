@@ -6,6 +6,9 @@
 
 - 适配 Devin（CLI / Desktop）：新增 Devin 原生能力映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`），说明 Devin 全局与项目技能路径及其自动读取 `~/.claude/skills` 带来的重复安装风险。
 - 预检与脚本在 Devin 下按技能 `Base directory` 拼绝对路径运行，同一会话只预检一次。
+- SKILL.md 精简（写作 −36%／建库 −16%／审计 −20%），宿主专属说明移入 references/host-adapters.md。
+- 预检对所有宿主改为同一会话只运行一次；check --json 不再输出完整清单与历史（约 28 KB → 不足 1 KB）。
+- 移除 v2610.9 上游并入说明（移至仓库 docs/upstream-integration-v2610.9.md），引注格式样例不等于来源的规则并入 SKILL.md“材料边界”。
 - 锁与发布清单随技能包统一升级至 2610.17.0。
 
 ## v2610.16（2026-10-16；机器字段 2610.16.0）
@@ -30,7 +33,7 @@
 - 边界适配：例证引用从简不限制程序/改判/群案比较；方法和结果章节不强塞理论；期刊正式要求、用户已确认参数与获准样稿优先于临时摘要/页面参数。
 - 衔接标准 Markdown 脚注与显式外文斜体的 DOCX 输出；实际执行证据与能力边界随候选包验收记录交付。
 - 同步三份更新器、插件、安装入口与发布校验；旧名迁移需要从新版候选调用更新器，不能承诺旧脚本透明自动升级。
-- 完整来源与处置表见 `references/upstream-integration.md`。
+- 完整来源与处置表见 `../docs/upstream-integration-v2610.9.md`。
 
 ## 6.0.1（2026-09-28）
 

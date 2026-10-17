@@ -2227,6 +2227,41 @@ class UpdateCheckTests(unittest.TestCase):
         self.assertIn("history", json.loads(detailed.stdout))
         self.assertEqual(before, after)
 
+    def test_cli_check_json_omits_manifest_and_history(self):
+        with updater_fixture() as fixture:
+            manifest_path = fixture.root / "incoming-manifest.json"
+            manifest_path.write_text(
+                json.dumps(make_manifest("1.1.0")), encoding="utf-8"
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-X",
+                    "utf8",
+                    str(UPDATER),
+                    "check",
+                    "--skill-dir",
+                    str(fixture.skill_dir),
+                    "--manifest",
+                    str(manifest_path),
+                    "--state-root",
+                    str(fixture.state_root),
+                    "--json",
+                ],
+                cwd=fixture.skill_dir,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                check=False,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["status"], "update_available")
+        self.assertNotIn("manifest", payload)
+        self.assertNotIn("history", payload)
+        self.assertIn("summary", payload)
+        self.assertIn("update_channel", payload)
+
     def test_check_gracefully_degrades_when_lock_dir_is_unwritable(self):
         module = load_module(UPDATER, "legal_skills_update_lock_perm")
         with updater_fixture() as fixture:

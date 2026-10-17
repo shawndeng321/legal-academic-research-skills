@@ -2121,6 +2121,12 @@ def main(argv: list[str] | None = None) -> int:
                     _load_manifest_path(args.manifest_path, state_root), None, False
                 )
             result = check_for_update(args.skill_dir or _skill_dir(), **kwargs)
+            manifest = result.pop("manifest", None)
+            result.pop("history", None)
+            if isinstance(manifest, dict):
+                for field in ("summary", "changes", "update_level", "published_at"):
+                    if field in manifest:
+                        result[field] = manifest[field]
         elif args.command == "snooze":
             result = snooze(_skill_dir(), args.hours)
         elif args.command == "ignore":

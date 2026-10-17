@@ -35,7 +35,7 @@
 
 **当前版本：v2610.17（机器字段 2610.17.0；2026-10-17）**
 
-本版：适配 Devin（CLI / Desktop）原生工具映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`）与按 `Base directory` 绝对路径预检；上一版适配 Google Antigravity。承接 v2610.9 的上游 v1.4.0 并入（引注体例、审读反馈、摘要自查等，清单见 [upstream-integration.md](references/upstream-integration.md)）；写作规则与既有能力不变。
+本版：适配 Devin（CLI / Desktop）原生工具映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`）与按 `Base directory` 绝对路径预检，并精简 SKILL.md；上一版适配 Google Antigravity。承接 v2610.9 的上游 v1.4.0 并入（引注体例、审读反馈、摘要自查等，清单见 [upstream-integration-v2610.9.md](../docs/upstream-integration-v2610.9.md)）；写作规则与既有能力不变。
 
 ## 为什么使用
 

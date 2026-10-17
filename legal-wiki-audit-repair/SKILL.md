@@ -12,29 +12,11 @@ metadata:
 
 # 法学研究 Wiki 排查与修复
 
-## 技能包更新预检
+## 预检与运行环境
 
-每次加载本技能时，先运行 `python3 -X utf8 scripts/legal_skills_update.py check --json`（Windows 用 `py -X utf8 …` 或 `python -X utf8 …`）。脚本按 **6 小时**缓存自动检查结果；只有返回 `update_available` 时才向用户展示 `[立即更新] [查看更新说明] [稍后提醒] [忽略此版本]`，其他状态（含离线、沙箱拒绝联网或状态目录不可写）不打断当前任务并继续执行。没有用户的明确确认，绝不运行 `apply`；“查看更新说明”只读取版本、变更与本地差异，不执行写入。
-
-**Claude Code 插件安装时跳过预检**：宿主给出的本技能基础目录路径含 `/plugins/cache/`（或位于 `.claude/plugins/` 下）时，本技能由 Claude Code 插件安装，更新由 Claude Code 负责，不运行上面的预检命令，直接执行当前任务。用户问起更新时，请其运行 `claude plugin marketplace update legal-academic-research` 与 `claude plugin update legal-academic-research@legal-academic-research`，再在会话中运行 `/reload-plugins`。若已运行预检且结果的 `update_channel` 为 `claude-plugin`，同样不运行 `apply`，只按上述方式提示。
-
-## 运行环境（Hermes / Claude Code / Codex 通用）
-
-- 本技能是标准 `SKILL.md` 技能目录。正文中的 `references/`、`assets/`、`scripts/` 等相对路径一律以本技能目录为基准解析；宿主加载技能时给出的基础目录就是本目录。
-- 读写文件、运行命令、委派子任务均使用当前宿主自带的工具；本文不绑定任何宿主的工具名。宿主不支持子代理时，按小批次串行执行同样的步骤。
-- Python 命令按系统选择：macOS/Linux 用 `python3`（macOS 默认没有 `python` 命令）；Windows 用 `py`，没有时用 `python`。本文及参考文件中写作 `python3` 的命令，在 Windows 上照此替换。所需版本为 Python 3.9 及以上。临时文件放在系统临时目录（Python `tempfile`、`$TMPDIR` 或 `%TEMP%`），不要写死 `/tmp`。
-- 宿主沙箱拒绝联网或写入时，先向用户说明需要的权限；更新预检失败直接跳过。
-
-### Antigravity 原生能力映射
-
-- **路径**：全局 `~/.gemini/config/skills/legal-wiki-audit-repair` 与工作区 `<workspace>/.agents/skills/`。
-- **工具映射**：体检决策抉择优先用 `ask_question` 卡片；周期性巡检支持配合内置 `schedule` 工具或 `/schedule` 命令配置。
-
-### Devin 原生能力映射
-
-- **路径**：全局 `~/.config/devin/skills/` 或 `~/.agents/skills/`，项目级 `<workspace>/.devin/skills/` 或 `<workspace>/.agents/skills/`；Devin 也读 `~/.claude/skills/`，同一技能只保留一处安装。
-- **预检与脚本**：命令在工作区目录执行，预检与 `scripts/multimodal_audit.py` 等脚本都用 `Base directory` 拼绝对路径；同一会话只预检一次；`offline` 或被沙箱、权限拒绝时静默继续。
-- **工具映射**：模式与范围确认用 `ask_user_question`；`AUDIT_ONLY`、`VERIFY` 下的全库扫描可委派只读 `subagent_explore`，结论须由主会话按文件复核；修复批次用 `todo_write` 跟踪 OPT 与验收项。
+- **更新预检**：同一会话里本技能包任一技能已预检过就不再重复；否则运行 `python3 -X utf8 scripts/legal_skills_update.py check --json`（Windows 用 `py`；不在技能目录执行时拼成绝对路径）。结果按 6 小时缓存。只有 `update_available` 才向用户展示 `[立即更新] [查看更新说明] [稍后提醒] [忽略此版本]`；其他状态（含离线、沙箱拒绝）静默继续，不为预检申请权限。没有用户的明确确认，绝不运行 `apply`。
+- **Claude Code 插件安装时跳过预检**：基础目录含 `/plugins/cache/` 或位于 `.claude/plugins/` 下，或 `update_channel` 为 `claude-plugin`／`antigravity-plugin` 时，更新由宿主插件管理器负责，不运行 `apply`；更新命令见 [host-adapters.md](references/host-adapters.md)。
+- `references/`、`assets/`、`scripts/` 均相对本技能目录；需要 Python 3.9+。宿主专属路径与工具名见 [host-adapters.md](references/host-adapters.md)，只读当前宿主那一节。
 
 ## 概述
 
@@ -48,7 +30,7 @@ metadata:
 
 ## 配套技能
 
-本技能与 `law-paper-writing`、`legal-research-wiki` 同属一个技能包，可以单独安装使用。三个技能不一定在同一目录（例如 Hermes 可能把它们分放在不同分类子目录下），引用其他技能的文件时按**技能名**找到该技能再读取，不要假设相对路径。配套技能没有安装时，按下表“未安装时”一列处理，不要假装读取了不存在的文件；需要完整能力时，提示用户安装整个技能包。
+同包技能可单独安装；引用其他技能的文件时按**技能名**找到该技能再读取，不假设相对路径。未安装时：
 
 | 用到的内容 | 所在技能 | 未安装时 |
 |---|---|---|
@@ -64,17 +46,7 @@ metadata:
 
 ## 何时使用
 
-- “全面排查知识库”“系统体检 Wiki”“看看还有什么问题”；
-- “检查分类和结构设计”“知识库有没有漏洞”；
-- “按排查修复流程与整改台账继续修复”“执行下一项 OPT”；
-- “修复死链、孤岛、标签、来源、案例关系”；
-- “检查这些页面是否套模板、能不能用于论文”；
-- “优化 Obsidian 知识库”“复核上一次修改”“今天检修”；
-- “总结经验，改进以后的建库方式”；
-- “案例文件按编号重命名”“分成几个文件夹”“全库链接跟着新文件名走”“补反向链接”“批量填充剩余页面”；
-- “检查法学技能更新”（技能包更新，见上文“技能包更新预检”）。
-
-不用于单纯查询某个法律问题；用户只要求读某一页时，不擅自升级为全库审计。
+全库排查与体检、结构与分类审计、按整改台账执行 OPT、修复死链／孤岛／标签／来源／案例关系、模板化检测、复核与每日检修、批量重命名与链接迁移、补反向链接与批量填充，以及“检查法学技能更新”（见“预检与运行环境”）。不用于单纯查询某个法律问题；用户只要求读某一页时，不擅自升级为全库审计。
 
 ## 一、先判定工作模式
 
@@ -193,7 +165,7 @@ metadata:
 
 **脚本**：
 
-- `scripts/multimodal_audit.py "<WIKI_PATH>" [--json] [--strict] [--privacy]`：七项全库深检——索引一致性、未摄入原始材料、frontmatter 质量、链接完整性、文件卫生与惯例、日志格式、法学专项（法规范时效、案件去重、隐私格式）。中文报告，每条发现含规则编号（IDX/RAW/FM/LINK/HYG/LOG/NORM/DUP/PRIV）、路径、定位、严重程度与检查范围；退出码 0=通过、1=存在阻断项（`--strict` 下提示项也计入）、2=执行失败或扫描不完整，未扫描到对象时不输出“通过”。需要 PyYAML（见 `requirements-dev.txt`）；链接解析与 `legal-research-wiki` 的 `check_wikilinks.py` 共用 `scripts/wiki_links.py`（两份字节一致）。已按法学库适配：页面以 vault 相对路径为身份、同名文件单独报告；默认扫描整个 `raw/`（含 `cases/`、`法规范/`），仅 `raw/transcripts`、`raw/screenshots` 强制同名提取；frontmatter 用真实 YAML 解析并检查字段类型、空值与重复键（解析失败单列）；标签词表兼容分类标题式 SCHEMA，只对单次使用且不在词表中的标签提示；跳过 `.maintenance`、`drafts`、`_scripts`、备份与隐藏目录（备份不得掩盖死链）；正式目录、排除目录、必填字段、`norm_verify_max_age_days` 与 `privacy{enabled, extra_patterns}` 可用 vault 根的 `wiki-audit.config.json` 覆盖（`--privacy` 启用可选隐私检查，命中值打码、只报告不改动）。不要用上游 multimodal-wiki 的脚本覆盖。
+- `scripts/multimodal_audit.py "<WIKI_PATH>" [--json] [--strict] [--privacy]`：七项全库深检（IDX/RAW/FM/LINK/HYG/LOG/NORM/DUP/PRIV）。退出码 0=通过、1=存在阻断项（`--strict` 下提示项也计入）、2=执行失败或扫描不完整；需要 PyYAML。扫描范围、配置文件 `wiki-audit.config.json` 与判定口径见 [technical-health-checklist.md](references/technical-health-checklist.md)“深检脚本”一节。不要用上游 multimodal-wiki 的脚本覆盖。
 
 - 其余巡检增强项与延伸参考（用户环境脚本优先、空壳补全、哈希批量修复）见 [daily-maintenance-and-periodic-checks.md](references/daily-maintenance-and-periodic-checks.md)。
 
@@ -215,6 +187,8 @@ metadata:
 
 全部适用项通过才能说“本批完成”；仍有问题时写出剩余计数和页面，不用“总体没问题”掩盖。
 
+交付审计报告前另行自查：已定模式与写入范围；已读 SCHEMA、index、log 与整改台账；递归扫描含根目录；技术轨与学术轨都完成，每类抽样基准页和风险页；文档示例、历史链接与正式内容问题分开；系统性结论有机器统计与原材料抽样双重证据；发现按 P0—P3 编号并附验收条件；修复未超出授权范围。
+
 ## 十三、常见陷阱
 
 排查时顺手修改；把 index 链接算作学术关系；把长页面当成高质量；用主题相似代替引用证据；只扫子目录、漏掉根目录幽灵页与嵌套实体；把非路径 source 误报为文件缺失；机械消灭孤岛制造假性稠密；看到重复段落就判错而不回读原材料；信任旧日志或子代理自报；修一项就宣布全库完成；直接运行旧生成脚本；未经确认批量修改（默认 5—8 页，超过 10 页先确认）。
@@ -224,20 +198,3 @@ metadata:
 行动优先，不先堆技术细节：本次模式与写入范围；已通过的项目；最严重的 3—5 个问题及具体证据；分类结构是否需要推倒重来；第一批建议处理的页面和原因；文件位置；验收计数和明确未处理的事项。
 
 用户只问“下一步是什么”时，只回答第一批范围、每页一项修改和验收标准，不重复整份审计。
-
-## 十五、更新技能后的自测
-
-修改本技能后：跑仓库测试（`python3 -m unittest discover -s tests` 全通过）；在宿主确认技能可加载且版本正确；对真实库做只读回归；小任务试跑并抽测压力场景；闭世界验证。完整步骤见 [daily-maintenance-and-periodic-checks.md](references/daily-maintenance-and-periodic-checks.md) 第四节。
-
-## 验收清单
-
-- [ ] 已确定 AUDIT_ONLY / AUDIT_PLAN / REPAIR / VERIFY 模式
-- [ ] 已读取 SCHEMA、index、log 和整改台账
-- [ ] 已递归扫描根目录和嵌套目录
-- [ ] 已同时完成技术健康轨和学术可用性轨
-- [ ] 每类至少抽样基准页和风险页
-- [ ] 文档示例、历史链接与正式内容问题分开
-- [ ] 系统性结论有机器统计和原材料抽样双重证据
-- [ ] 问题按 P0—P3 编号并附验收条件
-- [ ] 修复批次不超过授权范围
-- [ ] 修改后全量验收并追加记录

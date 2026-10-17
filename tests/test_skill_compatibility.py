@@ -238,23 +238,34 @@ class SkillCompatibilityTests(unittest.TestCase):
         for skill_name in SKILLS:
             with self.subTest(skill=skill_name):
                 body = (ROOT / skill_name / "SKILL.md").read_text(encoding="utf-8")
-                self.assertIn("## 运行环境（Hermes / Claude Code / Codex 通用）", body)
+                adapters = (ROOT / skill_name / "references" / "host-adapters.md").read_text(
+                    encoding="utf-8"
+                )
+                self.assertIn("## 预检与运行环境", body)
                 self.assertIn("update_channel", body)
                 self.assertIn("python3 -X utf8 scripts/legal_skills_update.py check --json", body)
                 self.assertNotIn("`python -X utf8 scripts/legal_skills_update.py", body)
-                self.assertIn("claude plugin update", body)
+                self.assertIn("claude plugin update", adapters)
                 self.assertIn("Claude Code 插件安装时跳过预检", body)
                 self.assertIn("/plugins/cache/", body)
 
     def test_skills_document_devin_host_mapping(self) -> None:
+        adapter_bodies = {
+            skill_name: (ROOT / skill_name / "references" / "host-adapters.md").read_bytes()
+            for skill_name in SKILLS
+        }
+        self.assertEqual(len(set(adapter_bodies.values())), 1)
         for skill_name in SKILLS:
             with self.subTest(skill=skill_name):
+                adapters = adapter_bodies[skill_name].decode("utf-8")
                 body = (ROOT / skill_name / "SKILL.md").read_text(encoding="utf-8")
-                self.assertIn("### Devin 原生能力映射", body)
-                self.assertIn("~/.config/devin/skills/", body)
-                self.assertIn("Base directory", body)
-                self.assertIn("ask_user_question", body)
+                for section in ("## Claude Code", "## Google Antigravity", "## Devin"):
+                    self.assertIn(section, adapters)
+                self.assertIn("~/.config/devin/skills/", adapters)
+                self.assertIn("Base directory", adapters)
+                self.assertIn("ask_user_question", adapters)
                 self.assertIn("同一会话", body)
+                self.assertIn("](references/host-adapters.md)", body)
 
     def test_skill_files_contain_no_project_specific_terms(self) -> None:
         terms = _load_project_terms()

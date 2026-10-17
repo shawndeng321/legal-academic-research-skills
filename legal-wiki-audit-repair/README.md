@@ -4,7 +4,7 @@
 
 > 运行时入口是 [`SKILL.md`](SKILL.md)。本页提供模式选择、安装和安全使用方式；批量操作细则见 `references/`。
 >
-> **当前版本：v2610.17（2026-10-17；机器字段 2610.17.0）**。本版：适配 Devin（CLI / Desktop）原生工具映射与按 `Base directory` 绝对路径预检；上一版适配 Google Antigravity。前版优化承接：深检扩展为七项（法规范时效 NORM-01～03、案号去重 DUP-01、可选隐私检查 PRIV-01）；新增论文—案例链接同步／扫描／验收与规范依据插入工具组；审计细则迁入本技能；`raw/MANIFEST.md` 豁免 frontmatter 检查。变更见 [CHANGELOG.md](CHANGELOG.md)。
+> **当前版本：v2610.17（2026-10-17；机器字段 2610.17.0）**。本版：适配 Devin（CLI / Desktop）原生工具映射与按 `Base directory` 绝对路径预检，并精简 SKILL.md；上一版适配 Google Antigravity。前版优化承接：深检扩展为七项（法规范时效 NORM-01～03、案号去重 DUP-01、可选隐私检查 PRIV-01）；新增论文—案例链接同步／扫描／验收与规范依据插入工具组；审计细则迁入本技能；`raw/MANIFEST.md` 豁免 frontmatter 检查。变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 自动检查、四种提示选择、本地修改保护与回滚说明见[根 README 的自动更新章节](../README.md#自动更新)。
 

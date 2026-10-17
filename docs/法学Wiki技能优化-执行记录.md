@@ -315,3 +315,10 @@
 - 版本刷新范围：三技能 `metadata.version`、`.claude-plugin/plugin.json`、根 README（版本表、“2026-10 更新内容”节、源码安装 target 列表加 Devin 行）、三技能 README「当前版本」与「本版」句、三份 CHANGELOG 新增 `v2610.17` 节；`tools/prepare_bundle_release.py --write` 重建三份 `bundle-lock.json` 与 `bundle-release.json`（2610.17.0，历史链保留），`--check` 一致。测试同步：`EXPECTED_VERSIONS` 与上游集成测试版本断言升 2610.17.0，新增 Devin 映射回归测试；WIKI-12c 瘦身回归上限随本次新增节上调（research 19,400／audit 23,400）。
 - 测试：`python3 -X utf8 -m unittest discover -s tests -v` → 224 项 OK（skipped=74，本机 `python3` 缺 PyYAML，与 v2610.14 无依赖基线一致；无失败）。
 - 未推送、未打 tag、未部署到本机宿主：改动仅在本地分支 `agent/devin-host-adaptation`。
+- 第二轮精简（同一版本 2610.17.0 内并入）：三技能「技能包更新预检」「运行环境」与宿主映射节合并为 `## 预检与运行环境`，宿主细则外移至各技能 `references/host-adapters.md`（三份字节一致）；SKILL.md 写作 −36%（11,306 B）、建库 −16%（16,175 B）、审计 −20%（18,573 B）。写作技能删「本次整合」；审计技能「何时使用」精简、深检脚本细则迁入 `technical-health-checklist.md`、重复验收清单合并、开发者自测节删除（内容在 `daily-maintenance-and-periodic-checks.md` 第四节）。
+- 更新器 CLI：`check --json` 不再输出完整 `manifest` 与 `history`（约 28 KB → 不足 1 KB），仅补 `summary`／`changes`／`update_level`／`published_at`；`check_for_update()` 返回值不变；预检改为同一会话只运行一次；新增 CLI 回归测试（update_available 输出无 manifest/history、含 summary 与 update_channel）。
+- `law-paper-writing/references/upstream-integration.md` 移出技能目录至 `docs/upstream-integration-v2610.9.md`（git mv，不删除），README 链接与 CHANGELOG 路径文字同步；「引注格式样例不等于来源」规则并入 SKILL.md「材料边界」。
+- 测试调整：host_neutral 断言改到新标题与 host-adapters.md；Devin 映射测试改为三份 host-adapters.md 字节一致 + 章节断言；WIKI-12c 上限随精简收紧（writing ≤12,000/≥9,000、research ≤16,500、audit ≤19,000）。
+- 测试：`~/.hermes/hermes-agent/venv/bin/python3 -X utf8 -m unittest discover -s tests` → 225 项全部通过，0 跳过（依赖齐全环境）。
+- 旧名清理：`chinese-law-paper-writing` 已从 `~/.claude/skills/` 归档到工作区 `../_archive/`（仓库外，不随本提交）；安装时同一技能只保留一处。
+- 锁与清单随精简后内容重建，`--check` 一致；仍未推送、未打 tag。

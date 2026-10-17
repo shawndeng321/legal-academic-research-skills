@@ -7,6 +7,8 @@
 - 适配 Devin（CLI / Desktop）：新增 Devin 原生能力映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`），说明 Devin 全局与项目技能路径及其自动读取 `~/.claude/skills` 带来的重复安装风险。
 - 预检与脚本在 Devin 下按技能 `Base directory` 拼绝对路径运行，同一会话只预检一次。
 - `model-orchestrated-legal-research-workflow.md` 宿主对照表增加 Devin 列。
+- SKILL.md 精简（写作 −36%／建库 −16%／审计 −20%），宿主专属说明移入 references/host-adapters.md。
+- 预检对所有宿主改为同一会话只运行一次；check --json 不再输出完整清单与历史（约 28 KB → 不足 1 KB）。
 - 锁与发布清单随技能包统一升级至 2610.17.0。
 
 ## v2610.16（2026-10-16；机器字段 2610.16.0）

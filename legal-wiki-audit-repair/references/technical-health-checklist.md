@@ -16,3 +16,9 @@
 - **4.8 研究设计与统计状态**：“统计口径可执行”≠“已计算”：核查数字是否真的算过、是否基于逐案文本归类、结果是否写入矩阵并更新研究假说状态；绝不编造数字。结果字段落地后机器全量重算与人工口径交叉核对，差异逐项归因，不直接改定稿数字。`methodology/` 页注明与某技能版本同步时，技能升级后同步其版本说明与新增规则。
 
 **技术轨完成条件**：给出可复算的计数、具体路径和误报分类，而不是“结构良好”。
+
+## 深检脚本 `multimodal_audit.py`
+
+> 由审计技能 SKILL.md 第十一节迁出（v2610.17 精简）。
+
+`scripts/multimodal_audit.py "<WIKI_PATH>" [--json] [--strict] [--privacy]`：七项全库深检——索引一致性、未摄入原始材料、frontmatter 质量、链接完整性、文件卫生与惯例、日志格式、法学专项（法规范时效、案件去重、隐私格式）。中文报告，每条发现含规则编号（IDX/RAW/FM/LINK/HYG/LOG/NORM/DUP/PRIV）、路径、定位、严重程度与检查范围；退出码 0=通过、1=存在阻断项（`--strict` 下提示项也计入）、2=执行失败或扫描不完整，未扫描到对象时不输出“通过”。需要 PyYAML（见 `requirements-dev.txt`）；链接解析与 `legal-research-wiki` 的 `check_wikilinks.py` 共用 `scripts/wiki_links.py`（两份字节一致）。已按法学库适配：页面以 vault 相对路径为身份、同名文件单独报告；默认扫描整个 `raw/`（含 `cases/`、`法规范/`），仅 `raw/transcripts`、`raw/screenshots` 强制同名提取；frontmatter 用真实 YAML 解析并检查字段类型、空值与重复键（解析失败单列）；标签词表兼容分类标题式 SCHEMA，只对单次使用且不在词表中的标签提示；跳过 `.maintenance`、`drafts`、`_scripts`、备份与隐藏目录（备份不得掩盖死链）；正式目录、排除目录、必填字段、`norm_verify_max_age_days` 与 `privacy{enabled, extra_patterns}` 可用 vault 根的 `wiki-audit.config.json` 覆盖（`--privacy` 启用可选隐私检查，命中值打码、只报告不改动）。不要用上游 multimodal-wiki 的脚本覆盖。

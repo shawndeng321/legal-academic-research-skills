@@ -6,10 +6,10 @@
   "skill_version": "2610.17.0",
   "files": {
     ".gitignore": "6a81b94bd1bead23e3cabf52807afab7d89e3d73023b8da34e226fa951889b54",
-    "CHANGELOG.md": "507adce897f07ab43a0ade76c322a72731ac7965d3264257f7c09c9c5aba8ebd",
+    "CHANGELOG.md": "d4d5ba344bac225d2356a82855235623df7782555cf41171c5bf41e7f0d1accb",
     "LICENSE": "911bbb65eefae9246cc68a14856c88c28ba0f965b6e4aa3f901d79ae1fda63e6",
-    "README.md": "2e9f851991fb22f1dc78eabfdec53422b54a9eaed55c41149c99e3b17e1692c2",
-    "SKILL.md": "fd5867fc965da5db36c26c5bd9f1e74b655aa0b628d1f22ec23c25b4e04c557e",
+    "README.md": "4275ca04c57aec7880d28efaab0f3409fc60017ab539960822c5b25d647ad29f",
+    "SKILL.md": "e0fbd7fff5610356814a18fda280d654943a93e3e1b78443a3c21b24cb277a58",
     "agents/openai.yaml": "293e43ac9fc74fcf926fe76d0eaf1d543e5c7f935dcaccf2babbcc47dcf52007",
     "assets/examples/abstract-examples.md": "c4d1d95dfd9fd2289b281c8ffbc20e7f63bb20dc1829c6d759752bb77cc2a59e",
     "assets/examples/legal-prose-examples.md": "16abbbb1eccb5c55040c81aeee7c28fd7df4d93d46ce87253eb8f0a9e8499aa3",
@@ -39,14 +39,14 @@
     "references/docx-production.md": "2a174c650f86a61d4342d5a652120d5dd87989293336049526b9c0416a7c6dc2",
     "references/empirical-case-research.md": "017100d8441f8b0c03c5c1cf3c7350066813ffb63b7a9393de9ac0fd4f56819e",
     "references/evidence-and-legal-validity.md": "ad38e4a03eab02857207270d163cd899a75b89ccf70fab08dde06c6dc7c8aeda",
+    "references/host-adapters.md": "d5ddb76986b8b8b0c5d8d3dd1042021f0e09f1babb4494a38aa4c1fcb2b0a1a6",
     "references/journal-adaptation.md": "c3b0fd93deb525a7626a617d0312f436674882854f1877f70abdd4eff69bdfa2",
     "references/legal-prose.md": "0d5f4e46470777dce60121eed609b86eafa0321eeba5151fb8dc32095ca1d398",
     "references/multimodal-citation-format.md": "dd4a802fdc185dc5eafc0fe93f7137be1ba3742b1728df4bd23f3c16f77af256",
     "references/obsidian-knowledge-base.md": "f0267a56dc1e4423b1db78d9d3bffb65868b8ee3c5ba6d5e1168d5ebc85cb911",
     "references/requirement-decomposition.md": "1c22ebb47737340359c45254a8169a3debd8cd611b950eca4d21e1ae36e77b02",
-    "references/upstream-integration.md": "158d2bbef0e88adda6c22f99d9547d6bfba3d949d011429e9cec42d1fae8368e",
     "references/workflow.md": "0ac02f737b6339d44ea6569f49137ed49401089e8d36b7727e2a62d68e451e6c",
-    "scripts/legal_skills_update.py": "9482fe1a6aa6506789fd1e15d2732665210ef59867e256ab2281206beb0da958",
+    "scripts/legal_skills_update.py": "7d0e1d5e448f97ba34a8a423c0302ce7beb9d2ca4624c5b730b1922989244c3a",
     "scripts/md2docx_footnotes.py": "78a4423c3f3613b137c77c0df232a5d0edf0c2fb0b6c3445331f2adb631419e8"
   }
 }

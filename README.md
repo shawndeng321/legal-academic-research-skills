@@ -30,7 +30,7 @@
 
 ## 2026-10 更新内容
 
-> **v2610.17（2026-10-17；机器字段 2610.17.0）**：适配 Devin（CLI / Desktop）：三技能新增 Devin 原生能力映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`）；预检与脚本按技能 `Base directory` 拼绝对路径、同一会话只预检一次；说明 Devin 技能路径及其自动读取 `~/.claude/skills` 带来的重复安装风险。
+> **v2610.17（2026-10-17；机器字段 2610.17.0）**：适配 Devin（CLI / Desktop）：三技能新增 Devin 原生能力映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`）；预检与脚本按技能 `Base directory` 拼绝对路径、同一会话只预检一次；说明 Devin 技能路径及其自动读取 `~/.claude/skills` 带来的重复安装风险；三技能 SKILL.md 精简（宿主说明外移、预检同会话去重、check 输出瘦身），写作技能移除旧版上游并入说明。
 >
 > **v2610.16（2026-10-16；机器字段 2610.16.0）**：全套适配 Google Antigravity 原生环境（`view_file`、`ask_question`、`invoke_subagent`、`schedule` 原生工具映射；Antigravity 全局与工作区技能路径识别；修复沙盒限制下更新预检锁权限报错并优雅降级为离线安全检查；清理旧版命名冲突）。
 >
