@@ -24,12 +24,14 @@
 
 | 技能 | 版本 | 适合什么时候用 | 核心能力 |
 |---|---:|---|---|
-| [`law-paper-writing`](law-paper-writing/) | **v2610.14** | 选题、研究、起草、修订、审核或期刊适配 | 七种任务模式、五项硬门禁、按命题类型检查论证、正文表达与作者声音、材料边界、实证材料细则、期刊适配、DOCX 真实脚注 |
-| [`legal-research-wiki`](legal-research-wiki/) | **v2610.14** | 新建、扩充或重新整理研究库 | 研究思路先行、范围优先摄入、PDF/DOCX/图片/音频摄入、法规范分层、论文—案例双轨关联、研究设计层、六维质量门禁、闭世界查询 |
-| [`legal-wiki-audit-repair`](legal-wiki-audit-repair/) | **v2610.14** | 已有 Wiki 出现死链、字段缺失、批量操作或技能包更新需求 | AUDIT_ONLY、P0—P3 分级、备份/DRY_RUN、小批修复、模板化检测、每日检修与迭代、七项深检脚本（含法学专项） |
+| [`law-paper-writing`](law-paper-writing/) | **v2610.16** | 选题、研究、起草、修订、审核或期刊适配 | 七种任务模式、五项硬门禁、按命题类型检查论证、正文表达与作者声音、材料边界、实证材料细则、期刊适配、DOCX 真实脚注 |
+| [`legal-research-wiki`](legal-research-wiki/) | **v2610.16** | 新建、扩充或重新整理研究库 | 研究思路先行、范围优先摄入、PDF/DOCX/图片/音频摄入、法规范分层、论文—案例双轨关联、研究设计层、六维质量门禁、闭世界查询 |
+| [`legal-wiki-audit-repair`](legal-wiki-audit-repair/) | **v2610.16** | 已有 Wiki 出现死链、字段缺失、批量操作或技能包更新需求 | AUDIT_ONLY、P0—P3 分级、备份/DRY_RUN、小批修复、模板化检测、每日检修与迭代、七项深检脚本（含法学专项） |
 
 ## 2026-10 更新内容
 
+> **v2610.16（2026-10-16；机器字段 2610.16.0）**：全套适配 Google Antigravity 原生环境（`view_file`、`ask_question`、`invoke_subagent`、`schedule` 原生工具映射；Antigravity 全局与工作区技能路径识别；修复沙盒限制下更新预检锁权限报错并优雅降级为离线安全检查；清理旧版命名冲突）。
+>
 > **v2610.14（2026-10-14；机器字段 2610.14.0）**：三技能批量优化——深检扩展为七项（法规范时效 NORM、案号去重 DUP、可选隐私检查 PRIV）；新增论文—案例链接同步／扫描／验收工具组；任务入口五种路由、首批材料按研究类型；新增“证据最小记录”；参考文档全中文化与 SKILL 精简（建库 −23.7%、审计 −32.1%）；发布面清理（项目专属词表移入本机文件、`raw/MANIFEST.md` 豁免）。本版承接 v2610.9 的更名与上游并入（迁移见下文“一次性升级”）。
 
 详细变更见各技能 `CHANGELOG.md`；本批逐项记录见 [`docs/法学Wiki技能优化-执行记录.md`](docs/法学Wiki技能优化-执行记录.md)。
@@ -121,7 +123,8 @@ checkout="$(mktemp -d)/legal-skills"
 git clone --branch main https://github.com/shawndeng321/legal-academic-research-skills.git "$checkout"
 
 # 选择目标目录（任选其一）：
-target="$HOME/.codex/skills"          # Codex
+target="$HOME/.gemini/config/skills"  # Google Antigravity 全局技能（或 <workspace>/.agents/skills）
+# target="$HOME/.codex/skills"        # Codex
 # target="$HOME/.claude/skills"       # Claude Code（个人）
 # target="${HERMES_HOME:-$HOME/.hermes}/skills"   # Hermes
 # target="$HOME/.agents/skills"       # 其他扫描 ~/.agents/skills 的宿主（如 DeepSeek Harness）

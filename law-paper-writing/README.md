@@ -11,7 +11,8 @@
 
 <div align="center">
 
-![Version: v2610.9](https://img.shields.io/badge/Version-v2610.14-5C3D2E?style=flat-square)
+![Version: v2610.16](https://img.shields.io/badge/Version-v2610.16-5C3D2E?style=flat-square)
+![Antigravity: Skill](https://img.shields.io/badge/Antigravity-Skill-4285F4?style=flat-square)
 ![Hermes: Skill](https://img.shields.io/badge/Hermes-Skill-193B5A?style=flat-square)
 ![Claude Code: Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-B4532A?style=flat-square)
 ![Codex: Skill](https://img.shields.io/badge/Codex-Skill-0F4C5C?style=flat-square)
@@ -31,9 +32,9 @@
   <a href="#检验与能力边界">检验与边界</a>
 </p>
 
-**当前版本：v2610.14（机器字段 2610.14.0；2026-10-14）**
+**当前版本：v2610.16（机器字段 2610.16.0；2026-10-16）**
 
-本版承接 v2610.9 的上游 v1.4.0 并入（引注体例、审读反馈、摘要自查等，清单见 [upstream-integration.md](references/upstream-integration.md)），并随技能包批量优化同步引注参考中文化、用语修订与发布面清理；写作规则与既有能力不变。
+本版：全套适配 Google Antigravity 原生环境（`view_file`、`ask_question`、`invoke_subagent` 工具映射；全局与工作区技能路径识别；修复沙盒限制下更新预检锁权限报错并优雅降级为离线安全检查；清理旧版命名冲突）。承接 v2610.9 的上游 v1.4.0 并入（引注体例、审读反馈、摘要自查等，清单见 [upstream-integration.md](references/upstream-integration.md)）；写作规则与既有能力不变。
 
 ## 为什么使用
 

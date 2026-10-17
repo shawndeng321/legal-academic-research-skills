@@ -819,6 +819,19 @@ def is_claude_plugin_path(
     return False
 
 
+def is_antigravity_plugin_path(path: Path) -> bool:
+    """Return True for a path inside an Antigravity plugin directory."""
+    resolved = Path(path).expanduser().resolve()
+    parts = tuple(part.lower() for part in resolved.parts)
+    for i in range(len(parts) - 2):
+        if (parts[i], parts[i + 1], parts[i + 2]) == (".gemini", "config", "plugins"):
+            return True
+    for i in range(len(parts) - 1):
+        if (parts[i], parts[i + 1]) in {(".agents", "plugins"), (".agent", "plugins")}:
+            return True
+    return False
+
+
 def detect_installation_mode(
     skills_root: Path, skill_names: Sequence[str]
 ) -> str:
@@ -828,6 +841,11 @@ def detect_installation_mode(
         raise ArchiveError(
             "Claude Code plugin installations are updated with "
             "`claude plugin update`, not by this updater"
+        )
+    if is_antigravity_plugin_path(skills_root):
+        raise ArchiveError(
+            "Antigravity plugin installations are updated through the plugin manager, "
+            "not by directly overwriting plugin directories with this updater"
         )
     _reject_symlink_ancestors(skills_root, "Skills root")
     if not skills_root.is_dir():
@@ -1703,6 +1721,13 @@ def _state_paths(state_root: Path | None = None) -> tuple[Path, Path]:
     return root / STATE_FILE_NAME, root / LOCK_FILE_NAME
 
 
+def _try_save_state(state_path: Path, state: dict) -> None:
+    try:
+        save_state(state_path, state)
+    except OSError:
+        pass
+
+
 def _record_nonfatal_attempt(
     state_path: Path,
     state: dict,
@@ -1714,7 +1739,7 @@ def _record_nonfatal_attempt(
     state["last_network_check"] = checked_at
     state["last_nonfatal_status"] = status
     state["last_nonfatal_message"] = message
-    save_state(state_path, state)
+    _try_save_state(state_path, state)
     return {
         "status": status,
         "fatal": False,
@@ -1732,9 +1757,13 @@ def check_for_update(
     state_root: Path | None = None,
 ) -> dict:
     result = _check_for_update(skill_dir, force=force, now=now, fetcher=fetcher, state_root=state_root)
-    result["update_channel"] = (
-        "claude-plugin" if is_claude_plugin_path(Path(skill_dir)) else "bundle"
-    )
+    path = Path(skill_dir)
+    if is_antigravity_plugin_path(path):
+        result["update_channel"] = "antigravity-plugin"
+    elif is_claude_plugin_path(path):
+        result["update_channel"] = "claude-plugin"
+    else:
+        result["update_channel"] = "bundle"
     return result
 
 
@@ -1754,109 +1783,124 @@ def _check_for_update(
         return {"status": "invalid_manifest", "fatal": False, "message": str(exc)}
 
     state_path, lock_path = _state_paths(state_root)
-    try:
-        with operation_lock(lock_path):
-            state = load_state(state_path)
-            cached_manifest = state.get("cached_manifest")
-            last_check = state.get("last_network_check")
-            last_nonfatal_status = state.get("last_nonfatal_status")
-            failed_attempt_fresh = (
-                not force
-                and isinstance(last_check, (int, float))
-                and checked_at - last_check < CHECK_INTERVAL_SECONDS
-                and last_nonfatal_status in {"offline", "invalid_manifest"}
+
+    def _run_check_body() -> dict:
+        state = load_state(state_path)
+        cached_manifest = state.get("cached_manifest")
+        last_check = state.get("last_network_check")
+        last_nonfatal_status = state.get("last_nonfatal_status")
+        failed_attempt_fresh = (
+            not force
+            and isinstance(last_check, (int, float))
+            and checked_at - last_check < CHECK_INTERVAL_SECONDS
+            and last_nonfatal_status in {"offline", "invalid_manifest"}
+        )
+        if failed_attempt_fresh:
+            result = {
+                "status": last_nonfatal_status,
+                "fatal": False,
+                "current_version": current_version,
+            }
+            if isinstance(state.get("last_nonfatal_message"), str):
+                result["message"] = state["last_nonfatal_message"]
+            return result
+        cache_fresh = (
+            isinstance(last_check, (int, float))
+            and checked_at - last_check < CHECK_INTERVAL_SECONDS
+            and isinstance(cached_manifest, dict)
+        )
+        snoozed = (
+            not force
+            and isinstance(state.get("snooze_until"), (int, float))
+            and state["snooze_until"] > checked_at
+        )
+        if (cache_fresh and not force) or snoozed:
+            if isinstance(cached_manifest, dict):
+                try:
+                    manifest = validate_manifest(cached_manifest)
+                    history = _aggregate_history(state.get("history"), manifest)
+                    result = _status_for_manifest(
+                        current_version, manifest, state, checked_at, history
+                    )
+                    if result["status"] == "up_to_date":
+                        result["status"] = "cached"
+                    return result
+                except ValueError:
+                    pass
+            return {"status": "cached", "fatal": False, "current_version": current_version}
+
+        etag = state.get("etag") if isinstance(state.get("etag"), str) else None
+        try:
+            fetched = fetcher(MANIFEST_URL, etag, NETWORK_TIMEOUT_SECONDS)
+        except (OSError, URLError, HTTPError, TimeoutError) as exc:
+            return _record_nonfatal_attempt(
+                state_path, state, checked_at, "offline", current_version, str(exc)
             )
-            if failed_attempt_fresh:
-                result = {
-                    "status": last_nonfatal_status,
+        except ValueError as exc:
+            return _record_nonfatal_attempt(
+                state_path,
+                state,
+                checked_at,
+                "invalid_manifest",
+                current_version,
+                str(exc),
+            )
+        if not isinstance(fetched, FetchResult):
+            message = "manifest fetcher returned an invalid result"
+            return _record_nonfatal_attempt(
+                state_path,
+                state,
+                checked_at,
+                "invalid_manifest",
+                current_version,
+                message,
+            )
+        try:
+            if fetched.not_modified:
+                if not isinstance(cached_manifest, dict):
+                    raise ValueError(
+                        "server returned not-modified without a cached manifest"
+                    )
+                manifest = validate_manifest(cached_manifest)
+            elif fetched.manifest is None:
+                raise ValueError("manifest response was empty")
+            else:
+                manifest = validate_manifest(fetched.manifest)
+            history = _aggregate_history(
+                state.get("history"), cached_manifest, manifest
+            )
+        except ValueError as exc:
+            return _record_nonfatal_attempt(
+                state_path,
+                state,
+                checked_at,
+                "invalid_manifest",
+                current_version,
+                str(exc),
+            )
+        state["last_network_check"] = checked_at
+        state.pop("last_nonfatal_status", None)
+        state.pop("last_nonfatal_message", None)
+        state["cached_manifest"] = manifest
+        state["history"] = history
+        state["etag"] = fetched.etag or etag
+        _try_save_state(state_path, state)
+        return _status_for_manifest(current_version, manifest, state, checked_at, history)
+
+    try:
+        try:
+            with operation_lock(lock_path):
+                return _run_check_body()
+        except OSError:
+            try:
+                return _run_check_body()
+            except OSError as inner_exc:
+                return {
+                    "status": "offline",
                     "fatal": False,
                     "current_version": current_version,
+                    "message": str(inner_exc),
                 }
-                if isinstance(state.get("last_nonfatal_message"), str):
-                    result["message"] = state["last_nonfatal_message"]
-                return result
-            cache_fresh = (
-                isinstance(last_check, (int, float))
-                and checked_at - last_check < CHECK_INTERVAL_SECONDS
-                and isinstance(cached_manifest, dict)
-            )
-            snoozed = (
-                not force
-                and isinstance(state.get("snooze_until"), (int, float))
-                and state["snooze_until"] > checked_at
-            )
-            if (cache_fresh and not force) or snoozed:
-                if isinstance(cached_manifest, dict):
-                    try:
-                        manifest = validate_manifest(cached_manifest)
-                        history = _aggregate_history(state.get("history"), manifest)
-                        result = _status_for_manifest(
-                            current_version, manifest, state, checked_at, history
-                        )
-                        if result["status"] == "up_to_date":
-                            result["status"] = "cached"
-                        return result
-                    except ValueError:
-                        pass
-                return {"status": "cached", "fatal": False, "current_version": current_version}
-
-            etag = state.get("etag") if isinstance(state.get("etag"), str) else None
-            try:
-                fetched = fetcher(MANIFEST_URL, etag, NETWORK_TIMEOUT_SECONDS)
-            except (OSError, URLError, HTTPError, TimeoutError) as exc:
-                return _record_nonfatal_attempt(
-                    state_path, state, checked_at, "offline", current_version, str(exc)
-                )
-            except ValueError as exc:
-                return _record_nonfatal_attempt(
-                    state_path,
-                    state,
-                    checked_at,
-                    "invalid_manifest",
-                    current_version,
-                    str(exc),
-                )
-            if not isinstance(fetched, FetchResult):
-                message = "manifest fetcher returned an invalid result"
-                return _record_nonfatal_attempt(
-                    state_path,
-                    state,
-                    checked_at,
-                    "invalid_manifest",
-                    current_version,
-                    message,
-                )
-            try:
-                if fetched.not_modified:
-                    if not isinstance(cached_manifest, dict):
-                        raise ValueError(
-                            "server returned not-modified without a cached manifest"
-                        )
-                    manifest = validate_manifest(cached_manifest)
-                elif fetched.manifest is None:
-                    raise ValueError("manifest response was empty")
-                else:
-                    manifest = validate_manifest(fetched.manifest)
-                history = _aggregate_history(
-                    state.get("history"), cached_manifest, manifest
-                )
-            except ValueError as exc:
-                return _record_nonfatal_attempt(
-                    state_path,
-                    state,
-                    checked_at,
-                    "invalid_manifest",
-                    current_version,
-                    str(exc),
-                )
-            state["last_network_check"] = checked_at
-            state.pop("last_nonfatal_status", None)
-            state.pop("last_nonfatal_message", None)
-            state["cached_manifest"] = manifest
-            state["history"] = history
-            state["etag"] = fetched.etag or etag
-            save_state(state_path, state)
-            return _status_for_manifest(current_version, manifest, state, checked_at, history)
     except LockBusyError:
         return {"status": "busy", "fatal": False, "current_version": current_version}
     except ValueError as exc:
@@ -1900,7 +1944,10 @@ def details(skill_dir: Path) -> dict:
         current_version = _read_current_version(skill_dir)
     except ValueError:
         current_version = None
-    with operation_lock(lock_path):
+    try:
+        with operation_lock(lock_path):
+            state = load_state(state_path)
+    except OSError:
         state = load_state(state_path)
     manifest = state.get("cached_manifest") if isinstance(state.get("cached_manifest"), dict) else None
     return {

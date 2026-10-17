@@ -35,6 +35,7 @@
 ## 三、延伸参考
 
 - 用户环境中若已有自己的每日检修脚本，优先使用；没有时由本技能按需执行，或把等价脚本放入 vault 的 `_scripts/`，由用户用系统定时任务（cron、launchd、Windows 任务计划程序）运行。
+- 在 Google Antigravity 环境中，可使用内置的 `schedule` 工具或建议用户输入 `/schedule` 命令配置周期性自动巡检任务；发现需要用户决策的问题时，调用 `ask_question` 交付结构化确认。
 - 空壳来源补全：`references/multimodal-reingest-stubs.md`（补全属于摄入动作，查询阶段禁止补全）；哈希批量修复：`references/multimodal-sha256-bulk-fix.md`。
 
 ## 四、更新技能后的自测

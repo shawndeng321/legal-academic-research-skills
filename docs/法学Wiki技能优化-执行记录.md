@@ -299,3 +299,11 @@
 - 备份：手工备份（与既有备份同位置、固定命名）+ 更新器自动备份（状态目录 `backups/` 最新一份，含 `transaction.json`）。
 - 复核：三处锁均为 2610.14.0；三个安装目录与全新解压逐文件对比 0 差异（忽略缓存）；`tools/prepare_bundle_release.py --check` 一致；宿主技能列表中三个技能均为 `enabled`，安装目录 `SKILL.md` frontmatter 解析正常。
 - 提示：本机使用新版需开新会话（当前会话仍载旧版 `SKILL.md`）。
+
+## 发布 v2610.16（2026-10-16：Google Antigravity 适配与沙盒预检修复） | 状态：完成
+
+- 环境与工具映射：全套适配 Google Antigravity 原生环境（`view_file`、`ask_question`、`invoke_subagent`、`schedule` 原生工具映射；识别全局 `~/.gemini/config/skills/` 与工作区 `.agents/skills/` 路径）。
+- 权限与降级修复：修复 `legal_skills_update.py` 在 Antigravity 沙盒无锁写入或网络权限时抛出 `PermissionError` 的 Bug，改写为优雅降级为离线安全检查（`status: offline, fatal: false`），消除阻断。
+- 版本刷新：三技能 `metadata.version`、`.claude-plugin/plugin.json`、根 README、各技能 README 与 CHANGELOG 刷新至 `v2610.16`（机器字段 `2610.16.0`）。
+- 测试：223 项测试全部通过（含新增沙盒降级与 Antigravity 插件路径识别回归测试）。
+- 本机部署：已清理旧版冲突（`chinese-law-paper-writing`），全局安装至 `~/.gemini/config/skills/` 并实测预检通过。
