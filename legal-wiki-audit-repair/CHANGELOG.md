@@ -9,6 +9,7 @@
 - SKILL.md 精简（写作 −36%／建库 −16%／审计 −20%），宿主专属说明移入 references/host-adapters.md。
 - 预检对所有宿主改为同一会话只运行一次；check --json 不再输出完整清单与历史（约 28 KB → 不足 1 KB）。
 - 深检脚本细则迁入 technical-health-checklist.md；合并重复验收清单；删除开发者自测节（见 daily-maintenance-and-periodic-checks.md 第四节）。
+- 新增 tools/bump_version.py，版本号以 bundle-release.json 为单一来源，测试不再硬编码版本。
 - 锁与发布清单随技能包统一升级至 2610.17.0。
 
 ## v2610.16（2026-10-16；机器字段 2610.16.0）

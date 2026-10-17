@@ -1,6 +1,6 @@
 # 技能仓库协作规则（所有 agent 必读）
 
-本仓库：legal-academic-research-skills（GitHub：https://github.com/shawndeng321/legal-academic-research-skills），三个技能 `law-paper-writing`、`legal-research-wiki`、`legal-wiki-audit-repair`，2026-10-17 时版本为 v2610.14（2610.14.0）。
+本仓库：legal-academic-research-skills（GitHub：https://github.com/shawndeng321/legal-academic-research-skills），三个技能 `law-paper-writing`、`legal-research-wiki`、`legal-wiki-audit-repair`，当前版本以 `bundle-release.json` 的 `bundle_version` 为准。
 
 本机位置：`~/Desktop/legal academic skills/skills/`。旧路径 `~/Desktop/法学Wiki/skill` 现在是指向这里的符号链接，仅为兼容；新的命令和配置请用真实路径（技能更新器会拒绝祖先目录含符号链接的路径）。
 
@@ -18,7 +18,7 @@
 
 ## 3. 每次修改一次提交
 - 一项改动一次提交，提交信息写明「agent 名称：改了什么」，例如：`Claude：law-paper-writing 摘要规则补充自查清单`。
-- 改动技能内容后，按仓库现有流程同步版本号、CHANGELOG 和 `bundle-release.json`，并运行测试。
+- 改动技能内容后：写 CHANGELOG 与 README“本版”说明 → `python3 tools/bump_version.py <版本>` → `python3 tools/prepare_bundle_release.py --write …`（见根 README“开发验证”）→ `--check` → 跑测试。
 - 不改写历史：禁止 `git push --force`、`git reset --hard`、`rebase` 已推送的提交。
 
 ## 4. 不并行改同一个技能

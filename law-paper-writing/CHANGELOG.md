@@ -9,6 +9,8 @@
 - SKILL.md 精简（写作 −36%／建库 −16%／审计 −20%），宿主专属说明移入 references/host-adapters.md。
 - 预检对所有宿主改为同一会话只运行一次；check --json 不再输出完整清单与历史（约 28 KB → 不足 1 KB）。
 - 移除 v2610.9 上游并入说明（移至仓库 docs/upstream-integration-v2610.9.md），引注格式样例不等于来源的规则并入 SKILL.md“材料边界”。
+- 引注格式参考按文献类型拆分：citation-format.md 只留原则、基本体例与分文件索引（49 KB → 约 11 KB），外文英文与其他语种分开。
+- 新增 tools/bump_version.py，版本号以 bundle-release.json 为单一来源，测试不再硬编码版本。
 - 锁与发布清单随技能包统一升级至 2610.17.0。
 
 ## v2610.16（2026-10-16；机器字段 2610.16.0）

@@ -318,7 +318,7 @@ python -X utf8 $validator legal-research-wiki
 python -X utf8 $validator legal-wiki-audit-repair
 ```
 
-修改任何技能文件后，用 `python3 tools/prepare_bundle_release.py --write --bundle-version X.Y.Z --published-at <ISO时间> --update-level <级别> --summary "<摘要>" --change "<变更>"` 重新生成 `bundle-release.json` 与各技能的 `bundle-lock.json`，再运行 `python3 tools/prepare_bundle_release.py --check` 确认指纹一致；同时更新 `.claude-plugin/plugin.json` 的 `version`。
+修改任何技能文件后，先运行 `python3 tools/bump_version.py <版本>` 统一写版本号（SKILL.md frontmatter、plugin.json 与各 README 版本行），再用 `python3 tools/prepare_bundle_release.py --write --bundle-version X.Y.Z --published-at <ISO时间> --update-level <级别> --summary "<摘要>" --change "<变更>"` 重新生成 `bundle-release.json` 与各技能的 `bundle-lock.json`，最后运行 `python3 tools/prepare_bundle_release.py --check` 确认指纹一致。
 
 ## 目录结构
 

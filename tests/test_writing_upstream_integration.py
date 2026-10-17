@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import re
 import unittest
 from pathlib import Path
 
@@ -23,11 +25,14 @@ class WritingUpstreamIntegrationTests(unittest.TestCase):
 
     @unittest.skipIf(yaml is None, _REQUIRE_YAML)
     def test_three_skill_metadata_versions_share_date_release(self) -> None:
+        bundle_version = json.loads(
+            (ROOT / "bundle-release.json").read_text(encoding="utf-8")
+        )["bundle_version"]
         for name in ("law-paper-writing", "legal-research-wiki", "legal-wiki-audit-repair"):
             with self.subTest(skill=name):
                 text = (ROOT / name / "SKILL.md").read_text(encoding="utf-8")
                 metadata = yaml.safe_load(text.split("---", 2)[1])
-                self.assertEqual(metadata["metadata"]["version"], "2610.17.0")
+                self.assertEqual(metadata["metadata"]["version"], bundle_version)
 
     def test_new_citation_formats_are_routed_and_audited(self) -> None:
         writing = ROOT / "law-paper-writing"
@@ -66,6 +71,38 @@ class WritingUpstreamIntegrationTests(unittest.TestCase):
         requirement = (writing / "references/requirement-decomposition.md").read_text(encoding="utf-8")
         self.assertIn("期刊论文项目的展开提示", requirement)
         self.assertFalse((writing / "references/obsidian-hermes-workflow.md").exists())
+
+    def test_citation_format_split_is_indexed(self) -> None:
+        refs = ROOT / "law-paper-writing" / "references"
+        volumes = [
+            "citation-format.md",
+            "citation-format-paper-items.md",
+            "citation-format-chinese.md",
+            "citation-format-legal.md",
+            "citation-format-examples.md",
+            "citation-format-foreign.md",
+            "citation-format-foreign-other.md",
+        ]
+        for name in volumes:
+            with self.subTest(file=name):
+                self.assertTrue((refs / name).is_file(), name)
+        index = (refs / "citation-format.md").read_text(encoding="utf-8")
+        for name in volumes[1:]:
+            self.assertIn(f"]({name})", index)
+        self.assertLessEqual(len((refs / "citation-format.md").read_bytes()), 13_000)
+        self.assertLessEqual(
+            len((refs / "citation-format-foreign.md").read_bytes()), 11_000
+        )
+        # 手册第1—150条须在各分册 ##/### 标题中完整覆盖，无缺号。
+        covered = set()
+        for name in volumes:
+            text = (refs / name).read_text(encoding="utf-8")
+            for heading in re.findall(r"^#{2,3} .*$", text, re.M):
+                for match in re.finditer(r"第(\d+)(?:—(\d+))?条", heading):
+                    start = int(match.group(1))
+                    end = int(match.group(2) or start)
+                    covered.update(range(start, end + 1))
+        self.assertEqual(covered, set(range(1, 151)))
 
 
 if __name__ == "__main__":

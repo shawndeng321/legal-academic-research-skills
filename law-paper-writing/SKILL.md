@@ -55,7 +55,7 @@ metadata:
 - 起草正文、修改表达或处理“AI味”反馈：[legal-prose.md](references/legal-prose.md)；局部任务只处理指定范围。
 - 使用法律规范、案例、政策、数据或学术文献：[evidence-and-legal-validity.md](references/evidence-and-legal-validity.md)。
 - 起草正文、补引注、生成全文或引用审核时必读：[citation-integrity.md](references/citation-integrity.md)。
-- 决定或核对引注格式：[citation-format.md](references/citation-format.md)；外文文献另读 [citation-format-foreign.md](references/citation-format-foreign.md)。期刊正式要求与用户已确认的稿件体例优先。
+- 决定或核对引注格式：先读 [citation-format.md](references/citation-format.md)（原则、基本体例与分文件索引），再只读索引指向的分文件；外文文献读 [citation-format-foreign.md](references/citation-format-foreign.md)（英文）或其中指向的法德意俄日分册。期刊正式要求与用户已确认的稿件体例优先。
 - 期刊适配、摘要、关键词、匿名或投稿要求：[journal-adaptation.md](references/journal-adaptation.md)。
 - 以案例群、裁判文书样本、调研数据或统计结果支撑论证：[empirical-case-research.md](references/empirical-case-research.md)。
 - 使用 Obsidian、Markdown 笔记或知识库：[obsidian-knowledge-base.md](references/obsidian-knowledge-base.md)；需要把每项主张追溯到具体源文件时再读 [multimodal-citation-format.md](references/multimodal-citation-format.md)。

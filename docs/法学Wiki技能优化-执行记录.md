@@ -322,3 +322,6 @@
 - 测试：`~/.hermes/hermes-agent/venv/bin/python3 -X utf8 -m unittest discover -s tests` → 225 项全部通过，0 跳过（依赖齐全环境）。
 - 旧名清理：`chinese-law-paper-writing` 已从 `~/.claude/skills/` 归档到工作区 `../_archive/`（仓库外，不随本提交）；安装时同一技能只保留一处。
 - 锁与清单随精简后内容重建，`--check` 一致；仍未推送、未打 tag。
+- 第三轮（同一版本内并入）：`citation-format.md` 按文献类型逐字拆分为六个文件（49 KB → 11,454 B），`citation-format-foreign.md` 法德意俄日三节移入 `citation-format-foreign-other.md`；主文件末尾新增分文件索引，逐字校验脚本确认全部 17 节正文各只出现一次（外文第七节的尾注按新归属改指 examples 分册并更正覆盖条号 116—150）。
+- 版本号单一来源：新增 `tools/bump_version.py`（三段版本 → 公开标签 vYYMM.D[.N]，一次同步三 SKILL.md frontmatter、plugin.json、根 README 版本表与三技能 README 版本行，任一目标未匹配即报错不写）；测试改为从 `bundle-release.json` 读版本；`skills/AGENTS.md` 与根 README 开发说明同步更新。
+- 测试：`~/.hermes/hermes-agent/venv/bin/python3 -X utf8 -m unittest discover -s tests` → 229 项全部通过、0 跳过（含新增 bump_version 三项与引注拆分索引测试）。

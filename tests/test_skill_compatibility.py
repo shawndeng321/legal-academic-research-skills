@@ -27,11 +27,10 @@ DESCRIPTION_TRIGGERS = {
     "legal-research-wiki": ("建库", "摄入", "知识库查询", "legal-wiki-audit-repair"),
     "legal-wiki-audit-repair": ("updating its Bundle", "全库体检", "每日检修", "检查法学技能更新"),
 }
-EXPECTED_VERSIONS = {
-    "law-paper-writing": "2610.17.0",
-    "legal-research-wiki": "2610.17.0",
-    "legal-wiki-audit-repair": "2610.17.0",
-}
+# 版本号单一来源是 bundle-release.json； tools/bump_version.py 同步其余位置。
+EXPECTED_VERSIONS = json.loads(
+    (ROOT / "bundle-release.json").read_text(encoding="utf-8")
+)["skills"]
 # 项目专属词表放在本机文件 tests/.project_terms.local.json（不入库）：
 # 公开仓库不出现词表内容，每台机器维护自己的词表；文件缺省时词表扫描跳过。
 PROJECT_TERMS_FILE = ROOT / "tests" / ".project_terms.local.json"
