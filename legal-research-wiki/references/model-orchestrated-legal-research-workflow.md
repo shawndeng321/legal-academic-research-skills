@@ -65,13 +65,15 @@
 
 本文件的概念与宿主能力的对应关系如下；宿主功能会更新，实施前核对其当前文档。
 
-| 本文档概念 | Google Antigravity | Devin | Hermes | Claude Code | Codex / 其他宿主 |
-|---|---|---|---|---|---|
-| 单模型角色槽位（提取、清洗、中文撰写、工具排错） | 主会话模型或调用 `invoke_subagent` 委派只读 `research` 子代理 | 主会话；只读检索可委派 `subagent_explore` | 当前会话模型或 `delegate_task` | 主会话或子代理（可为子代理指定模型） | 主会话；支持子任务时按宿主方式委派 |
-| 多模型决策关口（`law-plan` 等） | 主代理编排，关键决策与门禁调用 `ask_question` 交付用户确认 | 主会话编排；关键门禁用 `ask_user_question` 交用户确认 | 内置 MoA | 多个子代理分别给出问题清单，主会话聚合；关键门禁交用户确认 | 独立复核轮 + 用户确认 |
-| 并行批处理（每批 8—9 篇） | `invoke_subagent` 并行检索（主会话集中写入 Wiki，避免写冲突） | `subagent_explore` 并行只读检索（主会话集中写入 Wiki） | `delegate_task` 并行 | 并行子代理 | 支持时并行，否则串行分批 |
+| 本文档概念 | Google Antigravity | Devin | DeepSeek Harness（DSH） | Hermes | Claude Code | Codex / 其他宿主 |
+|---|---|---|---|---|---|---|
+| 单模型角色槽位（提取、清洗、中文撰写、工具排错） | 主会话模型或调用 `invoke_subagent` 委派只读 `research` 子代理 | 主会话；只读检索可委派 `subagent_explore` | 主会话；只读检索可委派 `subagent` | 当前会话模型或 `delegate_task` | 主会话或子代理（可为子代理指定模型） | 主会话；支持子任务时按宿主方式委派 |
+| 多模型决策关口（`law-plan` 等） | 主代理编排，关键决策与门禁调用 `ask_question` 交付用户确认 | 主会话编排；关键门禁用 `ask_user_question` 交用户确认 | 主会话编排；关键门禁用 `ask_user_question` 交用户确认 | 内置 MoA | 多个子代理分别给出问题清单，主会话聚合；关键门禁交用户确认 | 独立复核轮 + 用户确认 |
+| 并行批处理（每批 8—9 篇） | `invoke_subagent` 并行检索（主会话集中写入 Wiki，避免写冲突） | `subagent_explore` 并行只读检索（主会话集中写入 Wiki） | `subagent`／`workflow` 并行只读检索（主会话集中写入 Wiki） | `delegate_task` 并行 | 并行子代理 | 支持时并行，否则串行分批 |
 
 无论哪种宿主：交接物契约不变；单一主写人不变；子代理之间不共享上下文，交接必须依靠落盘的来源包、章节卡和问题清单；联网和写入按宿主的权限规则事先取得用户同意。
+
+DeepSeek Harness 没有内置 MoA：需要异构意见时用 `subagent`／`workflow` 分批委派子代理，主会话聚合结果，关键决策与门禁仍交用户确认。
 
 ## Hermes MoA 的正确用法
 

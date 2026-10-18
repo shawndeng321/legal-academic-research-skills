@@ -3,7 +3,7 @@ name: legal-wiki-audit-repair
 description: "Use when auditing or repairing a Chinese legal wiki. 法学研究Wiki全库体检、死链/YAML/来源/图谱检查、模板化检测、P0—P3整改台账、分批修复、批量重命名与链接迁移、每日检修; also for updating its Bundle（检查法学技能更新）. Read-only by default; writes only after the user confirms a scope."
 license: MIT
 metadata:
-  version: "2610.17.0"
+  version: "2610.18.0"
   author: shawndeng321
   hermes:
     tags: [legal-wiki, audit, repair, obsidian, quality-control, batch, rename, wikilink, maintenance]

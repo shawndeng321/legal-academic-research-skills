@@ -2,6 +2,12 @@
 
 本文件记录本技能的版本与变更。自 v2610.9 起，公开版本按日期 `vYYMM.D` 编号，同日迭代加尾部序号；三技能与 Bundle 机器字段同步为 `YYMM.D.N`。历史能力代际编号原样保留，论文稿件版本不受此规则约束。变更同时更新 `SKILL.md`、锁、清单与当前 README。
 
+## v2610.18（2026-10-18；机器字段 2610.18.0）
+
+- 适配 DeepSeek Harness（DSH）：`references/host-adapters.md` 新增 DSH 节，说明 `~/.dsh/skills/` 与项目级技能路径、`/law-paper-writing` 等斜杠调用、`ask_user_question`／`read_image`／`subagent`／`workflow`／`todo_write` 工具映射，以及 `workspace-write` 沙盒下的预检降级与更新方式。
+- README 增加 DSH 宿主徽章、安装目标 `~/.dsh/skills/`、调用示例与安装验证说明。
+- 锁与发布清单随技能包统一升级至 2610.18.0。
+
 ## v2610.17（2026-10-17；机器字段 2610.17.0）
 
 - 适配 Devin（CLI / Desktop）：新增 Devin 原生能力映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`），说明 Devin 全局与项目技能路径及其自动读取 `~/.claude/skills` 带来的重复安装风险。

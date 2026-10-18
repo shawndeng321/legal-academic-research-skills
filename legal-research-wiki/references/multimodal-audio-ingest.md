@@ -8,10 +8,11 @@
 
 ## 宿主能力检查
 
-不同宿主（Hermes、Claude Code、Codex 等）的转录工具、Python 环境和模型配置并不相同，不能假定 `transcribe_audio` 或 `faster-whisper` 已安装。摄入前先确认当前宿主实际暴露的音频转录能力：
+不同宿主（Hermes、Claude Code、Codex、DeepSeek Harness 等）的转录工具、Python 环境和模型配置并不相同，不能假定 `transcribe_audio` 或 `faster-whisper` 已安装。摄入前先确认当前宿主实际暴露的音频转录能力：
 
 - 某些 Hermes 部署可能提供 `tools.transcription_tools.transcribe_audio`；只有导入检查成功后才能使用。
 - Claude Code、Codex 或其他宿主可使用当前已提供的转录工具，或在用户授权安装依赖后运行 `faster-whisper`。
+- DeepSeek Harness 没有内置转录工具；需要转录时经用户授权在工作区 venv 安装 `faster-whisper`／`ctranslate2`，或由用户提供现成逐字稿；沙盒默认只能写会话工作区，模型缓存与输出目录要放在可写位置。
 - 如果没有可用转录能力，保留原始音频并标记“待转录”，不要伪造逐字稿或声称摄入完成。
 
 ## 引擎与配置

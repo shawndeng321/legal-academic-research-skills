@@ -266,6 +266,30 @@ class SkillCompatibilityTests(unittest.TestCase):
                 self.assertIn("同一会话", body)
                 self.assertIn("](references/host-adapters.md)", body)
 
+    def test_skills_document_dsh_host_mapping(self) -> None:
+        adapter_bodies = {
+            skill_name: (ROOT / skill_name / "references" / "host-adapters.md").read_bytes()
+            for skill_name in SKILLS
+        }
+        self.assertEqual(len(set(adapter_bodies.values())), 1)
+        adapters = next(iter(adapter_bodies.values())).decode("utf-8")
+        for expected in (
+            "## DeepSeek Harness（DSH）",
+            "~/.dsh/skills/",
+            "~/.agents/skills/",
+            "/law-paper-writing",
+            "ask_user_question",
+            "read_image",
+            "Base directory",
+            "workspace-write",
+            "update_channel",
+        ):
+            self.assertIn(expected, adapters)
+        root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("| DeepSeek Harness（DSH） |", root_readme)
+        self.assertIn("~/.dsh/skills/", root_readme)
+        self.assertIn("/law-paper-writing", root_readme)
+
     def test_skill_files_contain_no_project_specific_terms(self) -> None:
         terms = _load_project_terms()
         if not terms:

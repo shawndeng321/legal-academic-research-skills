@@ -24,12 +24,14 @@
 
 | 技能 | 版本 | 适合什么时候用 | 核心能力 |
 |---|---:|---|---|
-| [`law-paper-writing`](law-paper-writing/) | **v2610.17** | 选题、研究、起草、修订、审核或期刊适配 | 七种任务模式、五项硬门禁、按命题类型检查论证、正文表达与作者声音、材料边界、实证材料细则、期刊适配、DOCX 真实脚注 |
-| [`legal-research-wiki`](legal-research-wiki/) | **v2610.17** | 新建、扩充或重新整理研究库 | 研究思路先行、范围优先摄入、PDF/DOCX/图片/音频摄入、法规范分层、论文—案例双轨关联、研究设计层、六维质量门禁、闭世界查询 |
-| [`legal-wiki-audit-repair`](legal-wiki-audit-repair/) | **v2610.17** | 已有 Wiki 出现死链、字段缺失、批量操作或技能包更新需求 | AUDIT_ONLY、P0—P3 分级、备份/DRY_RUN、小批修复、模板化检测、每日检修与迭代、七项深检脚本（含法学专项） |
+| [`law-paper-writing`](law-paper-writing/) | **v2610.18** | 选题、研究、起草、修订、审核或期刊适配 | 七种任务模式、五项硬门禁、按命题类型检查论证、正文表达与作者声音、材料边界、实证材料细则、期刊适配、DOCX 真实脚注 |
+| [`legal-research-wiki`](legal-research-wiki/) | **v2610.18** | 新建、扩充或重新整理研究库 | 研究思路先行、范围优先摄入、PDF/DOCX/图片/音频摄入、法规范分层、论文—案例双轨关联、研究设计层、六维质量门禁、闭世界查询 |
+| [`legal-wiki-audit-repair`](legal-wiki-audit-repair/) | **v2610.18** | 已有 Wiki 出现死链、字段缺失、批量操作或技能包更新需求 | AUDIT_ONLY、P0—P3 分级、备份/DRY_RUN、小批修复、模板化检测、每日检修与迭代、七项深检脚本（含法学专项） |
 
 ## 2026-10 更新内容
 
+> **v2610.18（2026-10-18；机器字段 2610.18.0）**：适配 DeepSeek Harness（DSH）：三技能 `references/host-adapters.md` 新增 DSH 宿主节（`~/.dsh/skills/` 与项目级技能路径、`/技能名` 调用、原生工具映射、`workspace-write` 沙盒与更新方式）；README 增加 DSH 宿主行、源码安装目标与安装验证；多模型编排、音频摄入与每日检修的宿主清单同步补 DSH。
+>
 > **v2610.17（2026-10-17；机器字段 2610.17.0）**：适配 Devin（CLI / Desktop）：三技能新增 Devin 原生能力映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`）；预检与脚本按技能 `Base directory` 拼绝对路径、同一会话只预检一次；说明 Devin 技能路径及其自动读取 `~/.claude/skills` 带来的重复安装风险；三技能 SKILL.md 精简（宿主说明外移、预检同会话去重、check 输出瘦身），写作技能移除旧版上游并入说明；README 安装说明改为全平台口径。
 >
 > **v2610.16（2026-10-16；机器字段 2610.16.0）**：全套适配 Google Antigravity 原生环境（`view_file`、`ask_question`、`invoke_subagent`、`schedule` 原生工具映射；Antigravity 全局与工作区技能路径识别；修复沙盒限制下更新预检锁权限报错并优雅降级为离线安全检查；清理旧版命名冲突）。
@@ -85,6 +87,7 @@
 | Hermes | Skills Hub 或源码复制 | `${HERMES_HOME:-~/.hermes}/skills/` |
 | Devin（CLI / Desktop） | 源码复制 | `~/.config/devin/skills/` 或 `~/.agents/skills/`；项目内 `.devin/skills/`。Devin 也读取 `~/.claude/skills/`，已装在那里就不要重复安装 |
 | Google Antigravity | 源码复制 | `~/.gemini/config/skills/`；工作区 `.agents/skills/` |
+| DeepSeek Harness（DSH） | 源码复制 | `~/.dsh/skills/`（原生用户根，优先）或 `~/.agents/skills/`；项目内 `.dsh/skills/` 或 `.agents/skills/` |
 | 其他支持 `SKILL.md` 的宿主 | 源码复制 | 宿主扫描的技能目录，常见为 `~/.agents/skills/` |
 
 ### Claude Code
@@ -141,7 +144,8 @@ target="$HOME/.gemini/config/skills"  # Google Antigravity 全局技能（或 <w
 # target="$HOME/.codex/skills"        # Codex
 # target="$HOME/.claude/skills"       # Claude Code（个人）
 # target="${HERMES_HOME:-$HOME/.hermes}/skills"   # Hermes
-# target="$HOME/.agents/skills"       # 其他扫描 ~/.agents/skills 的宿主（如 DeepSeek Harness）
+# target="$HOME/.dsh/skills"          # DeepSeek Harness 全局技能（或 <workspace>/.dsh/skills）
+# target="$HOME/.agents/skills"       # 其他扫描 ~/.agents/skills 的宿主（DSH 也扫描，但同名时 ~/.dsh/skills 优先）
 
 mkdir -p "$target"
 for s in law-paper-writing legal-research-wiki legal-wiki-audit-repair; do
@@ -178,7 +182,7 @@ Copy-Item -Recurse -Force "$checkout\legal-wiki-audit-repair" (Join-Path $hermes
 hermes skills list --source local --enabled-only
 ```
 
-Claude Code、Devin、Antigravity 或其他宿主：把上面的目标目录换成上表对应目录，例如 `Join-Path $HOME '.claude\skills'`、`Join-Path $HOME '.config\devin\skills'`、`Join-Path $HOME '.gemini\config\skills'` 或 `Join-Path $HOME '.agents\skills'`。
+Claude Code、Devin、Antigravity、DeepSeek Harness 或其他宿主：把上面的目标目录换成上表对应目录，例如 `Join-Path $HOME '.claude\skills'`、`Join-Path $HOME '.config\devin\skills'`、`Join-Path $HOME '.gemini\config\skills'`、`Join-Path $HOME '.dsh\skills'` 或 `Join-Path $HOME '.agents\skills'`。
 
 复制安装不要放在 Git 工作树里（自动更新器会拒绝 Git 工作树安装，此时请用 `git pull` 更新源码）。
 
@@ -191,7 +195,7 @@ Claude Code、Devin、Antigravity 或其他宿主：把上面的目标目录换�
 提出本批 5—8 页的摄入计划。不要扫描其他目录，不要写回任何文件。
 ```
 
-Claude Code 中也可以用 `/law-paper-writing` 等斜杠命令直接调用；Codex 中可用 `$law-paper-writing`。其他宿主按技能名或描述自动选用。
+Claude Code 中也可以用 `/law-paper-writing` 等斜杠命令直接调用；Codex 中可用 `$law-paper-writing`；DeepSeek Harness 中同样可用 `/law-paper-writing`、`/legal-research-wiki`、`/legal-wiki-audit-repair` 直接调用。其他宿主按技能名或描述自动选用。
 
 ## 自动更新
 
@@ -295,6 +299,7 @@ python -X utf8 $updater apply --skills-root $skillsRoot --staged-root $stagedRoo
 - Claude Code：`claude plugin details legal-academic-research@legal-academic-research` 应列出 3 个技能；会话中可用 `/law-paper-writing` 等命令调用。
 - Hermes：`hermes skills list --source local --enabled-only` 或 `hermes skills list`。
 - Codex：新建任务后直接要求使用对应技能；技能目录必须包含 `SKILL.md` 和 `agents/openai.yaml`。
+- DeepSeek Harness（DSH）：新会话输入 `/law-paper-writing`（或 `/legal-research-wiki`、`/legal-wiki-audit-repair`）应注入正文；`~/.dsh/skills/` 下三个目录齐全，`SKILL.md` 的 `metadata.version` 与 `bundle-release.json` 一致。
 - 远程 Hub 因网络探测超时时，改用“源码安装”，不要重复下载单个 `SKILL.md`。
 
 ### 开发验证

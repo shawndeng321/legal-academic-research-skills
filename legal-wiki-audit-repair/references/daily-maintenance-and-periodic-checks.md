@@ -43,7 +43,7 @@
 修改本技能（或本技能包中的任何技能）后：
 
 1. **仓库测试**：在技能包仓库根目录运行 `python3 -m unittest discover -s tests`（兼容性、脚本安全、Bundle 更新器），全部通过才算通过；
-2. **宿主加载**：Hermes 用 `hermes skills list` 确认可见、版本正确；Claude Code 新建会话后确认技能出现在可用技能中（插件安装的运行 `/reload-plugins`）；Codex 新建任务后确认可按名称调用；
+2. **宿主加载**：Hermes 用 `hermes skills list` 确认可见、版本正确；Claude Code 新建会话后确认技能出现在可用技能中（插件安装的运行 `/reload-plugins`）；Codex 新建任务后确认可按名称调用；DeepSeek Harness 新建会话后输入 `/legal-wiki-audit-repair` 确认技能被列出，并核对 `~/.dsh/skills/` 下三个目录为同一版本；
 3. **真实知识库只读回归**：对一个真实 vault 跑全库体检，确认检查逻辑没有被改坏；
 4. **小任务试跑**：用新版本执行一次每日检修等小任务，并按 `evals/pressure-tests.md` 抽测相关场景（修改了哪部分规则，就测哪部分）；
 5. **闭世界验证**：审计结论全部能回溯到库内页面和原始材料。

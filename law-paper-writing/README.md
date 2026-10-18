@@ -11,9 +11,10 @@
 
 <div align="center">
 
-![Version: v2610.17](https://img.shields.io/badge/Version-v2610.17-5C3D2E?style=flat-square)
+![Version: v2610.18](https://img.shields.io/badge/Version-v2610.18-5C3D2E?style=flat-square)
 ![Antigravity: Skill](https://img.shields.io/badge/Antigravity-Skill-4285F4?style=flat-square)
 ![Devin: Skill](https://img.shields.io/badge/Devin-Skill-0B6E4F?style=flat-square)
+![DeepSeek Harness: Skill](https://img.shields.io/badge/DeepSeek%20Harness-Skill-4D6BFE?style=flat-square)
 ![Hermes: Skill](https://img.shields.io/badge/Hermes-Skill-193B5A?style=flat-square)
 ![Claude Code: Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-B4532A?style=flat-square)
 ![Codex: Skill](https://img.shields.io/badge/Codex-Skill-0F4C5C?style=flat-square)
@@ -33,9 +34,9 @@
   <a href="#检验与能力边界">检验与边界</a>
 </p>
 
-**当前版本：v2610.17（机器字段 2610.17.0；2026-10-17）**
+**当前版本：v2610.18（机器字段 2610.18.0；2026-10-18）**
 
-本版：适配 Devin（CLI / Desktop）原生工具映射（`ask_user_question`、`read`、`subagent_explore`、`todo_write`）与按 `Base directory` 绝对路径预检，并精简 SKILL.md；上一版适配 Google Antigravity。承接 v2610.9 的上游 v1.4.0 并入（引注体例、审读反馈、摘要自查等，清单见 [upstream-integration-v2610.9.md](../docs/upstream-integration-v2610.9.md)）；写作规则与既有能力不变。
+本版：适配 DeepSeek Harness（DSH）宿主——`~/.dsh/skills/` 与项目级技能路径、`/技能名` 调用、原生工具映射（`ask_user_question`、`read_image`、`subagent`／`workflow`、`todo_write`）与 `workspace-write` 沙盒下的预检降级和更新方式，详见 [host-adapters.md](references/host-adapters.md)；上一版适配 Devin（CLI / Desktop）原生工具映射与按 `Base directory` 绝对路径预检，并精简 SKILL.md；更早适配 Google Antigravity。承接 v2610.9 的上游 v1.4.0 并入（引注体例、审读反馈、摘要自查等，清单见 [upstream-integration-v2610.9.md](../docs/upstream-integration-v2610.9.md)）；写作规则与既有能力不变。
 
 ## 为什么使用
 
@@ -102,7 +103,7 @@
 
 ## 安装与更新
 
-本技能属于[法学学术研究技能包](../README.md)，与 `legal-research-wiki`、`legal-wiki-audit-repair` 一起发布，Claude Code、Codex、Hermes、Devin、Google Antigravity 等支持 `SKILL.md` 的宿主通用。完整安装方式见[根目录的安装说明](../README.md#安装)，自动更新与回滚见[自动更新](../README.md#自动更新)。
+本技能属于[法学学术研究技能包](../README.md)，与 `legal-research-wiki`、`legal-wiki-audit-repair` 一起发布，Claude Code、Codex、Hermes、Devin、Google Antigravity、DeepSeek Harness 等支持 `SKILL.md` 的宿主通用。完整安装方式见[根目录的安装说明](../README.md#安装)，自动更新与回滚见[自动更新](../README.md#自动更新)。
 
 Claude Code（一次安装三个技能）：
 
@@ -117,7 +118,7 @@ Hermes Skills Hub（脚本或 CI 环境加 `--yes`）：
 hermes skills install shawndeng321/legal-academic-research-skills/law-paper-writing --yes
 ```
 
-其他支持 `SKILL.md` 的宿主（Codex、Devin、Antigravity 等）：复制完整的 `law-paper-writing` 目录（连同 `references/`、`assets/`、`scripts/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.claude/skills/`、`~/.config/devin/skills/`、`~/.gemini/config/skills/` 或 `~/.agents/skills/`。
+其他支持 `SKILL.md` 的宿主（Codex、Devin、Antigravity、DeepSeek Harness 等）：复制完整的 `law-paper-writing` 目录（连同 `references/`、`assets/`、`scripts/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.claude/skills/`、`~/.config/devin/skills/`、`~/.gemini/config/skills/`、`~/.dsh/skills/` 或 `~/.agents/skills/`。
 
 每次加载时，技能会按 6 小时缓存检查技能包更新；只有发现新版本才提示，更新前必须由你确认。安装后在新会话中直接要求使用 `law-paper-writing`。
 
@@ -153,7 +154,7 @@ Word 正文、批注和修订的提取依赖运行环境的文档工具；本技
 
 ### 3. 调用 Skill
 
-在 Claude Code、Hermes、Devin 或 Antigravity 的新会话中：
+在 Claude Code、Hermes、Devin、Antigravity 或 DeepSeek Harness 的新会话中：
 
 ```text
 使用 law-paper-writing 的 OUTLINE 模式。根据我提供的论文项目卡、来源登记和允许读取的资料，
