@@ -24,6 +24,19 @@ OLD_NAME = "chinese-law-paper-writing"
 NEW_NAME = "law-paper-writing"
 
 
+def create_directory_symlink(link: Path, target: Path) -> None:
+    """只跳过明确的 Windows 创建权限不足；其他错误照常报错。"""
+    try:
+        link.symlink_to(target, target_is_directory=True)
+    except OSError as exc:
+        if getattr(exc, "winerror", None) == 1314:
+            raise unittest.SkipTest(
+                "缺少创建真实符号链接的权限（WinError 1314）；"
+                "请在启用开发者模式或具备链接权限的环境补跑"
+            ) from exc
+        raise
+
+
 def canonical_manifest(version: str = "2610.9.0") -> dict:
     manifest = make_manifest(version)
     manifest["skills"] = {
@@ -233,17 +246,17 @@ class SourceRenameTests(unittest.TestCase):
                 if unsafe == "skill-symlink":
                     moved = fixture.root / "outside-skill"
                     fixture.old_path.rename(moved)
-                    fixture.old_path.symlink_to(moved, target_is_directory=True)
+                    create_directory_symlink(fixture.old_path, moved)
                 elif unsafe == "category-symlink":
                     category = fixture.old_path.parent
                     moved = fixture.root / "outside-category"
                     category.rename(moved)
-                    category.symlink_to(moved, target_is_directory=True)
+                    create_directory_symlink(category, moved)
                 elif unsafe == "state-parent-symlink":
                     state = fixture.root / "external-state"
                     state.mkdir()
                     linked = fixture.root / "state-link"
-                    linked.symlink_to(state, target_is_directory=True)
+                    create_directory_symlink(linked, state)
                     fixture.state_root = linked / "bundle-state"
                 else:
                     parent = {
@@ -258,6 +271,34 @@ class SourceRenameTests(unittest.TestCase):
                     allow_local_changes=True, install_missing=True,
                 )
                 self.assertEqual(result["status"], "rejected", result)
+                self.assertFalse(fixture.state_root.exists())
+
+    def test_symlink_paths_are_rejected_without_link_privileges(self):
+        for position in ("skill", "category", "state-parent"):
+            with self.subTest(position=position), migration_fixture("writing") as fixture:
+                if position == "skill":
+                    linked = fixture.old_path
+                elif position == "category":
+                    linked = fixture.old_path.parent
+                else:
+                    linked = fixture.root / "state-parent"
+                    linked.mkdir()
+                    fixture.state_root = linked / "bundle-state"
+                before = snapshot_tree(fixture.root)
+                original_is_symlink = Path.is_symlink
+
+                def simulated_is_symlink(path):
+                    return path == linked or original_is_symlink(path)
+
+                with patch.object(Path, "is_symlink", simulated_is_symlink):
+                    result = self.module.apply_source_transaction(
+                        fixture.skills_root, fixture.staged_root,
+                        fixture.manifest, fixture.state_root,
+                        allow_local_changes=True, install_missing=True,
+                    )
+                self.assertEqual(result["status"], "rejected", result)
+                self.assertIn("symlink", str(result).lower())
+                self.assertEqual(snapshot_tree(fixture.root), before)
                 self.assertFalse(fixture.state_root.exists())
 
     def test_final_journal_write_failure_rolls_back_migration(self):
@@ -549,6 +590,49 @@ def legacy_release_repository(root: Path) -> dict:
     return manifest
 
 
+class SymlinkCapabilityTests(unittest.TestCase):
+    def run_with_link_error(self, case, error):
+        result = unittest.TestResult()
+        with patch.object(Path, "symlink_to", side_effect=error):
+            case.run(result)
+        return result
+
+    def test_missing_privilege_skips_only_link_subcases(self):
+        error = OSError("synthetic missing symbolic-link privilege")
+        error.winerror = 1314
+        source = SourceRenameTests("test_unsafe_legacy_path_is_rejected_before_any_state_write")
+        source.setUp()
+        with patch.object(source, "setUp"), patch.object(
+            source.module, "apply_source_transaction", wraps=source.module.apply_source_transaction,
+        ) as apply:
+            result = self.run_with_link_error(source, error)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(result.failures, [])
+        self.assertEqual(len(result.skipped), 3)
+        self.assertEqual(apply.call_count, 3, "worktree 子场景仍须执行")
+
+        release = ReleaseDateTests("test_new_release_rejects_legacy_alias_or_symlinked_skill_before_writing")
+        with patch(__name__ + ".write_date_release", wraps=write_date_release) as write:
+            result = self.run_with_link_error(release, error)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(result.failures, [])
+        self.assertEqual(len(result.skipped), 1)
+        self.assertEqual(write.call_count, 1, "旧别名拒绝检查仍须执行")
+
+    def test_other_link_errors_are_not_silently_skipped(self):
+        error = OSError("synthetic unexpected link error")
+        error.winerror = 5
+        for case, count in (
+            (SourceRenameTests("test_unsafe_legacy_path_is_rejected_before_any_state_write"), 3),
+            (ReleaseDateTests("test_new_release_rejects_legacy_alias_or_symlinked_skill_before_writing"), 1),
+        ):
+            with self.subTest(case=case.id()):
+                result = self.run_with_link_error(case, error)
+                self.assertEqual(len(result.errors), count)
+                self.assertEqual(result.skipped, [])
+                self.assertEqual(result.failures, [])
+
+
 class ReleaseDateTests(unittest.TestCase):
     def test_new_release_rejects_legacy_alias_or_symlinked_skill_before_writing(self):
         for unsafe in ("old-alias", "symlinked-skill"):
@@ -560,11 +644,33 @@ class ReleaseDateTests(unittest.TestCase):
                 else:
                     actual = root / "actual-writing"
                     (root / NEW_NAME).rename(actual)
-                    (root / NEW_NAME).symlink_to(actual, target_is_directory=True)
+                    create_directory_symlink(root / NEW_NAME, actual)
                 before = snapshot_tree(root)
                 result = write_date_release(root)
                 self.assertNotEqual(result.returncode, 0, "unsafe release was generated")
                 self.assertEqual(snapshot_tree(root), before)
+
+    def test_symlinked_release_is_rejected_without_link_privileges(self):
+        with CanonicalTemporaryDirectory() as tmp:
+            root = Path(tmp)
+            date_release_repository(root)
+            before = snapshot_tree(root)
+            prepare = load_module(PREPARE, "date_release_link_guard")
+            linked = root / NEW_NAME
+            original_is_symlink = Path.is_symlink
+
+            def simulated_is_symlink(path):
+                return path == linked or original_is_symlink(path)
+
+            with patch.object(prepare, "ROOT", root), patch.object(Path, "is_symlink", simulated_is_symlink):
+                with self.assertRaisesRegex(ValueError, "symlinked release Skill directory"):
+                    prepare.main([
+                        "--write", "--bundle-version", "2610.9.0",
+                        "--published-at", "2026-10-09T00:00:00+08:00",
+                        "--update-level", "feature", "--summary", "date release",
+                        "--change", "canonical writing identity",
+                    ])
+            self.assertEqual(snapshot_tree(root), before)
 
     def test_invalid_calendar_version_is_rejected_before_writing_locks(self):
         invalid = ("2613.9.0", "2610.0.0", "2610.32.0", "2602.29.0", "2610.999.0")
