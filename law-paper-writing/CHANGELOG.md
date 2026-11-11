@@ -2,6 +2,11 @@
 
 本文件记录本技能的版本与变更。自 v2610.9 起，公开版本按日期 `vYYMM.D` 编号，同日迭代加尾部序号；三技能与 Bundle 机器字段同步为 `YYMM.D.N`。历史能力代际编号原样保留，论文稿件版本不受此规则约束。变更同时更新 `SKILL.md`、锁、清单与当前 README。
 
+## 未发布：任务入口与验收精简
+
+- 合并任务入口、必读规则与完成条件；摘要和局部表达直接走短流程。
+- 摘要、关键词与英文摘要迁至 `references/abstract-writing.md`；日常命题检查与条件专项迁至 `references/argumentation-core.md`，原文保留、调用同步。
+
 ## v2611.11（2026-11-11；机器字段 2611.11.0）
 
 - 增量同步 [VictorTran1023/law-paper-writing-skill v1.5](https://github.com/VictorTran1023/law-paper-writing-skill/tree/0454eea1d6ee8955199d9c4c2af7e4c3e9d10c73)，覆盖 v1.4.1、v1.4.2 与 v1.5；历史整合记录原样保留。

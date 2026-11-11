@@ -59,7 +59,7 @@ confidence: medium                           # 视觉会误读图表，见下
 
 ### 4. 编织进 Layer 2（常规摄入步骤 ③④⑤⑥）
 
-按标准流程：检查已有页面，新建/更新实体页与概念页，交叉链接（≥2 个 `[[wikilinks]]`），更新 `index.md` + `log.md`。
+按标准流程：检查已有页面，新建/更新实体页与概念页，建立有证据的交叉链接（数量只作复核信号，不为凑数补链接），更新 `index.md` + `log.md`。
 
 - 页面 frontmatter 引用：`sources: [raw/screenshots/<主题>.md]`。
 - 综合论断加溯源标记 `^[raw/screenshots/<主题>.md]`（见 `law-paper-writing` 技能的 `references/multimodal-citation-format.md`）。

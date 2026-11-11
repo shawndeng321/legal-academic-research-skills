@@ -38,6 +38,8 @@
 
 本版：将通用写作规则从上游 v1.4.0 增量同步至 **v1.5**，更新摘要内容要求与起草预算、论证专项检查、帽段与正文分工、结语及引注核对；保留本包的 DOCX 真实脚注、实证研究、知识库溯源、引注分册、更新器与多宿主适配。来源、差异处置与验证边界见 [v2611.11 整合说明](../docs/upstream-integration-v2611.11.md)；历史 v1.4.0 并入记录见 [v2610.9 整合说明](../docs/upstream-integration-v2610.9.md)。
 
+候选分支（未发布）：合并任务入口，摘要与日常论证可独立读取；原上游 v1.5 规则内容保留。
+
 ## 为什么使用
 
 | 研究问题先行 | 每项主张可回溯 | 交付前有门禁 |
@@ -184,7 +186,7 @@ Word 正文、批注和修订的提取依赖运行环境的文档工具；本技
 
 ### 5. 生成工作稿
 
-起草前按 [论证诊断](references/argumentation-diagnostics.md) 区分归纳、规范解释、制度评价与建议等判断；交代材料为什么支持结论，不把“材料→规律→结论”作为统一行文顺序。用 [正文表达](references/legal-prose.md) 检查句段推进，并参考 [合成改写示例](assets/examples/legal-prose-examples.md)。有原稿时保留有效表达和立场强弱，避免整篇统一改成模型惯用语气。
+起草前按 [日常论证检查](references/argumentation-core.md) 区分归纳、规范解释、制度评价与建议等判断；交代材料为什么支持结论，不把“材料→规律→结论”作为统一行文顺序。用 [正文表达](references/legal-prose.md) 检查句段推进，并参考 [合成改写示例](assets/examples/legal-prose-examples.md)。有原稿时保留有效表达和立场强弱，避免整篇统一改成模型惯用语气。
 
 在写作时同步插入脚注标识。来源已定位时可先使用：
 
@@ -307,12 +309,14 @@ law-paper-writing/
 ├── references/
 │   ├── workflow.md                   # 论文工作流
 │   ├── requirement-decomposition.md  # 需求拆解（五问）
-│   ├── argumentation-diagnostics.md  # 学术增量、命题理由、章节与反馈诊断
+│   ├── argumentation-core.md         # 日常命题理由与条件专项检查
+│   ├── argumentation-diagnostics.md  # 学术增量、章节与反馈专题诊断
 │   ├── legal-prose.md                # 正文推进与作者表达保留
 │   ├── empirical-case-research.md    # 实证、群案与统计材料的使用细则
 │   ├── evidence-and-legal-validity.md # 证据与法律资料核验
 │   ├── citation-integrity.md         # 引注完整性
 │   ├── multimodal-citation-format.md # 知识库回答的 note-level 溯源格式
+│   ├── abstract-writing.md           # 摘要、关键词与英文摘要
 │   ├── journal-adaptation.md         # 目标期刊适配与风格观察卡
 │   ├── docx-production.md            # 投稿 DOCX：真实脚注与样稿复刻
 │   └── obsidian-knowledge-base.md    # Obsidian 与知识库协作边界

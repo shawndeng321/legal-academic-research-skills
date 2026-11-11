@@ -33,33 +33,30 @@ metadata:
 
 围绕一个可论证的主问题组织论文；每项来源性主张可追溯，每项法律判断标明依据、版本与核验状态。宁可保留待核项，也不补造文献、页码、案号、法条、数据或期刊要求。模型记忆不是来源。
 
-## 任务模式
+## 任务入口：交付物、必读与完成条件
 
-| 模式 | 主要输出 |
-|---|---|
-| `PLAN` | 选题诊断、研究问题、范围与项目卡 |
-| `RESEARCH` | 材料分类、来源核验、研究现状与证据缺口 |
-| `OUTLINE` | 主张链、章节功能、论点—证据—引注表 |
-| `DRAFT` | 带引注标识的分节或全文工作稿 |
-| `REVISE` | 逻辑、论证、表达、术语和结构修改 |
-| `AUDIT` | 引注、来源、法律时效、匿名与投稿检查 |
-| `ADAPT` | 按目标期刊正式要求调整稿件 |
+按当前任务选一行，遇相应内容再加读；已读且未变的规则不重读。链接是按需索引；模式可交叉或回退，局部任务不强迫用户重走完整流程。
 
-只执行任务需要的模式；模式可反复、交叉或回退。局部任务不强迫用户重走完整流程。`ADAPT` 仅在目标期刊已指定且其要求已核验时执行。
+| 任务／模式 | 主要交付物 | 必读 | 完成检查 |
+|---|---|---|---|
+| 选题 `PLAN` | 主问题、范围与项目卡 | [工作流](references/workflow.md) | 问题与材料能对应；方向不明再用五问 |
+| 研究 `RESEARCH` | 来源登记与证据缺口 | [证据核验](references/evidence-and-legal-validity.md) | 原文定位、法律版本与来源状态明确 |
+| 提纲 `OUTLINE` | 主张链与章节功能 | [工作流](references/workflow.md)、[日常论证](references/argumentation-core.md) | 各节理由、证据与结论边界明确 |
+| 正文起草 `DRAFT` | 带引注标识的工作稿 | `OUTLINE` 必读，加[正文表达](references/legal-prose.md)、[引注完整性](references/citation-integrity.md) | 主张有理由；来源性主张就近加注，缺口保留待核 |
+| 实质改稿 `REVISE` | 修改稿与变化说明 | 同 `DRAFT`；实质反馈再读下列专题 | 回读受影响论证与引注，未解决项明确 |
+| 只改摘要、关键词 | 指定范围的摘要或关键词 | [abstract-writing.md](references/abstract-writing.md) | 对照正文，无新增未证观点；满足本稿已核要求 |
+| 局部表达修改 | 指定句段的修改 | [正文表达](references/legal-prose.md) | 原意、立场强弱和术语不变；改到主张或引语再加相应核验 |
+| 引用核对／全文审核 `AUDIT` | 核验结果与待核清单 | [引注完整性](references/citation-integrity.md) | 单项只声明该项结果；最终稿检查全部适用门禁 |
+| 期刊适配 `ADAPT` | 适配稿与未决项 | [期刊适配](references/journal-adaptation.md) | 目标期刊已指定、要求已核验 |
 
-## 按需读取参考文件
+**遇到相应内容再加读**：
 
-- 完整流程、选题、提纲、起草或修改：[workflow.md](references/workflow.md)。
-- 需求模糊、新项目或用户未说明研究思路：[requirement-decomposition.md](references/requirement-decomposition.md)。
-- 提纲、起草或实质改稿：[argumentation-diagnostics.md](references/argumentation-diagnostics.md) 的“按命题检查理由”；检查增量、框架、章节或审稿意见时读对应部分。专项检查按所涉命题和材料触发，不要求每篇论文加入比较法、案例实证或证明责任。
-- 起草正文、修改表达或处理“AI味”反馈：[legal-prose.md](references/legal-prose.md)；局部任务只处理指定范围。
-- 使用法律规范、案例、政策、数据或学术文献：[evidence-and-legal-validity.md](references/evidence-and-legal-validity.md)。
-- 起草正文、补引注、生成全文或引用审核时必读：[citation-integrity.md](references/citation-integrity.md)。
-- 决定或核对引注格式：先读 [citation-format.md](references/citation-format.md)（原则、基本体例与分文件索引），再只读索引指向的分文件；外文文献读 [citation-format-foreign.md](references/citation-format-foreign.md)（英文）或其中指向的法德意俄日分册。期刊正式要求与用户已确认的稿件体例优先。
-- 期刊适配、摘要、关键词、匿名或投稿要求：[journal-adaptation.md](references/journal-adaptation.md)；写或改摘要、关键词时，按其中“摘要与关键词”的内容要求、写法与自查清单执行。
-- 以案例群、裁判文书样本、调研数据或统计结果支撑论证：[empirical-case-research.md](references/empirical-case-research.md)。
-- 使用 Obsidian、Markdown 笔记或知识库：[obsidian-knowledge-base.md](references/obsidian-knowledge-base.md)；需要把每项主张追溯到具体源文件时再读 [multimodal-citation-format.md](references/multimodal-citation-format.md)。
-- 转投稿 DOCX（真实 Word 脚注、样稿格式复刻、修改标注版）：[docx-production.md](references/docx-production.md)，脚本 [md2docx_footnotes.py](scripts/md2docx_footnotes.py)。
+- 需求模糊或研究思路缺失：[五问](references/requirement-decomposition.md)。
+- 增量、综述、框架、章节或反馈专题：[专题诊断](references/argumentation-diagnostics.md)；专项按内容触发，不强塞比较法、实证或证明责任。
+- 使用、改变或审核法律规范、案例、政策、数据或文献主张：[证据核验](references/evidence-and-legal-validity.md)；补引注沿用 `AUDIT` 的必读规则。
+- 核对引注格式：先读 [citation-format.md](references/citation-format.md) 的总则和索引，再读所需分册；英文见 [citation-format-foreign.md](references/citation-format-foreign.md)，其他语种沿其索引。期刊正式要求与用户已确认的稿件体例优先。
+- 涉及案例群或统计材料：[实证材料](references/empirical-case-research.md)；使用知识库：[知识库](references/obsidian-knowledge-base.md)，逐项追溯源文件时再读 [原件溯源](references/multimodal-citation-format.md)。
+- 转投稿 DOCX、真实脚注或样稿复刻：[DOCX制作](references/docx-production.md) 和 [md2docx_footnotes.py](scripts/md2docx_footnotes.py)。
 
 ## 任务边界
 
