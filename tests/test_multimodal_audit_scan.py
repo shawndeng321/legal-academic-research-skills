@@ -189,6 +189,21 @@ class AuditScanTests(unittest.TestCase):
                                 for f in data["findings"]))
 
     @requires_yaml
+    def test_self_link_does_not_hide_isolation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            wiki = Path(tmp)
+            write(wiki, "SCHEMA.md", schema())
+            write(wiki, "index.md", "当前纳入导航的页面：1\n\n- [[孤页]]\n")
+            for target in ("孤页#孤页", "concepts/孤页#孤页", "#孤页", "孤页#不存在"):
+                with self.subTest(target=target):
+                    write(wiki, "concepts/孤页.md", fm(title="孤页") + f"# 孤页\n\n[[{target}]]\n")
+                    result, data = self.run_json(wiki, "--strict")
+                    self.assertTrue(any(f["rule"] == "LINK-07" for f in data["findings"]), data)
+                    self.assertEqual(result.returncode, 1, data)
+                    self.assertEqual(any(f["rule"] == "LINK-06" for f in data["findings"]),
+                                     target.endswith("不存在"), data)
+
+    @requires_yaml
     def test_one_valid_link_passes_strict_but_broken_link_does_not(self):
         with tempfile.TemporaryDirectory() as tmp:
             wiki = Path(tmp)

@@ -556,6 +556,11 @@ class Audit:
                      f"同名页面「{stem}」：{'、'.join(paths)}（链接将按最短路径解析，建议消歧）")
         if not stats["broken"] and not stats["attachment_missing"]:
             self.add("LINK-9", "pass", "链接", "（全库）", "全库", "未发现死链")
+        # Valid self-navigation does not establish a relationship to another page.
+        # Resolve and validate anchors above before excluding self-edges here.
+        for rel in self.pages:
+            outbound[rel].discard(rel)
+            inbound[rel].discard(rel)
         orphans = sorted(rel for rel in self.pages if not inbound.get(rel))
         for rel in orphans:
             self.add("LINK-07", "warning", "链接", rel, "文件", "孤立页（0 入链）")

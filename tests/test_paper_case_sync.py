@@ -245,6 +245,40 @@ class PaperCaseSyncTests(unittest.TestCase):
             self.assertEqual(verify.returncode, 0, verify.stdout)  # 与同步同一口径 → 不误报
             self.assertIn("理由字数超标: 无", verify.stdout)
 
+    def test_insert_norm_uses_available_evidence_without_count_quota(self):
+        for count in (0, 1, 5):
+            with self.subTest(count=count), tempfile.TemporaryDirectory() as tmp:
+                wiki = Path(tmp) / "wiki"
+                norms = wiki / "entities/法规范"
+                norms.mkdir(parents=True)
+                page = wiki / "concepts/甲.md"
+                page.parent.mkdir()
+                page.write_text("---\nupdated: 2026-01-01\n---\n# 甲\n\n## 相关概念\n", encoding="utf-8")
+                (wiki / "log.md").write_text("# 操作日志\n", encoding="utf-8")
+                items = []
+                for number in range(count):
+                    name = f"规范{number}"
+                    (norms / (name + ".md")).write_text(f"# {name}\n", encoding="utf-8")
+                    items.append([name, "依据说明" * 10])
+                plan = Path(tmp) / "plan.json"
+                plan.write_text(json.dumps({"pages": {"concepts/甲.md": items}}, ensure_ascii=False), encoding="utf-8")
+                before = {p.relative_to(wiki).as_posix(): p.read_bytes()
+                          for p in wiki.rglob("*") if p.is_file()}
+                dry = run(INSERT, wiki, "--plan", plan, "--dry-run")
+                expected = 0 if items else 1
+                self.assertEqual(dry.returncode, expected, dry.stdout + dry.stderr)
+                self.assertEqual(before, {p.relative_to(wiki).as_posix(): p.read_bytes()
+                                          for p in wiki.rglob("*") if p.is_file()})
+                real = run(INSERT, wiki, "--plan", plan)
+                self.assertEqual(real.returncode, expected, real.stdout + real.stderr)
+                if items:
+                    self.assertEqual(page.read_text(encoding="utf-8").count("——依据说明"), count)
+                    backup = wiki / ".maintenance/norm-reference/before/concepts/甲.md"
+                    self.assertEqual(backup.read_bytes(), before["concepts/甲.md"])
+                else:
+                    self.assertEqual(before, {p.relative_to(wiki).as_posix(): p.read_bytes()
+                                              for p in wiki.rglob("*") if p.is_file()})
+
     def test_insert_norm_plan_from_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             wiki = make_vault(tmp)
