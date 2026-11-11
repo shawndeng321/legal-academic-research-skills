@@ -4,7 +4,7 @@
 
 > 运行时入口是 [`SKILL.md`](SKILL.md)。本页提供模式选择、安装和安全使用方式；批量操作细则见 `references/`。
 >
-> **当前版本：v2610.18（2026-10-18；机器字段 2610.18.0）**。本版：适配 DeepSeek Harness（DSH）宿主（`~/.dsh/skills/`、`/技能名` 调用、原生工具映射与沙盒/更新方式）；上一版适配 Devin（CLI / Desktop）原生工具映射与按 `Base directory` 绝对路径预检，并精简 SKILL.md；更早适配 Google Antigravity。前版优化承接：深检扩展为七项（法规范时效 NORM-01～03、案号去重 DUP-01、可选隐私检查 PRIV-01）；新增论文—案例链接同步／扫描／验收与规范依据插入工具组；审计细则迁入本技能；`raw/MANIFEST.md` 豁免 frontmatter 检查。变更见 [CHANGELOG.md](CHANGELOG.md)。
+> **当前版本：v2611.11（2026-11-11；机器字段 2611.11.0）**。本版：随技能包同步写作技能的上游 v1.5；本技能运行规则与脚本不变，继续保留既有建库/审计和多宿主能力。变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 自动检查、四种提示选择、本地修改保护与回滚说明见[根 README 的自动更新章节](../README.md#自动更新)。
 

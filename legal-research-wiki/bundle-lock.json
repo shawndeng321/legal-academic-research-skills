@@ -1,17 +1,11 @@
 {
   "schema_version": 1,
   "bundle_id": "hermes-legal-research-skills",
-  "bundle_version": "2610.18.0",
+  "bundle_version": "2611.11.0",
   "skill_name": "legal-research-wiki",
-  "skill_version": "2610.18.0",
+  "skill_version": "2611.11.0",
   "files": {
-    "CHANGELOG.md": "8ed5b4177b385cbdfe2d2860aa5a04b1c1dd32eb207c76621ad324bda2b362e0",
-    "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "README.md": "762628be6a7d69dfad1e392385c5c44965b13b35be5431de50c0dca4bdb6fd4f",
-    "SKILL.md": "ad1479bcf9097967e860a9896a5320d90fcecc02fed632dde672e3a836dd142b",
     "agents/openai.yaml": "32715f38b3c294e6047531ee661833abff9f33aa927f70a67029405dcc0b7fae",
-    "assets/templates/README.md": "89c8a39c53158d89c8b9db8338a3d3ba7fc98b5c142f3254a35b7735e8ac143b",
-    "assets/templates/SCHEMA.md": "62e4f9f7e55d6b49cbd2e7eb3fb7cd32816dd15b5d15affbcddc4286a15500b7",
     "assets/templates/anchor-draft.md": "4a27a29e0c67e4e4ae60b201cfb41d7dcef61db92727c0c1ed916bded03c15dd",
     "assets/templates/case.md": "2e0000009de85540f91aa0def877fb45dd03f0143ca6b3771115f00b1baf7c6f",
     "assets/templates/claim-evidence-matrix.md": "b733cfd548d9ec9b70536594d72402a265e506b7ed41353be8f035c0653621b5",
@@ -28,10 +22,15 @@
     "assets/templates/norm-version.md": "4bada2a934a8f02dba8cb0dacde6ad56a10b60a45ac452a5ef29a918038433e5",
     "assets/templates/norm.md": "35d50b1ed6fc57e38fa94ce640cad1eec2a52f8b0741438d244c98c148b2942f",
     "assets/templates/paper.md": "e0cf9d6d0f0f682a3e04c0daf61b7970da0445a7595ec61e5448e9b8e32abc78",
+    "assets/templates/README.md": "89c8a39c53158d89c8b9db8338a3d3ba7fc98b5c142f3254a35b7735e8ac143b",
     "assets/templates/research-design.md": "074d753dc82630328f2f78ee1e5bb4f6607ec14211a429a2b47c452073dc1f6e",
+    "assets/templates/SCHEMA.md": "62e4f9f7e55d6b49cbd2e7eb3fb7cd32816dd15b5d15affbcddc4286a15500b7",
     "assets/templates/wiki-design-brief.md": "079ac942386d54bf17895799a60151458cc3e31af6e54ecb5cd42e2611d2a491",
     "assets/templates/writing-outline.md": "b6494949f573fcc9a045479cb6a3d73fa12b0ac0e4ddf8107f8402b67358cc46",
+    "CHANGELOG.md": "58fbeb7dd8da650e729308ed43a02ffc94492b594241a3aa2bad5f374f89d9ec",
     "evals/pressure-tests.md": "d7e8563c11f8f9318486035d29ce586a6c5ee6a4209dc4b3b109f7cd941cd1a2",
+    "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
+    "README.md": "180fdc095ec6f0fd4eb58bfcbdbeb3591614a2b3fa21e0c25a83e31a182b4f97",
     "references/case-ingestion.md": "f1fba56b6d07961dd30ce120cca9a945468f651dabdb27c1e6ac477145739e26",
     "references/content-completeness.md": "5c48a61039139f6022f8ca662343a73630b54f165b025c481be9962f52f41a95",
     "references/directory-layout-and-page-types.md": "338119db7bb3b44a5f2cf88be4ca59ef60a08fc816407eaace440a471e300e21",
@@ -61,6 +60,7 @@
     "scripts/check_wikilinks.py": "8c0f8c4714671f6e1bc8231bf09ddef7f0122ace3f7089a553dd01045c2e0910",
     "scripts/clean_pdf_artifacts.py": "7062295aabf0ba82fa4122bd42116b5fec827171a2ef9a1461a8e99be9aa1443",
     "scripts/legal_skills_update.py": "7d0e1d5e448f97ba34a8a423c0302ce7beb9d2ca4624c5b730b1922989244c3a",
-    "scripts/wiki_links.py": "273091dfa808e3086f9f2733db19f5e32ec5f3f4009413186f47d3e529a1bbe5"
+    "scripts/wiki_links.py": "273091dfa808e3086f9f2733db19f5e32ec5f3f4009413186f47d3e529a1bbe5",
+    "SKILL.md": "8d347f4db6cb10078a8cbb22ca88e61036bbeedb662f9c36723dec86e7b6df31"
   }
 }

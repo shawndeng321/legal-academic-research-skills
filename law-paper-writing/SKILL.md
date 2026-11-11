@@ -1,9 +1,9 @@
 ---
 name: law-paper-writing
-description: "Use when writing or reviewing Chinese legal papers. 法学期刊/CSSCI论文：选题、五问需求拆解、提纲、起草、改稿、审稿意见落实、引注与法律时效核查、期刊适配、投稿DOCX脚注; planning, drafting, revising, auditing, journal adaptation. Not for theses, books, contracts, pleadings or client advice."
+description: "Use when writing or reviewing Chinese legal papers. 中文法学期刊/CSSCI论文：选题、五问需求拆解、提纲、正文、摘要、改稿、审稿意见落实、论证诊断、引注体例与法律时效核查、期刊适配、知识库溯源、实证材料、投稿DOCX真实脚注及稿件版本管理；不用于专著、学位论文、合同、法律意见书、诉讼文书或个案咨询。 Not for books, theses, contracts, pleadings or client advice."
 license: MIT
 metadata:
-  version: "2610.18.0"
+  version: "2611.11.0"
 ---
 
 # Law Paper Writing（法学论文写作）
@@ -51,12 +51,12 @@ metadata:
 
 - 完整流程、选题、提纲、起草或修改：[workflow.md](references/workflow.md)。
 - 需求模糊、新项目或用户未说明研究思路：[requirement-decomposition.md](references/requirement-decomposition.md)。
-- 提纲、起草或实质改稿：[argumentation-diagnostics.md](references/argumentation-diagnostics.md) 的“按命题检查理由”；检查增量、框架、章节或审稿意见时读对应部分。
+- 提纲、起草或实质改稿：[argumentation-diagnostics.md](references/argumentation-diagnostics.md) 的“按命题检查理由”；检查增量、框架、章节或审稿意见时读对应部分。专项检查按所涉命题和材料触发，不要求每篇论文加入比较法、案例实证或证明责任。
 - 起草正文、修改表达或处理“AI味”反馈：[legal-prose.md](references/legal-prose.md)；局部任务只处理指定范围。
 - 使用法律规范、案例、政策、数据或学术文献：[evidence-and-legal-validity.md](references/evidence-and-legal-validity.md)。
 - 起草正文、补引注、生成全文或引用审核时必读：[citation-integrity.md](references/citation-integrity.md)。
 - 决定或核对引注格式：先读 [citation-format.md](references/citation-format.md)（原则、基本体例与分文件索引），再只读索引指向的分文件；外文文献读 [citation-format-foreign.md](references/citation-format-foreign.md)（英文）或其中指向的法德意俄日分册。期刊正式要求与用户已确认的稿件体例优先。
-- 期刊适配、摘要、关键词、匿名或投稿要求：[journal-adaptation.md](references/journal-adaptation.md)。
+- 期刊适配、摘要、关键词、匿名或投稿要求：[journal-adaptation.md](references/journal-adaptation.md)；写或改摘要、关键词时，按其中“摘要与关键词”的内容要求、写法与自查清单执行。
 - 以案例群、裁判文书样本、调研数据或统计结果支撑论证：[empirical-case-research.md](references/empirical-case-research.md)。
 - 使用 Obsidian、Markdown 笔记或知识库：[obsidian-knowledge-base.md](references/obsidian-knowledge-base.md)；需要把每项主张追溯到具体源文件时再读 [multimodal-citation-format.md](references/multimodal-citation-format.md)。
 - 转投稿 DOCX（真实 Word 脚注、样稿格式复刻、修改标注版）：[docx-production.md](references/docx-production.md)，脚本 [md2docx_footnotes.py](scripts/md2docx_footnotes.py)。

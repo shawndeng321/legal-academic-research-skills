@@ -11,7 +11,7 @@
 
 <div align="center">
 
-![Version: v2610.18](https://img.shields.io/badge/Version-v2610.18-5C3D2E?style=flat-square)
+![Version: v2611.11](https://img.shields.io/badge/Version-v2611.11-5C3D2E?style=flat-square)
 ![Antigravity: Skill](https://img.shields.io/badge/Antigravity-Skill-4285F4?style=flat-square)
 ![Devin: Skill](https://img.shields.io/badge/Devin-Skill-0B6E4F?style=flat-square)
 ![DeepSeek Harness: Skill](https://img.shields.io/badge/DeepSeek%20Harness-Skill-4D6BFE?style=flat-square)
@@ -34,9 +34,9 @@
   <a href="#检验与能力边界">检验与边界</a>
 </p>
 
-**当前版本：v2610.18（机器字段 2610.18.0；2026-10-18）**
+**当前版本：v2611.11（机器字段 2611.11.0；2026-11-11）**
 
-本版：适配 DeepSeek Harness（DSH）宿主——`~/.dsh/skills/` 与项目级技能路径、`/技能名` 调用、原生工具映射（`ask_user_question`、`read_image`、`subagent`／`workflow`、`todo_write`）与 `workspace-write` 沙盒下的预检降级和更新方式，详见 [host-adapters.md](references/host-adapters.md)；上一版适配 Devin（CLI / Desktop）原生工具映射与按 `Base directory` 绝对路径预检，并精简 SKILL.md；更早适配 Google Antigravity。承接 v2610.9 的上游 v1.4.0 并入（引注体例、审读反馈、摘要自查等，清单见 [upstream-integration-v2610.9.md](../docs/upstream-integration-v2610.9.md)）；写作规则与既有能力不变。
+本版：将通用写作规则从上游 v1.4.0 增量同步至 **v1.5**，更新摘要内容要求与起草预算、论证专项检查、帽段与正文分工、结语及引注核对；保留本包的 DOCX 真实脚注、实证研究、知识库溯源、引注分册、更新器与多宿主适配。来源、差异处置与验证边界见 [v2611.11 整合说明](../docs/upstream-integration-v2611.11.md)；历史 v1.4.0 并入记录见 [v2610.9 整合说明](../docs/upstream-integration-v2610.9.md)。
 
 ## 为什么使用
 
@@ -346,14 +346,14 @@ law-paper-writing/
 
 ## 检验与能力边界
 
-原有诊断与边界检验材料共 27 个场景：[12 个论证诊断场景](evals/argumentation-cases.md)、[9 个边界压力测试场景](evals/pressure-tests.md) 与 [6 个通用规则融合场景](evals/generic-fusion-cases.md)（材料边界、需求拆解、推理链、改稿继承、统计限定），覆盖论证缺口，也覆盖不应误判的合理写法；均须人工判断，不能替代投稿前的内容核查。检验分两轮完成：2026-09-09 桌面走查（记录见下段）；2026-09-14 规则融合后完成技能元数据、相对链接和差异检查，并保留既有真实性与资料权限规则。
+当前诊断与边界检验材料共 71 个场景：[24 个论证诊断场景](evals/argumentation-cases.md)、[9 个边界压力场景](evals/pressure-tests.md)、[6 个通用规则融合场景](evals/generic-fusion-cases.md)、[8 个引注体例场景](evals/citation-format-cases.md)、[24 个审读反馈与摘要场景](evals/review-feedback-cases.md)。这些是可执行的评估材料，不是已全部通过的成绩；v2611.11 同步新增 A13—A24、H19—H24 并修订相关旧场景。旧版 2026-09-09 桌面走查与 2026-09-14 静态检查只证明当时快照的对应范围，不充当本次结果。
 
 [检验记录](evals/2026-09-09-review.md) 是同一助手完成的桌面走查，不是独立模型盲测或多模型性能比较。它不证明特定模型能稳定识别所有论文问题，也不代表实际论文的法律、案例与文献已经核验。运行效果仍取决于材料完整性、模型和可用的检索、文档工具。
 
-本轮候选版新增 [4 个写作与合理写法保护任务](evals/writing-inputs.md)，另列 [评阅方法](evals/writing-evaluation.md)。哪些实际执行、原始输出和检查局限见 [本轮记录](evals/2026-09-18-writing-review.md)。小样本试写、规则校验和完整论文盲评是不同层级的证据，不能互相代替；不承诺消除“AI味”或提高录用率。
+2026-09-18 候选版新增 [4 个写作与合理写法保护任务](evals/writing-inputs.md)，另列 [评阅方法](evals/writing-evaluation.md)。哪些实际执行、原始输出和检查局限见 [本轮记录](evals/2026-09-18-writing-review.md)。小样本试写、规则校验和完整论文盲评是不同层级的证据，不能互相代替；不承诺消除“AI味”或提高录用率。
 
 ## 来源说明
 
-本技能的 6.x 版本线由两条来源合并而成：[VictorTran1023/law-paper-writing-skill](https://github.com/VictorTran1023/law-paper-writing-skill) 1.2.0-rc.1 的通用写作方法（正文、参考文件、模板与评估），以及本技能包 5.x 中仍然通用的 DOCX、溯源与更新能力；版本变更见 [CHANGELOG.md](CHANGELOG.md)。
+本技能的 6.x 版本线由两条来源合并而成：[VictorTran1023/law-paper-writing-skill](https://github.com/VictorTran1023/law-paper-writing-skill) 1.2.0-rc.1 的通用写作方法（正文、参考文件、模板与评估），以及本技能包 5.x 中仍然通用的 DOCX、溯源与更新能力；版本变更见 [CHANGELOG.md](CHANGELOG.md)。 v2610.9 增量并入上游 v1.4.0，v2611.11 继续同步至上游 v1.5（`0454eea1d6ee8955199d9c4c2af7e4c3e9d10c73`）；本包日期版本与上游版本分别编号。
 
 初始方法源于《关于中国法学类CSSCI期刊发表论文的写作过程与方法》，并结合论文修改反馈提炼了学术增量、理论框架、章节衔接和反馈落实检查，同时保留目标期刊适配、证据核验、引用完整性、法律时效和 Obsidian 协作规则。检验示例使用合成材料，不包含私人稿件全文、身份信息或原始批阅文件。它提供的是可审查的写作流程，不是任何 Hermes、Anthropic、OpenAI、Obsidian、CSSCI 期刊或其他机构的官方指南、认证或录用承诺。

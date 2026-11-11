@@ -2,6 +2,15 @@
 
 本文件记录本技能的版本与变更。自 v2610.9 起，公开版本按日期 `vYYMM.D` 编号，同日迭代加尾部序号；三技能与 Bundle 机器字段同步为 `YYMM.D.N`。历史能力代际编号原样保留，论文稿件版本不受此规则约束。变更同时更新 `SKILL.md`、锁、清单与当前 README。
 
+## v2611.11（2026-11-11；机器字段 2611.11.0）
+
+- 增量同步 [VictorTran1023/law-paper-writing-skill v1.5](https://github.com/VictorTran1023/law-paper-writing-skill/tree/0454eea1d6ee8955199d9c4c2af7e4c3e9d10c73)，覆盖 v1.4.1、v1.4.2 与 v1.5；历史整合记录原样保留。
+- 摘要改用内容要求，取消固定四功能位；无期刊及其他用户要求时以 350～400 字为起草目标，保留必要背景与限定，不把字数当作合格门槛；手册来源建议与技能预算分别说明。
+- 补研究不足与本文推进的对应、框架理由、帽段与正文分工，以及按内容触发的比较法、法定要件、证明责任和实体程序衔接检查；不强制每篇论文增加专项内容。
+- 完善结语、不同任务下的案例复用、直接引语与重复引用页码核对、待核脚注标记与定义成对保留。
+- 同步 A13—A24、H19—H24 与既有场景修订、投稿检查清单及中文简介；保留本包的程序研究例外、样稿优先、DOCX、实证、溯源、宿主适配和引注分册结构。
+- 本轮来源、逐文件处置和验证边界见 [整合说明](../docs/upstream-integration-v2611.11.md)。
+
 ## v2610.18（2026-10-18；机器字段 2610.18.0）
 
 - 适配 DeepSeek Harness（DSH）：`references/host-adapters.md` 新增 DSH 节，说明 `~/.dsh/skills/` 与项目级技能路径、`/law-paper-writing` 等斜杠调用、`ask_user_question`／`read_image`／`subagent`／`workflow`／`todo_write` 工具映射，以及 `workspace-write` 沙盒下的预检降级与更新方式。
