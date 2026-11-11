@@ -6,7 +6,6 @@
 
     WIKI_PATH 也可通过环境变量 WIKI_PATH 提供。`--json` 输出机器可读结果
     （字段名为英文，内容为中文）；`--strict` 下「提示」级发现也计入失败；
-    info「观察」级仅供人工抽查，即使在 `--strict` 下也不阻断；
     `--privacy` 启用可选的个人信息格式检查（默认关闭，命中值打码显示）。
 
 退出码：
@@ -23,7 +22,7 @@
                   FM-03 类型非法/FM-04 标签问题/FM-05 重复键/FM-06 来源路径不存在
     4 链接完整性  LINK-01 死链/LINK-02 空目标（0 字节）/LINK-03 同名歧义/
                   LINK-04 畸形写法/LINK-05 路径前缀不符/LINK-06 锚点不存在/
-                  LINK-07 孤立页/LINK-08 低出站数量观察（不阻断）
+                  LINK-07 孤立页/LINK-08 出站不足
     5 文件卫生    HYG-01 素材图未引用/HYG-02 提取正文过短或缺提取
     6 日志格式    LOG-01 日志超阈值
     7 法学专项    NORM-01 法规范页缺 效力状态/核验日期，NORM-02 核验日期超期限
@@ -105,7 +104,7 @@ class Finding:
 
     def __init__(self, rule, severity, scope, path, location, message):
         self.rule = rule
-        self.severity = severity      # broken / warning / info / pass
+        self.severity = severity      # broken / warning / pass
         self.scope = scope            # 结构 / 来源 / 内容 / 链接 / 卫生 / 日志
         self.path = path
         self.location = location
@@ -556,23 +555,17 @@ class Audit:
                      f"同名页面「{stem}」：{'、'.join(paths)}（链接将按最短路径解析，建议消歧）")
         if not stats["broken"] and not stats["attachment_missing"]:
             self.add("LINK-9", "pass", "链接", "（全库）", "全库", "未发现死链")
-        # Valid self-navigation does not establish a relationship to another page.
-        # Resolve and validate anchors above before excluding self-edges here.
-        for rel in self.pages:
-            outbound[rel].discard(rel)
-            inbound[rel].discard(rel)
         orphans = sorted(rel for rel in self.pages if not inbound.get(rel))
         for rel in orphans:
             self.add("LINK-07", "warning", "链接", rel, "文件", "孤立页（0 入链）")
         if self.pages and not orphans:
             self.add("LINK-9", "pass", "链接", "（全库）", "全库", "无孤立页（0 入链）")
-        # Low degree is a review signal, not an evidence-quality threshold.
-        # Keep LINK-08 for consumers, but never turn its count into strict failure.
         under = [(rel, len(outbound.get(rel, ()))) for rel in sorted(self.pages)]
+        under = [(rel, n) for rel, n in under if n < 2]
         for rel, n in under:
-            if n < 2:
-                self.add("LINK-08", "info", "链接", rel, "文件",
-                         f"关联数量观察：出站 {n} 条；仅供抽查，不作合格门槛，不为凑数补链接")
+            self.add("LINK-08", "warning", "链接", rel, "文件", f"出站链接不足（{n} < 2）")
+        if self.pages and not under:
+            self.add("LINK-9", "pass", "链接", "（全库）", "全库", "所有页面出站链接均 ≥2")
         broken = any(f.severity == "broken" for f in self.findings if f.scope == "链接")
         warning = any(f.severity == "warning" for f in self.findings if f.scope == "链接")
         stats["status"] = "fail" if broken else ("warn" if warning else "pass")
@@ -933,7 +926,7 @@ CHECK_TITLES = {
     4: "链接完整性", 5: "文件卫生与惯例", 6: "日志格式",
     7: "法学专项（法规范时效、案件去重、隐私格式）",
 }
-SEVERITY_LABEL = {"broken": "🔴 阻断", "warning": "🟡 提示", "info": "⚪ 观察"}
+SEVERITY_LABEL = {"broken": "🔴 阻断", "warning": "🟡 提示"}
 STATUS_LABEL = {"pass": "✅ 通过", "warn": "🟡 有提示", "fail": "🔴 有阻断", "not_checked": "⚪ 未检查"}
 
 
@@ -970,9 +963,7 @@ def print_report(audit):
     print("\n" + "=" * 72)
     print("汇总")
     print("=" * 72)
-    observations = sum(f.severity == "info" for f in audit.findings)
-    print("  🔴 阻断项：{}｜🟡 提示项：{}｜⚪ 观察项（不阻断）：{}".format(
-        len(broken), len(warnings), observations))
+    print("  🔴 阻断项：{}｜🟡 提示项：{}".format(len(broken), len(warnings)))
     if audit.unreadable:
         print("  ⚪ 解析失败、其余检查未执行的页面（{}）：{}".format(
             len(audit.unreadable), "、".join(audit.unreadable[:8])))
@@ -1003,9 +994,7 @@ def build_result(audit, strict, exit_code):
             for n in range(1, 8)
         ],
         "findings": [f.to_dict() for f in audit.findings if f.severity != "pass"],
-        "summary": {"broken": len(broken), "warning": len(warnings),
-                    "info": sum(f.severity == "info" for f in audit.findings),
-                    "exit_code": exit_code},
+        "summary": {"broken": len(broken), "warning": len(warnings), "exit_code": exit_code},
     }
 
 

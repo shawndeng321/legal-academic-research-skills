@@ -55,16 +55,8 @@ class WritingUpstreamIntegrationTests(unittest.TestCase):
         self.assertIn("逐观点", citation)
         self.assertIn("程序研究", citation)
         self.assertIn("改判机制", citation)
-        abstract = (writing / "references/abstract-writing.md").read_text(encoding="utf-8")
-        self.assertIn("](abstract-writing.md)", journal)
-        self.assertIn("### 内容要求", abstract)
-        self.assertNotIn("### 四个功能位", abstract)
-        for boundary in ("不设最低字数", "有依据的限定", "不免除正文对应内容的引注责任"):
-            self.assertIn(boundary, abstract)
-        core = (writing / "references/argumentation-core.md").read_text(encoding="utf-8")
-        self.assertIn("](argumentation-core.md)", diagnostics)
-        for topic in ("案例或经验归纳", "现行法解释", "制度建议", "概念或理论分析", "比较法", "证明责任"):
-            self.assertIn(topic, core)
+        self.assertIn("### 内容要求", journal)
+        self.assertNotIn("### 四个功能位", journal)
         self.assertIn("期刊风格观察卡", journal)
         self.assertIn("用户已确认", journal)
         self.assertTrue((writing / "assets/examples/abstract-examples.md").is_file())

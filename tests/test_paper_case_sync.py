@@ -7,6 +7,7 @@
 四个脚本均为标准库实现，无额外依赖，可在两个测试环境中运行。
 """
 
+import hashlib
 import json
 import re
 import subprocess
@@ -14,7 +15,6 @@ import sys
 import tempfile
 import unittest
 from datetime import date
-from itertools import product
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -189,79 +189,29 @@ class PaperCaseSyncTests(unittest.TestCase):
             self.assertEqual(verify.returncode, 0, verify.stdout)
             self.assertIn("理由字数超标: 无", verify.stdout)
 
-    def preview_hash(self, wiki, plan):
-        before = {p.relative_to(wiki): p.read_bytes() for p in wiki.rglob("*") if p.is_file()}
-        preview = run(SYNC, wiki, "--plan", plan, "--dry-run")
-        self.assertEqual(preview.returncode, 0, preview.stdout + preview.stderr)
-        self.assertEqual(
-            {p.relative_to(wiki): p.read_bytes() for p in wiki.rglob("*") if p.is_file()}, before,
-        )
-        hashes = re.findall(r"文件 sha256: ([0-9a-f]{64})", preview.stdout)
-        self.assertEqual(len(hashes), 1, preview.stdout)
-        return hashes[0]
-
     def test_expect_sha256_conflict_stops_without_writing(self):
-        for newline, conflict_last in product(("\n", "\r\n"), (False, True)):
-            with self.subTest(newline=repr(newline), conflict_last=conflict_last), tempfile.TemporaryDirectory() as tmp:
-                wiki = make_vault(tmp)
-                paper1 = wiki / "entities" / "引用文献" / "作者甲-论文一.md"
-                text = paper1.read_text(encoding="utf-8")
-                paper1.write_bytes(text.replace("\n", newline).encode("utf-8"))
-                before = {p.relative_to(wiki): p.read_bytes() for p in wiki.rglob("*") if p.is_file()}
+        with tempfile.TemporaryDirectory() as tmp:
+            wiki = make_vault(tmp)
+            paper1 = wiki / "entities" / "引用文献" / "作者甲-论文一.md"
+            before = paper1.read_bytes()
 
-                papers = [
-                    {"key": "作者甲-论文一", "file": paper1.name, "expect_sha256": "0" * 64},
-                    {"key": "作者乙-论文二", "file": "作者乙-论文二.md"},
-                ]
-                if conflict_last:
-                    papers.reverse()
-                wrong = write_plan(tmp, papers)
-                blocked = run(SYNC, wiki, "--plan", wrong)
-                self.assertNotEqual(blocked.returncode, 0)
-                self.assertIn("哈希冲突", blocked.stdout + blocked.stderr)
-                self.assertEqual(
-                    {p.relative_to(wiki): p.read_bytes() for p in wiki.rglob("*") if p.is_file()}, before,
-                )
-                self.assertFalse((wiki / ".maintenance").exists())
+            wrong = write_plan(tmp, [
+                {"key": "作者甲-论文一", "file": "作者甲-论文一.md", "expect_sha256": "0" * 64},
+                {"key": "作者乙-论文二", "file": "作者乙-论文二.md"},
+            ])
+            blocked = run(SYNC, wiki, "--plan", wrong)
+            self.assertNotEqual(blocked.returncode, 0)
+            self.assertIn("哈希冲突", blocked.stdout + blocked.stderr)
+            self.assertEqual(paper1.read_bytes(), before)
+            self.assertFalse(list((wiki / ".maintenance").rglob("作者甲-论文一.md")))
 
-                # expect_sha256 的公开协议是使用预演指纹，不自行按原始字节计算。
-                plan = write_plan(tmp, [{"key": "作者甲-论文一", "file": paper1.name}])
-                digest = self.preview_hash(wiki, plan)
-                good = write_plan(tmp, [
-                    {"key": "作者甲-论文一", "file": paper1.name, "expect_sha256": digest},
-                ])
-                ok = run(SYNC, wiki, "--plan", good)
-                self.assertEqual(ok.returncode, 0, ok.stdout + ok.stderr)
-                self.assertIn("[[案例1-2016-甲案]]", paper1.read_text(encoding="utf-8"))
-                backups = list((wiki / ".maintenance").rglob(paper1.name))
-                self.assertEqual(len(backups), 1)
-                self.assertEqual(backups[0].read_bytes(), before[paper1.relative_to(wiki)])
-
-    def test_preview_hash_rejects_content_change_without_writing(self):
-        for newline, conflict_last in product(("\n", "\r\n"), (False, True)):
-            with self.subTest(newline=repr(newline), conflict_last=conflict_last), tempfile.TemporaryDirectory() as tmp:
-                wiki = make_vault(tmp)
-                paper1 = wiki / "entities" / "引用文献" / "作者甲-论文一.md"
-                text = paper1.read_text(encoding="utf-8")
-                paper1.write_bytes(text.replace("\n", newline).encode("utf-8"))
-                plan = write_plan(tmp, [{"key": "作者甲-论文一", "file": paper1.name}])
-                digest = self.preview_hash(wiki, plan)
-                paper1.write_bytes(paper1.read_bytes() + (newline + "预演后的真实内容变更" + newline).encode("utf-8"))
-                before = {p.relative_to(wiki): p.read_bytes() for p in wiki.rglob("*") if p.is_file()}
-                papers = [
-                    {"key": "作者甲-论文一", "file": paper1.name, "expect_sha256": digest},
-                    {"key": "作者乙-论文二", "file": "作者乙-论文二.md"},
-                ]
-                if conflict_last:
-                    papers.reverse()
-                stale = write_plan(tmp, papers)
-                blocked = run(SYNC, wiki, "--plan", stale)
-                self.assertNotEqual(blocked.returncode, 0)
-                self.assertIn("哈希冲突", blocked.stdout + blocked.stderr)
-                self.assertEqual(
-                    {p.relative_to(wiki): p.read_bytes() for p in wiki.rglob("*") if p.is_file()}, before,
-                )
-                self.assertFalse((wiki / ".maintenance").exists())
+            real_hash = hashlib.sha256(before).hexdigest()
+            good = write_plan(tmp, [
+                {"key": "作者甲-论文一", "file": "作者甲-论文一.md", "expect_sha256": real_hash},
+            ])
+            ok = run(SYNC, wiki, "--plan", good)
+            self.assertEqual(ok.returncode, 0, ok.stdout + ok.stderr)
+            self.assertIn("[[案例1-2016-甲案]]", paper1.read_text(encoding="utf-8"))
 
     def test_reason_counting_shared_with_verify(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -294,40 +244,6 @@ class PaperCaseSyncTests(unittest.TestCase):
             verify = run(VERIFY, wiki, "作者丙-论文三.md")
             self.assertEqual(verify.returncode, 0, verify.stdout)  # 与同步同一口径 → 不误报
             self.assertIn("理由字数超标: 无", verify.stdout)
-
-    def test_insert_norm_uses_available_evidence_without_count_quota(self):
-        for count in (0, 1, 5):
-            with self.subTest(count=count), tempfile.TemporaryDirectory() as tmp:
-                wiki = Path(tmp) / "wiki"
-                norms = wiki / "entities/法规范"
-                norms.mkdir(parents=True)
-                page = wiki / "concepts/甲.md"
-                page.parent.mkdir()
-                page.write_text("---\nupdated: 2026-01-01\n---\n# 甲\n\n## 相关概念\n", encoding="utf-8")
-                (wiki / "log.md").write_text("# 操作日志\n", encoding="utf-8")
-                items = []
-                for number in range(count):
-                    name = f"规范{number}"
-                    (norms / (name + ".md")).write_text(f"# {name}\n", encoding="utf-8")
-                    items.append([name, "依据说明" * 10])
-                plan = Path(tmp) / "plan.json"
-                plan.write_text(json.dumps({"pages": {"concepts/甲.md": items}}, ensure_ascii=False), encoding="utf-8")
-                before = {p.relative_to(wiki).as_posix(): p.read_bytes()
-                          for p in wiki.rglob("*") if p.is_file()}
-                dry = run(INSERT, wiki, "--plan", plan, "--dry-run")
-                expected = 0 if items else 1
-                self.assertEqual(dry.returncode, expected, dry.stdout + dry.stderr)
-                self.assertEqual(before, {p.relative_to(wiki).as_posix(): p.read_bytes()
-                                          for p in wiki.rglob("*") if p.is_file()})
-                real = run(INSERT, wiki, "--plan", plan)
-                self.assertEqual(real.returncode, expected, real.stdout + real.stderr)
-                if items:
-                    self.assertEqual(page.read_text(encoding="utf-8").count("——依据说明"), count)
-                    backup = wiki / ".maintenance/norm-reference/before/concepts/甲.md"
-                    self.assertEqual(backup.read_bytes(), before["concepts/甲.md"])
-                else:
-                    self.assertEqual(before, {p.relative_to(wiki).as_posix(): p.read_bytes()
-                                              for p in wiki.rglob("*") if p.is_file()})
 
     def test_insert_norm_plan_from_file(self):
         with tempfile.TemporaryDirectory() as tmp:

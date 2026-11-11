@@ -20,13 +20,13 @@ metadata:
 
 ## 概述
 
-检查法学研究 Wiki 的技术健康与学术可用性，登记问题并在授权范围内修复。来源、分析与关系须有证据，假说不作事实；具体标准见第四至六节。
+对法学研究 Obsidian/LLM Wiki 做全库体检、问题分级、整改设计、分批修复和复核。不只看 YAML、死链与文件数量，还要判断页面是否真正支持研究：来源可追溯、分析不套模板、论文—案例—概念—底稿关系具体、群案比较层存在、假说不被写成事实。
 
 - 建库、摄入与页面规范 → `legal-research-wiki`（本技能验收标准以它为准）；
 - 研究设计页审计的五问 → `law-paper-writing` 的 `references/requirement-decomposition.md`；
 - 分析框架是**项目特定**的：以该项目 `research-design/` 中用户确认的框架为准，不用通用模板或其他项目的框架去套。
 
-可配合其他 Wiki 技能；冲突时优先遵守当前 vault 的 `SCHEMA.md`、用户要求与原始材料。
+本技能自足。宿主另有通用 Wiki 或 Obsidian 技能时可以同时使用；规则冲突时，以当前 vault 的 `SCHEMA.md`、用户本轮明确要求和原始材料为最高优先级。
 
 ## 配套技能
 
@@ -38,17 +38,15 @@ metadata:
 | 死链检查脚本 `scripts/check_wikilinks.py` | `legal-research-wiki` | 用本技能的 `scripts/multimodal_audit.py`（含链接完整性检查；两技能共用 `scripts/wiki_links.py` 解析规则，两份字节一致、结论一致） |
 | 研究设计页审计用的五问（`references/requirement-decomposition.md`） | `law-paper-writing` | 按本技能 5.5 节检查研究设计页 |
 
-## 任务入口：读什么、查到哪里
+**本技能参考文档**（按需读取，不必每次全部加载）：
 
-先按任务选范围，再判定写入模式；只读相应规则，已读且未变不重读。单项不升级为全库审计，后文细则按此范围适用。
+- 全库审计与整改台账细则：[systematic-vault-audit-and-optimization-ledger.md](references/systematic-vault-audit-and-optimization-ledger.md)（第四至八节的详细版与方法论）；
+- 文献库逐篇审计与分批修复：[literature-audit-and-repair.md](references/literature-audit-and-repair.md)（论文实体页语料，含引用规范／引用案例的精度修复）；
+- 深度修复的分批推进：[staged-deep-repair.md](references/staged-deep-repair.md)（书目规范化、论文—案例链接、条文级引注）。
 
-| 任务 | 交付物 | 必读／条件加读 | 完成条件 |
-|---|---|---|---|
-| 全库审计 | 分类发现与 P0—P3 清单 | [技术细则](references/technical-health-checklist.md)、[学术细则](references/academic-usability-checklist.md)；建整改台账再读 [台账细则](references/systematic-vault-audit-and-optimization-ledger.md) | 技术轨与学术轨都完成，系统性结论有统计与原材料抽样证据 |
-| 每日巡检 | 当前检查结果与待处理项 | [巡检细则](references/daily-maintenance-and-periodic-checks.md)；发现具体问题才读专项规则 | 完成既定巡检清单；未做学术抽样不声称全面学术审计通过 |
-| 单项复核 `VERIFY` | 指定问题是否解决及证据 | 原问题、验收条件与受影响文件；涉及哪项读哪项细则 | 仅报告所查项目；未查维度明确，不自动重跑全套学术审计 |
-| 分批修复 `REPAIR` | 已授权修改与一份验收报告 | 对应问题细则；批量结构操作加读 [批量操作](references/batch-operations.md)，文献修复读 [文献修复](references/literature-audit-and-repair.md)，深度分批读 [深度修复](references/staged-deep-repair.md) | 备份、试运行、逐页回读；本批最终快照一次验收 |
-| 检查技能更新 | 版本与差异说明 | “预检与运行环境”及当前宿主适配 | 只检查技能版本，不扫描研究库；更新须明确授权 |
+## 何时使用
+
+全库排查与体检、结构与分类审计、按整改台账执行 OPT、修复死链／孤岛／标签／来源／案例关系、模板化检测、复核与每日检修、批量重命名与链接迁移、补反向链接与批量填充，以及“检查法学技能更新”（见“预检与运行环境”）。不用于单纯查询某个法律问题；用户只要求读某一页时，不擅自升级为全库审计。
 
 ## 一、先判定工作模式
 
@@ -71,11 +69,11 @@ metadata:
 
 优先使用用户本轮指定的 vault 路径；其次宿主的持久记忆或 `WIKI_PATH` 环境变量。不同研究项目独立 vault，不混扫、不混改；不因发现旧路径就恢复、迁移或使用旧库。
 
-全库审计、巡检与修复依次读取：`SCHEMA.md` → `index.md` → `log.md` 最近 30—80 行 → 既有整改台账的任务表和最近三条记录。单项复核只读适用规范、原问题与受影响文件；仅检查技能更新时跳过研究库定向。所需文件缺失记为未检查项，当前模式不允许时不擅自创建。
+依次读取：`SCHEMA.md` → `index.md` → `log.md` 最近 30—80 行 → `知识库排查修复流程与整改台账.md`（若存在；重点读任务表、规则回写区和最近三条执行记录）。缺失时记为结构问题，当前模式不允许时不擅自创建。
 
 **当前状态优先于历史记录**：日志只说明“当时说做了什么”；必须读取真实文件、重新统计；日志与文件冲突时以原始材料和当前文件为证据，并在报告中指出冲突。
 
-**完成条件**：全库任务报告 vault 路径、正式分类、页面和原始材料数量、规范版本及变更背景；单项任务只报实际检查范围，不把局部计数说成全库。
+**完成条件**：报告 vault 路径、正式分类、页面数量、原始材料数量、规范版本和最近一次变更背景。
 
 ## 三、冻结审计边界
 
@@ -85,28 +83,28 @@ metadata:
 
 ## 四、技术健康轨
 
-全库扫描必须**递归**（含 vault 根目录）；单项复核仅检查已选范围，不用顶层 `glob('*.md')` 得出全库结论。检查项一览：
+所有扫描必须**递归**（含 vault 根目录），不用顶层 `glob('*.md')` 得出全库结论。检查项一览：
 
 1. **4.1 目录与页面清单**：页面/原始文件/空目录/根目录文件/隐藏文件/脚本分类计数（正式页、元文件、0 字节幽灵页、系统文件、原始材料、中间产物）；
 2. **4.2 YAML 与类型**：frontmatter 递归解析、必需字段、`type` 与目录一致、标题关系、日期、`confidence`/`contested`、类型专属字段；mtime 晚于 `updated` 只列候选；
 3. **4.3 来源与原始材料**：`sources:` 路径存在、非路径值不误报、引用覆盖、重复哈希、多来源页面的段落级出处；
-4. **4.4 链接与 index**：死链/空目标/同名歧义/路径前缀/锚点/畸形写法分类报告，示例与历史单列，`drafts/` 容忍类；验收口径“正式内容页死链为零”（`--strict` 下全部同为零）；可运行 `check_wikilinks.py <vault> --strict`。Obsidian 解析细节见 [链接解析](references/obsidian-parsing-details.md)；
+4. **4.4 链接与 index**：死链/空目标/同名歧义/路径前缀/锚点/畸形写法分类报告，示例与历史单列，`drafts/` 容忍类；验收口径“正式内容页死链为零”（`--strict` 下全部同为零）；可运行 `check_wikilinks.py <vault> --strict`。Obsidian 解析细节见 [obsidian-parsing-details.md](references/obsidian-parsing-details.md)；
 5. **4.5 图谱与孤岛**：导航入站与实质入站分开；分类间矩阵、孤岛、星形结构；不机械补链接，每条边说明关系；
 6. **4.6 标签、命名和格式**：词表内外、同义与自由标签、重复 stem、空行、PDF 残留、结论碎片；>200 行只列候选；论文页完整六维检查（摘要、结论、PDF 残留、关键词、YAML、标题空行）；
 7. **4.7 脚本与 Obsidian 配置**：脚本安全清单（绝对路径、覆盖写、无试运行/备份等，存在即 P1 禁运行）；`.obsidian` 配置与视图分离；
 8. **4.8 研究设计与统计状态**：“可执行”≠“已计算”；不编造数字；机器重算与人工口径交叉核对、差异归因；方法页版本同步。
 
-各项的判定细节、报告口径与操作步骤见 [技术细则](references/technical-health-checklist.md)。**技术轨完成条件**：给出可复算的计数、具体路径和误报分类，而不是“结构良好”。
+各项的判定细节、报告口径与操作步骤见 [technical-health-checklist.md](references/technical-health-checklist.md)。**技术轨完成条件**：给出可复算的计数、具体路径和误报分类，而不是“结构良好”。
 
 ## 五、学术可用性轨
 
 技术合格不代表学术可用：页面可以很长、有来源、无死链，却因模板化分析或无证据结论而误导研究。
 
-抽查与判定方法（分类抽样＝基准页＋离群页；案例页四层区分；论文—案例“引用轨/主旨轨”核验、逐对双向、不可信链接复核；概念页可追溯性；研究设计与比较页的反例边界与可支持的论文主张；模块薄弱检查）见 [学术细则](references/academic-usability-checklist.md)。**学术轨完成条件**：每个系统性问题至少有“机器统计证据 + 人工抽样证据”；不能只凭重复计数断言内容错误，也不能只凭一页推断全库。
+抽查与判定方法（分类抽样＝基准页＋离群页；案例页四层区分；论文—案例“引用轨/主旨轨”核验、逐对双向、不可信链接复核；概念页可追溯性；研究设计与比较页的反例边界与可支持的论文主张；模块薄弱检查）见 [academic-usability-checklist.md](references/academic-usability-checklist.md)。**学术轨完成条件**：每个系统性问题至少有“机器统计证据 + 人工抽样证据”；不能只凭重复计数断言内容错误，也不能只凭一页推断全库。
 
 ## 六、模板化与假性图谱检测
 
-检测方法（章节指纹、重复组、最大重复组回读）与最小指纹示例见 [模板化检测](references/templating-and-false-graph-detection.md)。重复只是风险信号，只有原始材料和页面语义能证明“错误”；确认模板错配后，冻结相关分析层，不再用它生成比较页或论文统计。
+检测方法（章节指纹、重复组、最大重复组回读）与最小指纹示例见 [templating-and-false-graph-detection.md](references/templating-and-false-graph-detection.md)。重复只是风险信号，只有原始材料和页面语义能证明“错误”；确认模板错配后，冻结相关分析层，不再用它生成比较页或论文统计。
 
 ## 七、问题分级
 
@@ -125,7 +123,7 @@ metadata:
 
 不存在时：`AUDIT_ONLY` 不擅自创建；只有用户明确要求才创建；它是根目录元文件，不计入正式页数或 index（除非 SCHEMA 另有规定）。
 
-台账至少包含：使用规则；基线计数与已通过项目；分类抽样；P0—P3 编号任务；OPT 任务状态总表；分阶段执行顺序；全局验收清单；待处理页面清单；规则回写区（候选/已确认）；追加式执行记录模板。修复后两处都写；只读审计与默认状态的每日检修中不为“留痕”修改 `log.md`（检修的既定授权例外见第十节）。台账的完整设计（三份维护文件分工、RULE-CANDIDATE 回写纪律）见 [台账细则](references/systematic-vault-audit-and-optimization-ledger.md) 第十一节。
+台账至少包含：使用规则；基线计数与已通过项目；分类抽样；P0—P3 编号任务；OPT 任务状态总表；分阶段执行顺序；全局验收清单；待处理页面清单；规则回写区（候选/已确认）；追加式执行记录模板。修复后两处都写；只读审计与默认状态的每日检修中不为“留痕”修改 `log.md`（检修的既定授权例外见第十节）。台账的完整设计（三份维护文件分工、RULE-CANDIDATE 回写纪律）见 [systematic-vault-audit-and-optimization-ledger.md](references/systematic-vault-audit-and-optimization-ledger.md) 第十一节。
 
 ## 九、分批修复
 
@@ -136,12 +134,12 @@ metadata:
 3. **外科式修改**：只替换目标字段或章节，不重建整页，不碰 `raw/`；
 4. **关系复核**：新链接目标存在、有实质内容、关系具体，必要时双向；
 5. **日期与日志**：只更新实际改动页的 `updated`；台账追加详细记录，log 追加简记；
-6. **最终快照验收**：页面、关联、索引与获准日志全部写完后，统一检查 YAML、来源、死链、空壳、格式及相关图谱；编辑中保留局部检查，同一批不重复全库扫描；
+6. **全量验收**：复跑 YAML、来源、死链、空壳、格式和相关图谱检查；
 7. **抽样回读**：逐页读回修改段落，不只相信补丁成功或子代理自报完成。
 
 修案例页时只重写有证据问题的研究分析层、保留可核验的原始事实，证据不足写“暂不形成跨案结论”；修概念页时代表案例和论文必须支持明确命题，不为凑链接添加；修论文页时元数据以 PDF 首页或可靠书目来源为准、结论必须读 PDF 末尾确认；法规范库尚未完整摄入前，只列“需摄入的规范和条文范围”，不系统补条文号。
 
-**连续推进**：已确认范围内同类修改连续执行；新增范围、改口径或删除资料再提决策。跨会话按第一节交接，不重复批准。
+**连续推进与跨会话延续**：范围与批次预算已确认时，同类修改连续执行（默认每批 5—8 页），不逐项请求批准；新增范围、改统计口径、删除资料时单独提出决策。已确认范围、允许写入路径与未决项写入交接页，后续会话据此继续（“继续上一批”）。
 
 ### 9.1 批量操作
 
@@ -161,19 +159,19 @@ metadata:
 
 **触发**：用户说“今天检修”“每日检修”，或按既定计划执行。检修**默认只读（含日志）**：未获既定授权时不写任何文件，报告直接输出在会话中；发现问题按模式纪律提出方案；P1 及以上先列方案等用户确认（默认每批 5—8 页）。
 
-约 10 分钟的五步流程、三日迭代规则、常见易错点与通用巡检增强（LOG-ROTATE／SHA256-DRIFT／CONTESTED／CLOSED-WORLD）见 [巡检细则](references/daily-maintenance-and-periodic-checks.md)。
+约 10 分钟的五步流程、三日迭代规则、常见易错点与通用巡检增强（LOG-ROTATE／SHA256-DRIFT／CONTESTED／CLOSED-WORLD）见 [daily-maintenance-and-periodic-checks.md](references/daily-maintenance-and-periodic-checks.md)。
 
 ## 十一、通用巡检增强
 
 **脚本**：
 
-- `scripts/multimodal_audit.py "<WIKI_PATH>" [--json] [--strict] [--privacy]`：七项全库深检（IDX/RAW/FM/LINK/HYG/LOG/NORM/DUP/PRIV）。退出码 0=通过、1=存在阻断项（`--strict` 下提示项也计入）、2=执行失败或扫描不完整；需要 PyYAML。扫描范围、配置文件 `wiki-audit.config.json` 与判定口径见 [技术细则](references/technical-health-checklist.md)“深检脚本”一节。不要用上游 multimodal-wiki 的脚本覆盖。
+- `scripts/multimodal_audit.py "<WIKI_PATH>" [--json] [--strict] [--privacy]`：七项全库深检（IDX/RAW/FM/LINK/HYG/LOG/NORM/DUP/PRIV）。退出码 0=通过、1=存在阻断项（`--strict` 下提示项也计入）、2=执行失败或扫描不完整；需要 PyYAML。扫描范围、配置文件 `wiki-audit.config.json` 与判定口径见 [technical-health-checklist.md](references/technical-health-checklist.md)“深检脚本”一节。不要用上游 multimodal-wiki 的脚本覆盖。
 
-- 其余巡检增强项与延伸参考（用户环境脚本优先、空壳补全、哈希批量修复）见 [巡检细则](references/daily-maintenance-and-periodic-checks.md)。
+- 其余巡检增强项与延伸参考（用户环境脚本优先、空壳补全、哈希批量修复）见 [daily-maintenance-and-periodic-checks.md](references/daily-maintenance-and-periodic-checks.md)。
 
 ## 十二、全量验收标准
 
-每个修复批次对最终快照提交一份报告：记录范围、规则版本与受检文件路径/内容指纹；同一快照已通过的项目直接复用。验收后写入、增删文件、重命名或并发修改会使相关结果失效，须补查受影响项；影响范围不明则全量重查。适用项为：
+每个修复批次都报告：
 
 - [ ] YAML 错误为零；
 - [ ] 实际原始路径缺失为零；
@@ -189,7 +187,7 @@ metadata:
 
 全部适用项通过才能说“本批完成”；仍有问题时写出剩余计数和页面，不用“总体没问题”掩盖。
 
-交付前按任务入口自查范围、证据与未查项；单项或巡检不冒称全面学术审计，修复不得超授权；示例、历史链接与正式问题分开。
+交付审计报告前另行自查：已定模式与写入范围；已读 SCHEMA、index、log 与整改台账；递归扫描含根目录；技术轨与学术轨都完成，每类抽样基准页和风险页；文档示例、历史链接与正式内容问题分开；系统性结论有机器统计与原材料抽样双重证据；发现按 P0—P3 编号并附验收条件；修复未超出授权范围。
 
 ## 十三、常见陷阱
 

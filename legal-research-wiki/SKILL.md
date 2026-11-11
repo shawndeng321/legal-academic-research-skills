@@ -35,15 +35,15 @@ metadata:
 
 ## 任务入口（先判定入口，再按需加载参考文档）
 
-按下表选定交付物与检查范围，再按材料类型加读；同一会话中已读且未变化的规则不重读，链接是索引，不是全部加载指令。
+先判定本次任务属于哪一类；参考文档按入口与材料类型路由读取（下表与“按材料类型摄入”表），不必每次加载全部经验规则：
 
-| 入口 | 交付物 | 必读／条件加读 | 完成检查 |
+| 入口 | 触发 | 做法 | 先读 |
 |---|---|---|---|
-| 1 新建 | 设计书与首批试点 | [wiki-design-interview.md](references/wiki-design-interview.md)、模板 `assets/templates/wiki-design-brief.md`；获准摄入后读材料规则 | 设计已确认；试点按本批验收，不把暂定项写成定论 |
-| 2 增量摄入 | 新材料页面、关联与索引 | 已有 SCHEMA、设计书及“按材料类型摄入”对应文件 | 盘点差量后摄入；**不重启整套访谈、不重新设计**；最终快照一次验收 |
-| 3 查询 | 带出处的答案与缺口 | 库内相关页、原件；链接/逐条溯源格式需要时再读对应规则 | 结论可回原件；**不顺带建页、改库或写日志**，不运行摄入验收 |
-| 4 加深 | 指定争点的试点与验收 | 访谈“加深模式”；[content-completeness.md](references/content-completeness.md)、[linking-and-cross-references.md](references/linking-and-cross-references.md) | 确认新增维度与范围，试点通过后扩展 |
-| 5 审计/修复 | 审计报告或获准修复 | `legal-wiki-audit-repair` 的任务入口 | 传递范围、基线与授权；默认只读，按所选审计任务验收 |
+| 1 新建 | 要建新研究库 | 复用用户已提供的信息，只追问影响库设计的缺项；少量试点后将设计书交用户确认 | [wiki-design-interview.md](references/wiki-design-interview.md)、模板 `assets/templates/wiki-design-brief.md` |
+| 2 增量摄入 | 已有库追加材料 | 读已有 SCHEMA 与设计书，盘点差量，按材料类型摄入；**不重启整套访谈、不重新设计** | “按材料类型摄入”表的对应参考文件 |
+| 3 查询 | 提问题、要出处 | 检索库内页面与原始材料，给出处和缺口；**不顺带建页、改库或写日志** | [linking-and-cross-references.md](references/linking-and-cross-references.md) |
+| 4 加深 | 围绕一个争点补材料与关联 | 先只读了解现状，再问痛点、新维度与试点范围（访谈“加深模式”）；明确试点范围，验收后扩展 | [content-completeness.md](references/content-completeness.md)、[linking-and-cross-references.md](references/linking-and-cross-references.md) |
+| 5 审计/修复 | 已有库体检、批量修复 | 转交 `legal-wiki-audit-repair` 技能，并传递范围、基线与写入授权；默认只读，修复先备份、小批推进 | 审计技能的 `SKILL.md` |
 
 用户已经说明目的、材料和范围时，直接进入执行，不重复提问；只在范围有缺口时补问对应的问题。
 
@@ -106,7 +106,7 @@ metadata:
 
 ## 每批摄入后的一次性验收
 
-页面、清洗、关联、索引与获准的日志写入全部完成后，对**本批最终快照**一次运行全部适用检查并提交一份报告；不要修完一个维度就宣布完成。快照记录检查范围、规则版本与受检文件的路径/内容指纹。编辑中保留受影响文件的 YAML、来源与链接局部检查。
+摄入、清洗、链接全部完成后，一次运行全部检查并提交一份报告；不要修完一个维度就宣布完成：
 
 1. **内容**：无空壳、无占位文字；缺口（待核验／未发现材料）与空壳分开记录；
 2. **论文质量**：摘要与结论对照原文核验真实完整（长度与链接数只作筛查信号）；无 PDF 残留、关键词干净；YAML 以真实解析结果核验（见 [pdf-paper-ingestion.md](references/pdf-paper-ingestion.md)）；
@@ -115,7 +115,7 @@ metadata:
 5. **YAML 与 index**：全库可解析，每个正式页面都在 `index.md` 中；
 6. **研究设计同步**：材料状态、门禁、口径与现状一致。
 
-以模块为单位推进：摄入 → 关联与日志 → 最终快照验收 → 下一模块。模块检查见 [case-ingestion.md](references/case-ingestion.md) 第七节；同一快照、范围和规则下的已有结果直接复用，不重复全库扫描。验收后若写入、增删文件、重命名或发生并发修改，相关结果失效，须补查受影响项；影响范围不明则重新全量检查。子代理自报完成不是证据。
+以模块为单位推进（一个文件夹通常是一个模块）：摄入 → 关联 → MODULE-END CHECK → 下一模块。检查项见 [case-ingestion.md](references/case-ingestion.md) 第七节。子代理报告的“完成”不是证据，按文件核验内容。
 ## 审计与修复
 
 已有的研究库要体检、审计或批量修复时，转交 `legal-wiki-audit-repair` 技能：文献库逐篇审计与分批修复、深度修复的分批推进、全库结构与学术可用性审计、模板化检测、图谱形态、整改台账、P0—P3 分级、批量重命名与链接迁移、每日检修，细则随该技能安装（其 `references/` 下同名参考文件）。传递时带上范围、基线与写入授权；按**技能名**找到该技能再读取，不假设相对路径。

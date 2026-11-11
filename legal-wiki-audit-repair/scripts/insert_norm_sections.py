@@ -17,7 +17,7 @@ plan.json（PLAN 已移出源码，运行任务不再需要修改技能文件）
       }
     }
     也接受列表形式：{"pages": [{"file": "concepts/某概念.md", "items": [[链接, 说明], …]}]}；
-    条目也可写作 {"link": …, "desc": …}。按实际依据提供条目，不设数量配额；无依据时不插入空小节。
+    条目也可写作 {"link": …, "desc": …}。每页 2-4 条。
 
 批次纪律（备份 → 修改 → updated → 日志 → 复核 一次完成）：
 - 插在 '## 与比较页的关联' 之前；该 anchor 不存在时回退 '## 相关概念'；
@@ -152,8 +152,8 @@ def main(argv=None):
     ok = True
     for entry in plan:
         items = entry["items"]
-        if not items:
-            print(f"[空计划] {entry['file']}: 未提供规范依据，不插入空小节")
+        if not (2 <= len(items) <= 4):
+            print(f"[条数超限] {entry['file']}: {len(items)}条（需2-4条）")
             ok = False
         for link, desc in items:
             n = u.cjk_len(desc)

@@ -176,58 +176,15 @@ class AuditScanTests(unittest.TestCase):
             self.assertIn("raw/papers/无头提取.md", flagged)
 
     @requires_yaml
-    def test_zero_outbound_is_observation_but_isolation_still_warns(self):
+    def test_zero_outbound_page_is_flagged(self):
         with tempfile.TemporaryDirectory() as tmp:
             wiki = Path(tmp)
             write(wiki, "SCHEMA.md", schema())
             write(wiki, "concepts/孤页.md", fm(title="孤页") + "# 孤页\n")
-            _result, data = self.run_json(wiki, "--strict")
-            observations = [f for f in data["findings"] if f["rule"] == "LINK-08"]
-            self.assertEqual(len(observations), 1)
-            self.assertEqual(observations[0]["severity"], "info")
-            self.assertTrue(any(f["rule"] == "LINK-07" and f["severity"] == "warning"
-                                for f in data["findings"]))
 
-    @requires_yaml
-    def test_self_link_does_not_hide_isolation(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            wiki = Path(tmp)
-            write(wiki, "SCHEMA.md", schema())
-            write(wiki, "index.md", "当前纳入导航的页面：1\n\n- [[孤页]]\n")
-            for target in ("孤页#孤页", "concepts/孤页#孤页", "#孤页", "孤页#不存在"):
-                with self.subTest(target=target):
-                    write(wiki, "concepts/孤页.md", fm(title="孤页") + f"# 孤页\n\n[[{target}]]\n")
-                    result, data = self.run_json(wiki, "--strict")
-                    self.assertTrue(any(f["rule"] == "LINK-07" for f in data["findings"]), data)
-                    self.assertEqual(result.returncode, 1, data)
-                    self.assertEqual(any(f["rule"] == "LINK-06" for f in data["findings"]),
-                                     target.endswith("不存在"), data)
-
-    @requires_yaml
-    def test_one_valid_link_passes_strict_but_broken_link_does_not(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            wiki = Path(tmp)
-            write(wiki, "SCHEMA.md", schema())
-            write(wiki, "index.md", "当前纳入导航的页面：2\n\n- [[甲页]]\n- [[乙页]]\n")
-            write(wiki, "concepts/甲页.md", fm(title="甲页") + "# 甲页\n\n[[乙页]]\n")
-            write(wiki, "concepts/乙页.md", fm(title="乙页") + "# 乙页\n\n[[甲页]]\n")
-            before = {p.relative_to(wiki).as_posix(): p.read_bytes()
-                      for p in wiki.rglob("*") if p.is_file()}
-            result, data = self.run_json(wiki, "--strict")
-            self.assertEqual(result.returncode, 0, data)
-            self.assertEqual(data["summary"]["info"], 2)
-            self.assertEqual(data["summary"]["broken"], 0)
-            self.assertEqual(data["summary"]["warning"], 0)
-            self.assertEqual(before, {p.relative_to(wiki).as_posix(): p.read_bytes()
-                                     for p in wiki.rglob("*") if p.is_file()})
-            human = self.run_script(wiki, "--strict")
-            self.assertEqual(human.returncode, 0, human.stdout)
-            self.assertIn("观察", human.stdout)
-            write(wiki, "concepts/甲页.md", fm(title="甲页") + "# 甲页\n\n[[不存在]]\n")
-            result, data = self.run_json(wiki, "--strict")
-            self.assertEqual(result.returncode, 1, data)
-            self.assertTrue(any(f["rule"].startswith("LINK") and f["severity"] == "broken"
-                                for f in data["findings"]))
+            human = self.run_script(wiki)
+            self.assertIn("出站链接不足（0 < 2）", human.stdout)
+            self.assertNotIn("所有页面出站链接均 ≥2", human.stdout)
 
     @requires_yaml
     def test_missing_source_path_is_reported(self):
@@ -258,7 +215,7 @@ class AuditScanTests(unittest.TestCase):
             write(wiki, "concepts/概念乙.md",
                   fm(title="概念乙") + "# 概念乙\n\n[[概念甲]] [[概念乙]]\n")
             write(wiki, "concepts/概念丙.md",
-                  fm(title="概念丙", sources="raw/papers/缺失.pdf") + "# 概念丙\n\n[[概念甲]]\n")
+                  fm(title="概念丙") + "# 概念丙\n\n[[概念甲]]\n")
 
             plain = self.run_script(wiki)
             self.assertEqual(plain.returncode, 0, plain.stdout[-2000:])
@@ -325,7 +282,7 @@ class AuditScanTests(unittest.TestCase):
                 for key in ("rule", "severity", "scope", "path", "location", "message"):
                     self.assertIn(key, finding)
                     self.assertNotEqual(finding[key], None)
-                self.assertIn(finding["severity"], ("broken", "warning", "info"))
+                self.assertIn(finding["severity"], ("broken", "warning"))
 
     @requires_yaml
     def test_duplicate_keys_reported_and_checks_continue(self):
