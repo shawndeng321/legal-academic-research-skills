@@ -326,6 +326,10 @@ python3 -X utf8 -m unittest discover -s tests -v
 
 未安装开发依赖时，依赖相关测试会以“跳过”（`skipped`，附原因）列出，不计入通过；发布校验必须在依赖齐全的环境中运行。
 
+Windows 无法创建真实符号链接（`WinError 1314`）时，仅对应子场景标记跳过，模拟安全检查及其他子场景继续运行；其他错误不会被吞掉。真实链接场景须在具备权限的 Windows 或 Linux 环境补跑，`OK (skipped=...)` 不代表全部验证完成。论文—案例同步的 `expect_sha256` 应取自预演输出；它是统一换行后的文本指纹，不等同于原始文件字节指纹。
+
+私人项目词表使用本机 `tests/.project_terms.local.json`（JSON 字符串数组，已被 Git 忽略），应填写实际需要排除的私人项目名或个人目录片段。未配置时该项明确跳过；不要提交词表。修正范围、覆盖方式和验证边界见 [跨平台测试说明](docs/cross-platform-test-validation.md)。
+
 Claude Code 插件清单校验：
 
 ```bash
