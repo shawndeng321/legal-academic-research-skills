@@ -57,7 +57,7 @@
     "references/research-design-pages.md": "7fb0ab755017484e311ffff8d86d84ef5ff3255813d56f80f9debb37978a55ab",
     "references/statistics-landing-and-case-matching.md": "f674217955fee38316f2f81ee3621d8e0ac8ad32bb47b9d3e4702aa0821fd901",
     "references/wiki-design-interview.md": "95fa7edd03539064f7fd07afb4fc40cc3633c06a01aa950c23878ddedc8112de",
-    "scripts/batch_extract_papers.py": "e1123ee796aa885a0f66531fea6be0f5f564aee776f4825693be4dd35a857db8",
+    "scripts/batch_extract_papers.py": "203590adb451dcad6900db0657055488624e0bb4993ae8f6f8f176c823332d30",
     "scripts/check_wikilinks.py": "8c0f8c4714671f6e1bc8231bf09ddef7f0122ace3f7089a553dd01045c2e0910",
     "scripts/clean_pdf_artifacts.py": "63d0f57ab23716ea315ac5013fc5e8051939a588e1c1ab48fcc3ac35d847b096",
     "scripts/legal_skills_update.py": "7d0e1d5e448f97ba34a8a423c0302ce7beb9d2ca4624c5b730b1922989244c3a",

@@ -198,7 +198,7 @@ def verify_md(root):
     for directory, dirs, files in os.walk(root, onerror=scan_error):
         dirs[:] = sorted(d for d in dirs if not d.startswith("."))
         for name in sorted(files):
-            if name.endswith(".md"):
+            if Path(name).suffix.lower() == ".md":
                 results.append(verify_file(Path(directory) / name, root))
     if not results:
         results.append({"file": None, "status": "no_files", "text_status": "not_checked",

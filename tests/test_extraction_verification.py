@@ -85,6 +85,21 @@ class VerificationTests(unittest.TestCase):
             self.assertTrue(all(row['verification_status'] == 'incomplete' for row in rows))
             self.assertEqual({row['text_status'] for row in rows}, {'legacy_ok', 'missing_hash', 'skipped_no_frontmatter'})
 
+    def test_mixed_case_extensions_preserve_drift_and_unreadable_results(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'a.pdf').write_bytes(b'original')
+            path = companion(root, source='a.pdf', source_hash=digest(b'original'))
+            (root / 'changed.MD').write_bytes(path.read_bytes() + b'changed')
+            (root / 'unreadable.Md').write_bytes(b'\xff\xfe')
+            before = {p.name: p.read_bytes() for p in root.iterdir()}
+            code, rows = run_verify(root)
+            self.assertEqual(code, 1)
+            self.assertEqual({row['file'] for row in rows}, {'a.md', 'changed.MD', 'unreadable.Md'})
+            self.assertEqual(next(row for row in rows if row['file'] == 'changed.MD')['text_status'], 'drift')
+            self.assertEqual(next(row for row in rows if row['file'] == 'unreadable.Md')['text_status'], 'unreadable')
+            self.assertEqual(before, {p.name: p.read_bytes() for p in root.iterdir()})
+
     def test_empty_scan_is_incomplete(self):
         with tempfile.TemporaryDirectory() as tmp:
             code, rows = run_verify(Path(tmp))
