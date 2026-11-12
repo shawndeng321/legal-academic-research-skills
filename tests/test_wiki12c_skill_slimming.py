@@ -23,9 +23,38 @@ ENTRY_REQUIREMENTS = {
 }
 
 
+SCOPED_REQUIREMENTS = {
+    "research": (
+        ("任务入口", r"增量摄入[^\n]*不重启[^\n]*访谈[^\n]*不重新设计", "增量沿用设计"),
+        ("任务入口", r"查询[^\n]*不顺带建页、改库或写日志", "查询权限"),
+        ("任务入口", r"审计/修复[^\n]*legal-wiki-audit-repair[^\n]*默认只读", "审计交接"),
+        ("核心纪律", r"材料边界[^\n]*只用库内[^\n]*原始材料[^\n]*来源不明", "闭世界来源"),
+        ("审计与修复", r"用户授权修复后[^\n]*先备份、先试运行，再写入", "授权与写入顺序"),
+    ),
+    "audit": (
+        ("先判定工作模式", r"AUDIT_ONLY[^\n]*零写入[^\n]*仅在用户明确要求时", "只审计权限"),
+        ("先判定工作模式", r"AUDIT_PLAN[^\n]*只写用户明确指定[^\n]*其余零写入[^\n]*不改正式页面", "方案权限"),
+        ("先判定工作模式", r"REPAIR[^\n]*只改已确认范围", "修复权限"),
+        ("先判定工作模式", r"VERIFY[^\n]*零写入[^\n]*除非用户要求，不补修", "复核权限"),
+        ("冻结审计边界", r"raw/[^\n]*只读[^\n]*原件[^\n]*永不写入", "原件只读"),
+        ("分批修复", r"用户允许修复后", "修复需授权"),
+        ("分批修复", r"备份存", "备份留存"),
+        ("分批修复", r"写入前先试运行", "预演顺序"),
+        ("分批修复", r"逐页读回修改段落", "写后回读"),
+    ),
+}
+
+
 def entry_contract_errors(text, skill):
-    return [name for name, patterns in ENTRY_REQUIREMENTS[skill].items()
-            if not all(re.search(pattern, text) for pattern in patterns)]
+    errors = [name for name, patterns in ENTRY_REQUIREMENTS[skill].items()
+              if not all(re.search(pattern, text) for pattern in patterns)]
+    sections = re.findall(r"^## ([^\n]+)\n(.*?)(?=^## |\Z)", text, re.M | re.S)
+    for heading, pattern, name in SCOPED_REQUIREMENTS[skill]:
+        bodies = [body.replace("*", "").replace("`", "")
+                  for title, body in sections if heading in title]
+        if not any(re.search(pattern, body) for body in bodies):
+            errors.append(name)
+    return errors
 
 
 def route_errors(root, skill, names):
@@ -97,8 +126,30 @@ class SlimmingTests(unittest.TestCase):
 
     def test_contract_allows_short_entries_with_obligations(self):
         examples = {
-            "research": "新建、增量摄入、查询、加深、审计/修复。范围先于速度；只认原始材料，缺口标来源不明。检查YAML和死链；先备份、试运行，写后逐页复核。",
-            "audit": "AUDIT_ONLY/AUDIT_PLAN/REPAIR/VERIFY 分别按授权执行，默认零写入。读SCHEMA.md、index.md、log.md；raw/只读。按P0/P1/P2/P3分级，先备份、试运行，写后逐页回读。",
+            "research": """## 任务入口
+新建、加深：先定范围。
+增量摄入：不重启访谈、不重新设计。
+查询：不顺带建页、改库或写日志。
+审计/修复：转交legal-wiki-audit-repair，默认只读。
+## 核心纪律
+范围先于速度；材料边界：只用库内页面及原始材料，缺口标来源不明。
+## 每批验收
+检查YAML和死链，逐页复核。
+## 审计与修复
+用户授权修复后，先备份、先试运行，再写入。
+""",
+            "audit": """## 先判定工作模式
+AUDIT_ONLY：零写入，仅在用户明确要求时生成报告文件。
+AUDIT_PLAN：只写用户明确指定的报告；其余零写入；不改正式页面。
+REPAIR：只改已确认范围。
+VERIFY：零写入；除非用户要求，不补修。
+## 定向
+读取SCHEMA.md、index.md、log.md，按P0/P1/P2/P3分级。
+## 冻结审计边界
+raw/只读，原件永不写入。
+## 分批修复
+用户允许修复后执行。备份存维护目录，写入前先试运行，逐页读回修改段落。
+""",
         }
         for skill, text in examples.items():
             self.assertEqual(entry_contract_errors(text, skill), [])
@@ -108,6 +159,20 @@ class SlimmingTests(unittest.TestCase):
         for skill, path in (("research", "legal-research-wiki"), ("audit", "legal-wiki-audit-repair")):
             text = (ROOT / path / "SKILL.md").read_text(encoding="utf-8")
             self.assertTrue(entry_contract_errors(text.replace("备份", ""), skill))
+
+    def test_contract_rejects_missing_permission_with_keywords_elsewhere(self):
+        probes = (
+            ("research", "legal-research-wiki", "不重启整套访谈、不重新设计", ""),
+            ("research", "legal-research-wiki", "不顺带建页、改库或写日志", ""),
+            ("audit", "legal-wiki-audit-repair", "零写入；报告直接输出在会话中；除非用户要求，不补修", "零写入；报告直接输出在会话中；可以自动补修"),
+            ("audit", "legal-wiki-audit-repair", "只写用户明确指定的报告或台账；其余零写入；不改正式页面", "报告、台账、零写入；可以改正式页面"),
+        )
+        for skill, directory, old, new in probes:
+            with self.subTest(skill=skill, removed=old):
+                text = (ROOT / directory / "SKILL.md").read_text(encoding="utf-8")
+                self.assertEqual(text.count(old), 1)
+                damaged = text.replace(old, new) + "\n## 历史术语\n" + old
+                self.assertTrue(entry_contract_errors(damaged, skill))
 
     def test_route_detects_missing_and_empty_reference(self):
         with tempfile.TemporaryDirectory() as tmp:
