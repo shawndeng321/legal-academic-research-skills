@@ -500,6 +500,9 @@ class Audit:
                  "ambiguous": 0, "malformed": 0}
         outbound = defaultdict(set)
         inbound = defaultdict(set)
+        knowledge = {rel for rel, page in self.pages.items()
+                     if page["ok"] and rel not in self.meta_files
+                     and page["fm"].get("type") not in ("moc", "handoff")}
         for rel, page in sorted(self.pages.items()):
             for number, line in enumerate((page["text"] or "").splitlines(), 1):
                 for problem in malformed_problems(line):
@@ -517,8 +520,9 @@ class Audit:
                         continue
                     resolution = self.index.resolve(link.file_part, link.anchor)
                     if resolution.status == "ok" and resolution.target:
-                        outbound[rel].add(resolution.target)
-                        inbound[resolution.target].add(rel)
+                        if rel in knowledge and resolution.target in knowledge and resolution.target != rel:
+                            outbound[rel].add(resolution.target)
+                            inbound[resolution.target].add(rel)
                     elif resolution.status == "missing":
                         if link.embed:
                             stats["attachment_missing"] += 1
@@ -533,21 +537,15 @@ class Audit:
                                  f"空目标（0 字节页面）：[[{link.raw}]] → {resolution.target}")
                     elif resolution.status == "path_mismatch":
                         stats["path_mismatch"] += 1
-                        outbound[rel].add(resolution.target)
-                        inbound[resolution.target].add(rel)
                         self.add("LINK-05", "warning", "链接", rel, f"L{number}",
                                  f"路径前缀不符：[[{link.raw}]] → 实际 {resolution.target}")
                     elif resolution.status == "ambiguous":
                         stats["ambiguous"] += 1
-                        outbound[rel].add(resolution.target)
-                        inbound[resolution.target].add(rel)
                         self.add("LINK-03", "warning", "链接", rel, f"L{number}",
                                  f"同名歧义：[[{link.raw}]] → {resolution.target}"
                                  f"（另有 {len(resolution.candidates) - 1} 个同名文件）")
                     elif resolution.status == "anchor_missing":
                         stats["anchor_missing"] += 1
-                        outbound[rel].add(resolution.target)
-                        inbound[resolution.target].add(rel)
                         self.add("LINK-06", "warning", "链接", rel, f"L{number}",
                                  f"锚点不存在：[[{link.raw}]] → {resolution.target}")
         for stem, paths in sorted(self.index.duplicate_stems().items()):
@@ -555,12 +553,14 @@ class Audit:
                      f"同名页面「{stem}」：{'、'.join(paths)}（链接将按最短路径解析，建议消歧）")
         if not stats["broken"] and not stats["attachment_missing"]:
             self.add("LINK-9", "pass", "链接", "（全库）", "全库", "未发现死链")
-        orphans = sorted(rel for rel in self.pages if not inbound.get(rel))
+        stats["knowledge_edges"] = sum(len(targets) for targets in outbound.values())
+        stats["knowledge_pages"] = len(knowledge)
+        orphans = sorted(rel for rel in knowledge if not inbound.get(rel))
         for rel in orphans:
             self.add("LINK-07", "warning", "链接", rel, "文件", "孤立页（0 入链）")
         if self.pages and not orphans:
             self.add("LINK-9", "pass", "链接", "（全库）", "全库", "无孤立页（0 入链）")
-        under = [(rel, len(outbound.get(rel, ()))) for rel in sorted(self.pages)]
+        under = [(rel, len(outbound.get(rel, ()))) for rel in sorted(knowledge)]
         under = [(rel, n) for rel, n in under if n < 2]
         for rel, n in under:
             self.add("LINK-08", "warning", "链接", rel, "文件", f"出站链接不足（{n} < 2）")
