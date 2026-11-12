@@ -2,7 +2,7 @@
 """法学研究 Wiki 深检脚本（七项结构检查）。
 
 用法：
-    python3 -X utf8 multimodal_audit.py <WIKI_PATH> [--json] [--strict] [--privacy]
+    python3 -X utf8 multimodal_audit.py <WIKI_PATH> [--json] [--strict] [--privacy] [--verbose]
 
     WIKI_PATH 也可通过环境变量 WIKI_PATH 提供。`--json` 输出机器可读结果
     （字段名为英文，内容为中文）；`--strict` 下「提示」级发现也计入失败；
@@ -939,14 +939,14 @@ def _rule_check(rule):
             "NORM": 7, "DUP": 7, "PRIV": 7}.get(prefix, 0)
 
 
-def display_message(finding):
-    if finding.paths is not None and len(finding.paths) > 8:
+def display_message(finding, verbose=False):
+    if not verbose and finding.paths is not None and len(finding.paths) > 8:
         return (finding.message.split("：", 1)[0] + "：" + "、".join(finding.paths[:8])
                 + f"（另有 {len(finding.paths) - 8} 项；完整路径见 --json 的 paths 字段）")
     return finding.message
 
 
-def print_report(audit):
+def print_report(audit, verbose=False):
     print("=" * 72)
     print("法学研究 Wiki 深检报告（结构与来源一致性）")
     print("Wiki：{}".format(audit.wiki))
@@ -963,11 +963,12 @@ def print_report(audit):
             if _rule_check(finding.rule) != check_no:
                 continue
             if finding.severity == "pass":
-                print("  ✅ " + finding.message)
+                if verbose:
+                    print("  ✅ " + finding.message)
             else:
                 print("  {} [{}] {}｜{} — {}".format(
                     SEVERITY_LABEL[finding.severity], finding.rule,
-                    finding.path, finding.location, display_message(finding)))
+                    finding.path, finding.location, display_message(finding, verbose)))
     broken = [f for f in audit.findings if f.severity == "broken"]
     warnings = [f for f in audit.findings if f.severity == "warning"]
     print("\n" + "=" * 72)
@@ -976,13 +977,16 @@ def print_report(audit):
     print("  🔴 阻断项：{}｜🟡 提示项：{}".format(len(broken), len(warnings)))
     if audit.unreadable:
         print("  ⚪ 解析失败、其余检查未执行的页面（{}）：{}".format(
-            len(audit.unreadable), "、".join(audit.unreadable[:8])))
+            len(audit.unreadable), "、".join(audit.unreadable if verbose else audit.unreadable[:8]) +
+            (f"（另有 {len(audit.unreadable) - 8} 项；完整路径见 --json 的 unreadable_pages）" if not verbose and len(audit.unreadable) > 8 else "")))
     if audit.raw_unreadable:
         print("  ⚪ 无法读取的提取文件（{}）：{}".format(
-            len(audit.raw_unreadable), "、".join(audit.raw_unreadable[:8])))
+            len(audit.raw_unreadable), "、".join(audit.raw_unreadable if verbose else audit.raw_unreadable[:8]) +
+            (f"（另有 {len(audit.raw_unreadable) - 8} 项；完整路径见 --json 的 unreadable_raw）" if not verbose and len(audit.raw_unreadable) > 8 else "")))
     print("  说明：本报告仅覆盖结构与来源一致性；不构成学术内容审查，")
     print("        学术可用性（要旨、论证、统计口径等）需另行人工抽查。")
     print("        标题/块锚点按文本近似核对（块锚点待核）。")
+    print("  下一步：先核实异常与未检查项；完整报告用 --verbose，机器明细用 --json。")
 
 
 def build_result(audit, strict, exit_code):
@@ -1010,21 +1014,22 @@ def build_result(audit, strict, exit_code):
 
 def main(argv):
     json_mode = "--json" in argv
+    verbose = "--verbose" in argv
     strict = "--strict" in argv
     privacy = "--privacy" in argv
-    rest = [a for a in argv if a not in ("--json", "--strict", "--privacy")]
+    rest = [a for a in argv if a not in ("--json", "--strict", "--privacy", "--verbose")]
     if "--help" in rest or "-h" in rest:
         print(__doc__)
         return 0
     unknown = [a for a in rest if a.startswith("-")]
     if unknown:
-        print("错误：未知参数 {}。用法：python3 multimodal_audit.py <WIKI_PATH> [--json] [--strict] [--privacy]".format(unknown),
+        print("错误：未知参数 {}。用法：python3 multimodal_audit.py <WIKI_PATH> [--json] [--strict] [--privacy] [--verbose]".format(unknown),
               file=sys.stderr)
         return 2
     wiki_input = rest[0] if rest else os.environ.get("WIKI_PATH")
     if not wiki_input:
         print(
-            "错误：未提供 Wiki 根目录。用法：python3 multimodal_audit.py <WIKI_PATH> [--json] [--strict] [--privacy]；"
+            "错误：未提供 Wiki 根目录。用法：python3 multimodal_audit.py <WIKI_PATH> [--json] [--strict] [--privacy] [--verbose]；"
             "也可设置环境变量 WIKI_PATH。(error: pass the Wiki root as an argument or set WIKI_PATH)",
             file=sys.stderr,
         )
@@ -1057,7 +1062,7 @@ def main(argv):
     if json_mode:
         print(json.dumps(build_result(audit, strict, exit_code), ensure_ascii=False, indent=2))
     else:
-        print_report(audit)
+        print_report(audit, verbose=verbose)
         if empty_scan:
             print("  ⚪ 未扫描到任何页面或原始文件——请确认路径；不视为通过")
         if exit_code == 1:

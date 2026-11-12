@@ -292,7 +292,7 @@ class ScriptSafetyTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = self.run_script(MULTIMODAL_AUDIT_SCRIPT, wiki)
+            result = self.run_script(MULTIMODAL_AUDIT_SCRIPT, wiki, "--verbose")
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("raw 的 .md 均已登记到 log.md", result.stdout)
