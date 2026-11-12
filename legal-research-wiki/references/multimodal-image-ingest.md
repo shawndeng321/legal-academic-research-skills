@@ -48,7 +48,7 @@ extracted_by: <模型 id>                      # 由哪个模型读取——溯�
 confidence: medium                           # 视觉会误读图表，见下
 ---
 
-![[<主题>.png]]
+[[raw/screenshots/<主题>.png|原件图片]]
 
 <完整描述，逐字>
 ```
@@ -63,7 +63,7 @@ confidence: medium                           # 视觉会误读图表，见下
 
 - 页面 frontmatter 引用：`sources: [raw/screenshots/<主题>.md]`。
 - 综合论断加溯源标记 `^[raw/screenshots/<主题>.md]`（见 `law-paper-writing` 技能的 `references/multimodal-citation-format.md`）。
-- 要在 Layer-2 页面**展示**图：把 PNG 复制到 `raw/assets/<主题>.png` 并嵌 `![[<主题>.png]]`；`raw/screenshots/` 的原件保持不动。
+- 要在 Layer-2 页面**展示**图：把 PNG 复制到 `raw/assets/<主题>.png` 并嵌 `![[raw/assets/<主题>.png]]`；`raw/screenshots/` 的原件保持不动。
 
 ## 发现未摄入图片（文件夹投递情形）
 
