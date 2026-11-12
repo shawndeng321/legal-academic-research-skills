@@ -4,7 +4,7 @@
 
 > 全平台通用：同一份技能正文可在 Claude Code、Codex、Hermes、Devin（CLI / Desktop）、Google Antigravity 以及其他支持标准 `SKILL.md` 的代理宿主（如 DeepSeek Harness）中运行。各宿主的安装路径、工具对应与预检差异集中在每个技能的 `references/host-adapters.md`；运行时元数据分别放在 `SKILL.md`（通用 frontmatter）、`agents/openai.yaml`（Codex）与 `.claude-plugin/`（Claude Code 插件）中。
 
-[快速选择](#先从这里开始) · [更新内容](#2026-10-更新内容) · [安装](#安装) · [自动更新](#自动更新) · [验证](#验证与排错)
+[快速选择](#先从这里开始) · [当前状态](#未发布改动) · [最近发布](#2026-11-更新内容) · [安装](#安装) · [自动更新](#自动更新) · [验证与排错](#验证与排错) · [开发验证](#开发验证)
 
 <p align="center">
   <img src="law-paper-writing/assets/readme/paper-banner.jpg" alt="法学学术研究、知识库审计与论文写作技能包" width="100%">
@@ -31,6 +31,8 @@
 ## 未发布改动
 
 建库、摄入与库审计默认“当前多模态主模型＋按需工具＋必要子代理”，不以角色注册表或多模型聚合为前提。写作 v1.5、原件与定位、来源核验、必要复核和交接要求保留；详见 [建库执行方式](legal-research-wiki/references/multimodal-task-execution.md)。版本字段仍为 2611.11.0，尚未发布。
+
+文档导航：区分未发布状态与最近发布记录，补齐开发验证入口；审计 README 的每日检修说明指向实际细则，运行规则不变。
 
 ## 2026-11 更新内容
 

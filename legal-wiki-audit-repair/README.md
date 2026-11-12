@@ -19,6 +19,8 @@
 > 核验状态说明：同步独立哈希复核的退出码及未完成含义，漂移归因、原件只读与哈希口径保持。
 >
 > 命令目录定位：哈希复核示例明确技能脚本与知识库目录分开定位；派生提取物按实际目录复核，不假定两个技能相邻安装。
+>
+> 文档指路：每日检修、三日迭代和巡检增强说明链接到实际参考文件；运行规则与安装方式不变。
 
 自动检查、四种提示选择、本地修改保护与回滚说明见[根 README 的自动更新章节](../README.md#自动更新)。
 
@@ -102,7 +104,7 @@ hermes skills install shawndeng321/legal-academic-research-skills/legal-wiki-aud
 - `evals/pressure-tests.md`：15 个评估场景（工作模式与写入权限、证据判断、批量操作、检修与更新、报告），修改核心规则后逐条检查。
 - `references/multimodal-reingest-stubs.md`：空壳来源补全边界。
 - `references/multimodal-sha256-bulk-fix.md`：raw 提取文本的 SHA256 批量修复方法。
-- 每日检修、三日迭代和通用巡检增强纪律直接维护在 `SKILL.md`。
+- 每日检修的触发与只读边界见 [`SKILL.md`“每日检修与迭代”](SKILL.md#十每日检修与迭代)；五步流程、三日迭代和通用巡检增强细则见 [daily-maintenance-and-periodic-checks.md](references/daily-maintenance-and-periodic-checks.md)。
 
 所有会写入 Wiki 的脚本都应先用 `--dry-run` 查看计划；不要直接把整个 Vault 作为目标，也不要使用未经确认的备份路径。
 
