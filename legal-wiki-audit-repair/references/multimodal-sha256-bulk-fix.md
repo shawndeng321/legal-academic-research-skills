@@ -125,7 +125,7 @@ python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/papers --verify
 python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/derived/papers --verify
 ```
 
-输出每条 .md 的 `ok / legacy_ok / missing_hash / drift / source_drift`。批量修复完成后应无 `drift`/`source_drift`；`legacy_ok` 表示旧口径哈希仍然相符，可在下一轮迁移为 `text_sha256`。
+输出每条 .md 的文字和原件子状态，以及 `verification_status`（通过／问题／未完成）与 `checks_complete`。退出 0 才是有对象且全部核完相符；漂移退出 1，无漂移但未完成退出 2。修复后既要排除 `drift`/`source_drift`，也要逐项处理缺失、不可读和空扫描；不能把“没有漂移”当作核验全部完成。`text_status=legacy_ok` 只表示旧口径正文哈希相符，不代替原件核验，可在下一轮迁移为 `text_sha256`。
 
 ## When to Use
 

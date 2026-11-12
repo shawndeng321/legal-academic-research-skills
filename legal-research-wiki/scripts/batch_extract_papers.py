@@ -23,7 +23,8 @@ Formats:
 ``sha256`` 按旧口径的两种容差（含前导换行／不含）各试一次，命中标记
 ``legacy_ok``（建议迁移为 ``text_sha256``）；``source_path`` 可解析时同时
 核对 ``source_sha256`` 与原件字节。drift 只报告归因，不自动重算覆盖。
-退出码：正常提取/预览为 0；``--verify`` 发现 drift 或 source_drift 为 1。
+退出码：正常提取/预览为 0；``--verify`` 全部核完且相符为 0；发现漂移为 1；
+无漂移但核验未完成为 2。漂移与未完成可并存，须同时读取子状态与 checks_complete。
 
 By default, an existing companion is skipped. ``--force`` is an explicit
 opt-in to overwrite it (原提取物先自行备份，或改用 ``--out-dir`` 写入派生
@@ -33,6 +34,7 @@ modified.
 import argparse
 import hashlib
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -111,67 +113,91 @@ def extract_pdf(pdf_path, out_path, fmt, source_path):
     }
 
 
-def verify_md(root):
-    """只读复核 root 下的 .md 提取物；返回结果列表。"""
-    results = []
-    for md_path in sorted(root.rglob("*.md")):
-        rel_parts = md_path.relative_to(root).parts
-        if any(part.startswith(".") for part in rel_parts[:-1]):
-            continue
-        rel = "/".join(rel_parts)
-        entry = {"file": rel, "status": "ok"}
+def verify_file(md_path, root):
+    """Read one companion, retaining separate text/source verification results."""
+    entry = {"file": md_path.relative_to(root).as_posix(),
+             "text_status": "unreadable", "source_status": "not_checked",
+             "verification_status": "incomplete", "checks_complete": False}
+    try:
+        content = md_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        entry.update(status="unreadable", error=str(exc))
+        return entry
+    fm_text, body = split_frontmatter(content)
+    if fm_text is None:
+        entry.update(status="skipped_no_frontmatter", text_status="skipped_no_frontmatter")
+        return entry
+    text_sha = read_field(fm_text, "text_sha256")
+    legacy_sha = read_field(fm_text, "sha256")
+    now = sha256_text(body)
+    if text_sha:
+        entry["text_sha256_stored"] = text_sha
+        entry["text_status"] = "ok" if text_sha == now else "drift"
+    elif legacy_sha:
+        raw = hashlib.sha256(body.encode("utf-8")).hexdigest()
+        entry["text_status"] = "legacy_ok" if legacy_sha in (now, raw) else "drift"
+        if entry["text_status"] == "legacy_ok":
+            entry["note"] = "旧口径 sha256 命中；建议迁移为 text_sha256（见 multimodal-sha256-bulk-fix.md）"
+    else:
+        entry["text_status"] = "missing_hash"
+    if entry["text_status"] == "drift":
+        entry["text_sha256_now"] = now
+    source_sha = read_field(fm_text, "source_sha256")
+    source_path = read_field(fm_text, "source_path")
+    entry["source_status"] = "missing_metadata"
+    if source_sha and source_path:
         try:
-            content = md_path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError) as exc:
-            entry["status"] = "unreadable"
-            entry["error"] = str(exc)
-            results.append(entry)
-            continue
-        fm_text, body = split_frontmatter(content)
-        if fm_text is None:
-            entry["status"] = "skipped_no_frontmatter"
-            results.append(entry)
-            continue
-        text_sha = read_field(fm_text, "text_sha256")
-        legacy_sha = read_field(fm_text, "sha256")
-        if text_sha:
-            entry["text_sha256_stored"] = text_sha
-            if text_sha == sha256_text(body):
-                entry["status"] = "ok"
+            # Preserve the recorded path. Never fall back to an unrelated basename.
+            candidates = {base / source_path for base in (root, *list(root.parents)[:3])}
+            found = sorted({p.resolve() for p in candidates if p.is_file()})
+            if not found:
+                entry["source_status"] = "missing"
+            elif len(found) > 1:
+                entry["source_status"] = "ambiguous"
+                entry["source_candidates"] = [str(p) for p in found]
             else:
-                entry["status"] = "drift"
-                entry["text_sha256_now"] = sha256_text(body)
-        elif legacy_sha:
-            now_canonical = sha256_text(body)
-            now_raw = hashlib.sha256(body.encode("utf-8")).hexdigest()
-            if legacy_sha in (now_canonical, now_raw):
-                entry["status"] = "legacy_ok"
-                entry["note"] = ("旧口径 sha256 命中；建议迁移为 text_sha256"
-                                 "（见 multimodal-sha256-bulk-fix.md）")
-            else:
-                entry["status"] = "drift"
-                entry["text_sha256_now"] = now_canonical
-        else:
-            entry["status"] = "missing_hash"
-        source_sha = read_field(fm_text, "source_sha256")
-        source_path = read_field(fm_text, "source_path")
-        source_status = None
-        if source_sha and source_path:
-            candidates = [root / source_path]
-            for parent in list(root.parents)[:3]:
-                candidates.append(parent / source_path)
-            candidates.append(root / Path(source_path).name)
-            source_file = next((c for c in candidates if c.is_file()), None)
-            if source_file is None:
-                source_status = "missing"
-            else:
-                actual = sha256_bytes(source_file.read_bytes())
-                source_status = "ok" if actual == source_sha else "drift"
-            if source_status == "drift" and entry["status"] == "ok":
-                entry["status"] = "source_drift"
-        if source_status:
-            entry["source_status"] = source_status
-        results.append(entry)
+                entry["source_file"] = str(found[0])
+                actual = sha256_bytes(found[0].read_bytes())
+                entry["source_status"] = "ok" if actual == source_sha else "drift"
+                if actual != source_sha:
+                    entry["source_sha256_now"] = actual
+        except OSError as exc:
+            entry["source_status"] = "unreadable"
+            entry["source_error"] = str(exc)
+    entry["checks_complete"] = (entry["text_status"] in ("ok", "legacy_ok", "drift")
+                                 and entry["source_status"] in ("ok", "drift"))
+    if entry["text_status"] == "drift" or entry["source_status"] == "drift":
+        entry["verification_status"] = "issues"
+        entry["status"] = "drift" if entry["text_status"] == "drift" else "source_drift"
+    elif entry["checks_complete"]:
+        entry["verification_status"] = "passed"
+        entry["status"] = entry["text_status"]
+    elif entry["text_status"] == "missing_hash":
+        entry["status"] = "missing_hash"
+    else:
+        entry["status"] = "source_" + entry["source_status"]
+    return entry
+
+
+def verify_md(root):
+    """Read-only scan; unreadable directories and empty scopes remain incomplete."""
+    results = []
+
+    def scan_error(exc):
+        results.append({"file": str(exc.filename), "status": "scan_error",
+                        "text_status": "not_checked", "source_status": "not_checked",
+                        "verification_status": "incomplete", "checks_complete": False,
+                        "error": str(exc)})
+
+    for directory, dirs, files in os.walk(root, onerror=scan_error):
+        dirs[:] = sorted(d for d in dirs if not d.startswith("."))
+        for name in sorted(files):
+            if name.endswith(".md"):
+                results.append(verify_file(Path(directory) / name, root))
+    if not results:
+        results.append({"file": None, "status": "no_files", "text_status": "not_checked",
+                        "source_status": "not_checked", "verification_status": "incomplete",
+                        "checks_complete": False})
     return results
 
 
@@ -195,7 +221,9 @@ def main(argv=None):
     if args.verify:
         results = verify_md(root)
         print(json.dumps(results, ensure_ascii=False))
-        return 1 if any(r.get("status") in ("drift", "source_drift") for r in results) else 0
+        if any(r["verification_status"] == "issues" for r in results):
+            return 1
+        return 2 if any(r["verification_status"] == "incomplete" for r in results) else 0
 
     suffix = ".md" if args.format == "md" else ".txt"
     out_dir = Path(args.out_dir).expanduser() if args.out_dir else None

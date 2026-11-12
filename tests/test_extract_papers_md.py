@@ -88,7 +88,7 @@ class ExtractMdTests(unittest.TestCase):
             text = "first line\nsecond line\n"
             (root / "a.md").write_text(
                 "---\n"
-                "source_path: raw/papers/a.pdf\n"
+                "source_path: a.pdf\n"
                 "ingested: 2026-10-14\n"
                 f"source_sha256: {hashlib.sha256(b'PDF-BYTES-A').hexdigest()}\n"
                 f"text_sha256: {sha_text(text)}\n"
@@ -125,10 +125,10 @@ class ExtractMdTests(unittest.TestCase):
                 encoding="utf-8",
             )
             result = run(root, "--verify")
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
             entries = {e["file"]: e for e in parse(result)}
-            self.assertEqual(entries["b.md"]["status"], "legacy_ok", entries["b.md"])
-            self.assertEqual(entries["c.md"]["status"], "legacy_ok", entries["c.md"])
+            self.assertEqual(entries["b.md"]["text_status"], "legacy_ok", entries["b.md"])
+            self.assertEqual(entries["c.md"]["text_status"], "legacy_ok", entries["c.md"])
             self.assertIn("迁移为 text_sha256", entries["b.md"].get("note", ""))
 
     def test_verify_detects_real_edit(self):
@@ -157,7 +157,7 @@ class ExtractMdTests(unittest.TestCase):
             text = "body\n"
             (root / "e.md").write_text(
                 "---\n"
-                "source_path: raw/papers/e.pdf\n"
+                "source_path: e.pdf\n"
                 f"source_sha256: {hashlib.sha256(b'OTHER-BYTES').hexdigest()}\n"
                 f"text_sha256: {sha_text(text)}\n"
                 "---\n\n" + text,
@@ -169,7 +169,7 @@ class ExtractMdTests(unittest.TestCase):
             self.assertEqual(entry["status"], "source_drift", entry)
             self.assertEqual(entry["source_status"], "drift", entry)
 
-    def test_verify_missing_hash_is_informational(self):
+    def test_verify_missing_hash_is_incomplete_not_corrupt(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "papers"
             root.mkdir()
@@ -177,8 +177,9 @@ class ExtractMdTests(unittest.TestCase):
                 "---\ntitle: 无哈希旧文件\n---\n\n正文\n", encoding="utf-8"
             )
             result = run(root, "--verify")
-            self.assertEqual(result.returncode, 0, result.stdout)
+            self.assertEqual(result.returncode, 2, result.stdout)
             self.assertEqual(parse(result)[0]["status"], "missing_hash")
+            self.assertEqual(parse(result)[0]["verification_status"], "incomplete")
 
 
 if __name__ == "__main__":
