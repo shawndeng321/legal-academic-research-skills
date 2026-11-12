@@ -59,7 +59,7 @@
     "references/wiki-design-interview.md": "95fa7edd03539064f7fd07afb4fc40cc3633c06a01aa950c23878ddedc8112de",
     "scripts/batch_extract_papers.py": "8b6a98b53d8372e7fdcfa0e8f083d33a3b45e68603ab18a2d52d3f93ac028c7d",
     "scripts/check_wikilinks.py": "8c0f8c4714671f6e1bc8231bf09ddef7f0122ace3f7089a553dd01045c2e0910",
-    "scripts/clean_pdf_artifacts.py": "63d0f57ab23716ea315ac5013fc5e8051939a588e1c1ab48fcc3ac35d847b096",
+    "scripts/clean_pdf_artifacts.py": "6de7f59e6357f51e74fde39e36d2721026ba63f97f6c5179d6ec7fecca5f9560",
     "scripts/legal_skills_update.py": "7d0e1d5e448f97ba34a8a423c0302ce7beb9d2ca4624c5b730b1922989244c3a",
     "scripts/wiki_links.py": "273091dfa808e3086f9f2733db19f5e32ec5f3f4009413186f47d3e529a1bbe5",
     "SKILL.md": "6d9afbe1f768e906d1404f5d2d512bb30474e3a539edecb0f1e6b7c42f802cd2"

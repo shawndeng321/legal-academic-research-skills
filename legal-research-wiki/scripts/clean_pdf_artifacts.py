@@ -46,7 +46,9 @@ def _join_broken_lines(text):
             continue
         previous = result[-1]
         left, right = previous.rstrip(), line.lstrip()
-        if (STRUCTURAL_LINE.match(line) or previous.lstrip().startswith(("#", "|", ">", "```", "~~~"))
+        if (STRUCTURAL_LINE.match(line)
+                or previous.lstrip().startswith(("#", "|", ">", "```", "~~~"))
+                or (STRUCTURAL_LINE.match(previous) and not left.endswith(("，", "；", ",", ";")))
                 or left.endswith(("-", "。", "！", "？", ".", "!", "?", ":", "："))
                 or line.startswith(("    ", "\t"))):
             result.append(line)
