@@ -34,13 +34,18 @@ uv pip install pymupdf
 
 ## 步骤 3：提取文本——首选脚本（默认不覆盖）
 
-从 wiki 根目录运行：
+先按宿主提供的技能位置定位 `legal-research-wiki`，再切到用户指定的 wiki 根目录。技能目录与知识库目录可以完全分开；不要把脚本复制进知识库。以下变量替换为实际绝对路径（Windows 使用 `C:/...` 原生路径；含中文或空格也保留引号）：
 
 ```bash
-python3 scripts/batch_extract_papers.py raw/papers --format md --dry-run    # 先预览计划生成的 .md
-python3 scripts/batch_extract_papers.py raw/papers --format md              # 写入提取物（已存在则跳过）
-python3 scripts/batch_extract_papers.py raw/papers --format md --out-dir raw/derived/papers   # 新提取物写入派生目录（推荐）
-python3 scripts/batch_extract_papers.py raw/papers --verify                 # 只读复核（重算正文哈希 + 核对原件字节）
+RESEARCH_SKILL='/实际安装位置/legal-research-wiki'
+WIKI_PATH='/用户指定的知识库'
+cd "$WIKI_PATH" || exit 1
+python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/papers --format md --dry-run
+python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/papers --format md
+python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/papers --format md --out-dir raw/derived/papers
+python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/papers --verify
+# 使用派生目录时改为复核实际提取物目录：
+python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/derived/papers --verify
 ```
 
 - 默认**不覆盖**：目标已存在时跳过；重新提取请显式 `--force`（先自行备份原提取物）或写入派生目录。

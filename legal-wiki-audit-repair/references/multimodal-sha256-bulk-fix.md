@@ -114,10 +114,15 @@ print(f"{mode}: {stats}")
 
 ## Verification
 
-一键复核（推荐；只读，drift 时退出码 1）：
+一键复核（推荐；只读，drift 时退出码 1）。先按宿主提供的位置定位 `legal-research-wiki`，不假定它与审计技能相邻；切到用户指定的 wiki 根目录，再用技能脚本绝对路径运行。变量替换为实际绝对路径，含中文或空格时保留引号，Windows 使用 `C:/...` 原生路径：
 
 ```bash
-python3 scripts/batch_extract_papers.py raw/papers --verify   # 在 legal-research-wiki 技能目录下运行
+RESEARCH_SKILL='/实际安装位置/legal-research-wiki'
+WIKI_PATH='/用户指定的知识库'
+cd "$WIKI_PATH" || exit 1
+python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/papers --verify
+# 提取物若在派生目录，改用实际提取物目录：
+python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/derived/papers --verify
 ```
 
 输出每条 .md 的 `ok / legacy_ok / missing_hash / drift / source_drift`。批量修复完成后应无 `drift`/`source_drift`；`legacy_ok` 表示旧口径哈希仍然相符，可在下一轮迁移为 `text_sha256`。
