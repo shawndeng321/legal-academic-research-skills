@@ -31,9 +31,33 @@ LABEL_RE = re.compile(r"[【［]\s*(?:摘\s*要|内容提要|提\s*要|关\s*键
 FOOTNOTE_MARK_RE = re.compile(r"［\s*\d{1,3}\s*］")
 
 
+STRUCTURAL_LINE = re.compile(
+    r"^\s*(?:#{1,6}\s|[-+*•]\s|\d+[.)、]\s*|[（(]\d+[）)]|"
+    r"[（(]?[一二三四五六七八九十]+[）)、.]|[>|]|`{3}|~{3})"
+)
+
+
 def _join_broken_lines(text):
-    """Join single line breaks inside paragraphs, keep blank-line paragraph breaks."""
-    return re.sub(r"([^\n])\n([^\n])", r"\1\2", text)
+    """Join clear prose wraps; retain structure and uncertain word splitting."""
+    result = []
+    for line in text.split("\n"):
+        if not result or not result[-1].strip() or not line.strip():
+            result.append(line)
+            continue
+        previous = result[-1]
+        left, right = previous.rstrip(), line.lstrip()
+        if (STRUCTURAL_LINE.match(line) or previous.lstrip().startswith(("#", "|", ">", "```", "~~~"))
+                or left.endswith(("-", "。", "！", "？", ".", "!", "?", ":", "："))
+                or line.startswith(("    ", "\t"))):
+            result.append(line)
+            continue
+        if re.search(r"[A-Za-z0-9]$", left) and re.match(r"[A-Za-z0-9]", right):
+            result[-1] = left + " " + right
+        elif re.search(r"[\u3400-\u9fff，、；]$", left) and re.match(r"[\u3400-\u9fff]", right):
+            result[-1] = left + right
+        else:
+            result.append(line)
+    return "\n".join(result)
 
 
 def _clean_section(name, body):
@@ -45,7 +69,7 @@ def _clean_section(name, body):
     if name == "关键词":
         content = content.replace("【", "").replace("】", "")
         lead = content[: len(content) - len(content.lstrip("\n"))]
-        content = lead + content.strip().replace("\n", "").strip(";；")
+        content = lead + _join_broken_lines(content.strip()).strip(";；")
     elif name in ("摘要", "主要结论"):
         content = _join_broken_lines(content)
     else:  # 核心论点
