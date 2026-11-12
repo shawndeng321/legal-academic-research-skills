@@ -56,6 +56,25 @@ class DailyCoverageTests(unittest.TestCase):
             self.assertEqual(checks['hashes']['status'], 'not_checked')
             self.assertFalse(result['complete'])
 
+    def test_legal_subchecks_cannot_pass_from_privacy_or_one_type_only(self):
+        for kinds, expected in [(('concept',), 'not_checked'), (('norm',), 'partial'), (('case',), 'partial'), (('norm', 'case'), 'passed')]:
+            with self.subTest(kinds=kinds), tempfile.TemporaryDirectory() as tmp:
+                wiki = Path(tmp)
+                (wiki / 'entities').mkdir()
+                (wiki / 'wiki-audit.config.json').write_text(json.dumps({'privacy': {'enabled': True}}), encoding='utf-8')
+                for kind in kinds:
+                    (wiki / f'entities/{kind}.md').write_text(
+                        f'---\ntitle: {kind}\ntype: {kind}\ntags: [known]\ncreated: 2026-01-01\nupdated: 2026-01-01\n'
+                        '效力状态: 现行有效\n核验日期: 2099-01-01\ndocket: 合成案号001\n---\n正文\n', encoding='utf-8')
+                before = {str(p): p.read_bytes() for p in wiki.rglob('*') if p.is_file()}
+                code, result = self.run_daily(wiki)
+                row = next(r for r in result['coverage'] if r['id'] == 'legal')
+                self.assertEqual(row['status'], expected, row)
+                if expected != 'passed':
+                    self.assertIn('legal', result['summary']['outstanding'])
+                    self.assertIn('未检查', row['note'])
+                self.assertEqual(before, {str(p): p.read_bytes() for p in wiki.rglob('*') if p.is_file()})
+
     def test_tool_failure_and_missing_dependency_are_retained(self):
         self.assertTrue(SCRIPT.is_file())
         spec = importlib.util.spec_from_file_location('daily_summary', SCRIPT)

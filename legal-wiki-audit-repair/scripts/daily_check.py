@@ -58,13 +58,19 @@ def summarize(wiki, research_skill=None, strict=False):
     def add(key, status, note):
         coverage.append({'id': key, 'status': status, 'note': note})
 
-    def structural(key, numbers, note):
+    def structural(key, numbers, note, required_counts=()):
         if not structure_valid:
             add(key, 'not_checked', note + '；深检未成功返回，见 tools.structure.error')
             return
         checks = {row.get('check'): row for row in payload['checks']}
         statuses = [checks.get(n, {}).get('status', 'not_checked') for n in numbers]
         status = 'not_checked' if 'not_checked' in statuses else ('issues' if any(s in ('warn', 'fail') for s in statuses) else 'passed')
+        missing = [label for field, label in required_counts
+                   if not any(checks.get(n, {}).get(field, 0) > 0 for n in numbers)]
+        if missing:
+            note += '；未检查：' + '、'.join(missing)
+            if status == 'passed':
+                status = 'not_checked' if len(missing) == len(required_counts) else 'partial'
         if payload.get('unreadable_pages') or payload.get('unreadable_raw'):
             status = 'partial'
         add(key, status, note)
@@ -75,7 +81,8 @@ def summarize(wiki, research_skill=None, strict=False):
     add('tags', 'partial' if structure_valid else 'not_checked', '现有 FM-04 仅提示词表外且只用一次的标签；重复出现的词表外标签可能漏掉，须对全部标签与 SCHEMA 词表逐项核对')
     add('type_fields', 'partial' if structure_valid else 'not_checked', '通用必填字段和规范/案例专项已有检查；全部类型专属字段覆盖率须按 SCHEMA 人工补查')
     add('symmetry', 'manual', '论文↔案例双向对称须补查；可先运行 scan_missing_paper_case_links.py 与 verify_case_link_sections.py，再回读两侧来源和章节')
-    structural('legal', [7], '法规范时效和案号去重按机器字段检查；法律效力与案号归属仍需回到原件核验')
+    structural('legal', [7], '法规范时效和案号去重按机器字段检查；法律效力与案号归属仍需回到原件核验',
+               (('norms', '法规范时效（无可检查 norm 页）'), ('cases', '案号去重（无可检查 case 页）')))
     hash_status = 'not_checked'
     if hashes_valid:
         hash_status = 'issues' if any(r['verification_status'] == 'issues' for r in hash_rows) else ('passed' if all(r['verification_status'] == 'passed' for r in hash_rows) else 'partial')

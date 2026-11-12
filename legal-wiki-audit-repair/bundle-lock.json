@@ -26,7 +26,7 @@
     "references/technical-health-checklist.md": "b2574e10a1577361d06d16a39e4dd27277dda659e0d76cc7d5b865a6b67cdf72",
     "references/templating-and-false-graph-detection.md": "802efa209d627f619262288ff03d8b03a5ad95eb0862a0d536070f6f7d3600e1",
     "scripts/case_link_utils.py": "a76d691e55272ced256a16a2e932924779c88acbcad1a6c07c10b2f4e2b94388",
-    "scripts/daily_check.py": "d280ab0d0a684edcee66722e262662b0a167bed89fff3cd690bddfac56b9f3c7",
+    "scripts/daily_check.py": "1f01e56aa2c7b379eb56f87e1a80eb828e567c0453d4ea9685bb66fc050cfeb8",
     "scripts/insert_norm_sections.py": "d8ebe907038d66eeaade3dc30b34edc72a10c27ef6808c0b20c0504e6a615e01",
     "scripts/legal_skills_update.py": "7d0e1d5e448f97ba34a8a423c0302ce7beb9d2ca4624c5b730b1922989244c3a",
     "scripts/multimodal_audit.py": "e46be8a1871732526b0bee8986c77d635f5eaaaaea65bca68fce6bc1c258c25c",
