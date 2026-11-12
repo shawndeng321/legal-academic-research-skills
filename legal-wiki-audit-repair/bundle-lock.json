@@ -6,11 +6,11 @@
   "skill_version": "2611.11.0",
   "files": {
     "agents/openai.yaml": "466d7c1256241fea798dfdfe807de841800c5102164bb22715c6dc1d6f13af0b",
-    "CHANGELOG.md": "4a752b4a53be386e359b52c37cebc607a2cab2931e77eba4b42e66fa4dacdce0",
+    "CHANGELOG.md": "40c6e5ca9ddd1dcdab3f466942aef8c8e49612eceba00ba3ce42b97ee7988061",
     "evals/behavior-runs.md": "3b7b972f4cf22c36901167d4a0a728ed158aa0e7d55de1e83f9bbb7cb66490a4",
     "evals/pressure-tests.md": "5cd86fdc9ad6d457479650e089354df76658d0f24beef81059d57f972fed4083",
     "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "README.md": "ea6e211a95ee5c61a88522c0384f1caa6225b4b0eebbdaee405dd2865cc77f42",
+    "README.md": "e2d117f21a203004a5b24439f4ec7706de5cc6d25d48b05b7f145284b42c1937",
     "references/academic-usability-checklist.md": "1259cc71f65f9a7fcf1a7d023dea1afe64b8270db311a4828cf3866b22a14265",
     "references/batch-operations.md": "a9c47197411e7b3c6f8feab11fcc2575b923ea9613d7f2c61410d035f1d8e870",
     "references/comparison-page-format.md": "5e6586f78eb942684564a0c1d71d7eb2d4dd2b33d06ac3cbdcfb13b47b30500d",
@@ -33,6 +33,6 @@
     "scripts/sync_paper_case_links.py": "25a6b450a629d80551efaa71f1327737130a43a4c795087dc05562a050c20e01",
     "scripts/verify_case_link_sections.py": "5d8cd0a2ef73c89275a9169012dd2a7315a9c6a6d204c149086094aa4c6fb749",
     "scripts/wiki_links.py": "273091dfa808e3086f9f2733db19f5e32ec5f3f4009413186f47d3e529a1bbe5",
-    "SKILL.md": "8c0df46c298c5a26abd582480a1fc9b160c3e6b29a936552b55768cb5a36d84e"
+    "SKILL.md": "59531a43e6efbb4cd47766bbd415f4eec4fd7914baefcc91ef13fef28ba8a53f"
   }
 }

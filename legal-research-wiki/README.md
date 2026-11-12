@@ -5,6 +5,8 @@
 > 运行时入口是 [`SKILL.md`](SKILL.md)。本页解决“什么时候用、怎么开始、如何验收”；详细规则按需阅读 `references/`。
 >
 > **当前版本：v2611.11（2026-11-11；机器字段 2611.11.0）**。本版：随技能包同步写作技能的上游 v1.5；本技能运行规则与脚本不变，继续保留既有建库/审计和多宿主能力。变更见 [CHANGELOG.md](CHANGELOG.md)。
+>
+> **未发布改动**：建库与摄入默认“当前多模态主模型＋按需工具＋必要子代理”，不再要求按角色选型号或维护注册表。旧文档中的写作路由、交接与必要复核原样保留。
 
 自动检查、四种提示选择、本地修改保护与回滚说明见[根 README 的自动更新章节](../README.md#自动更新)。
 
@@ -90,7 +92,8 @@ hermes skills install shawndeng321/legal-academic-research-skills/legal-research
 - 链接网络：`references/linking-and-cross-references.md`；全库死链检查：`scripts/check_wikilinks.py`
 - 研究设计与统计：`references/research-design-pages.md`、`references/statistics-landing-and-case-matching.md`
 - 文献库审计与修复：转交 `legal-wiki-audit-repair` 技能（细则在其 `references/`：literature-audit-and-repair、staged-deep-repair、systematic-vault-audit-and-optimization-ledger）
-- 多模型与子代理编排：`references/model-orchestrated-legal-research-workflow.md`
+- 建库多模态执行：[当前模型、按需工具与必要子代理](references/multimodal-task-execution.md)
+- 写作路由、质量职责与交接：[既有说明](references/model-orchestrated-legal-research-workflow.md)（正式写作约束保留；型号与注册表不作为建库前提）
 - 易错点清单：`references/pitfalls-and-lessons.md`
 - 页面模板：`assets/templates/`（SCHEMA、index、log，以及案例、论文、概念、比较、法规范含时序版本、研究设计、矩阵、范文、底稿、导航、交接、行文思路页）
 - 规范时序版本与历史案件评价：`references/norm-versioning.md`
