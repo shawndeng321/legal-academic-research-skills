@@ -119,7 +119,7 @@ def extract_pdf(pdf_path, out_path, fmt, source_path):
     }
 
 
-def verify_file(md_path, root):
+def verify_file(md_path, root, source_root=None):
     """Read one companion, retaining separate text/source verification results."""
     entry = {"file": md_path.relative_to(root).as_posix(),
              "text_status": "unreadable", "source_status": "not_checked",
@@ -154,7 +154,8 @@ def verify_file(md_path, root):
     if source_sha and source_path:
         try:
             # Preserve the recorded path. Never fall back to an unrelated basename.
-            candidates = {base / source_path for base in (root, *list(root.parents)[:3])}
+            source_root = source_root if source_root is not None else root
+            candidates = {base / source_path for base in (source_root, *list(source_root.parents)[:3])}
             found = sorted({p.resolve() for p in candidates if p.is_file()})
             if not found:
                 entry["source_status"] = "missing"
@@ -207,13 +208,13 @@ def verify_md(root):
     return results
 
 
-def assess_reuse(pdf_path, out_path, fmt):
+def assess_reuse(pdf_path, out_path, fmt, source_root):
     """Existing files are preserved; only complete, matching extraction is reusable."""
     result = {"status": "unverified_existing", "reuse_status": "incomplete"}
     if fmt != "md":
         result["reason"] = "旧 txt 无原件指纹和提取状态，无法确认复用"
         return result
-    check = verify_file(out_path, out_path.parent)
+    check = verify_file(out_path, out_path.parent, source_root=source_root)
     result["verification"] = check
     if check["verification_status"] == "issues":
         result.update(status="needs_reextract", reuse_status="issues",
@@ -278,7 +279,7 @@ def main(argv=None):
                 entry.update(status="skipped_existing", reuse_status="not_checked",
                              note="预演未读原件，不能据此确认可复用")
             else:
-                entry.update(assess_reuse(pdf_path, out_path, args.format))
+                entry.update(assess_reuse(pdf_path, out_path, args.format, root))
             results.append(entry)
             continue
         if args.dry_run:

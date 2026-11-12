@@ -43,6 +43,30 @@ class ReuseTests(unittest.TestCase):
             self.assertEqual(rows[0]['status'], 'reused')
             self.assertEqual(before, {p.name: p.read_bytes() for p in root.iterdir()})
 
+    def test_nested_relative_source_reuses_in_separate_output_tree(self):
+        for derived in (False, True):
+            with self.subTest(derived=derived), tempfile.TemporaryDirectory() as tmp:
+                wiki = Path(tmp) / '知识库 空格'
+                folder = wiki / 'raw/papers/topic/year'
+                folder.mkdir(parents=True)
+                self.make_pdf(folder)
+                flags = ['--format', 'md']
+                output = Path(tmp) / '另一处 派生/very/deep/output'
+                if derived:
+                    flags += ['--out-dir', str(output)]
+                command = [sys.executable, '-X', 'utf8', str(SCRIPT), 'raw/papers', *flags]
+                def run():
+                    proc = subprocess.run(command, cwd=wiki, capture_output=True, text=True, encoding='utf-8')
+                    return proc.returncode, json.loads(proc.stdout)
+                self.assertEqual(run()[0], 0)
+                before = {str(p): (p.read_bytes(), p.stat().st_mtime_ns)
+                          for p in Path(tmp).rglob('*') if p.is_file()}
+                code, rows = run()
+                self.assertEqual(code, 0, rows)
+                self.assertEqual(rows[0]['status'], 'reused')
+                self.assertEqual(before, {str(p): (p.read_bytes(), p.stat().st_mtime_ns)
+                                         for p in Path(tmp).rglob('*') if p.is_file()})
+
     def test_changed_original_needs_reextraction_without_overwrite(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
