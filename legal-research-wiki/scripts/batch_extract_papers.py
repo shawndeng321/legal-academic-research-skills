@@ -26,7 +26,9 @@ Formats:
 退出码：正常提取/预览为 0；``--verify`` 全部核完且相符为 0；发现漂移为 1；
 无漂移但核验未完成为 2。漂移与未完成可并存，须同时读取子状态与 checks_complete。
 
-By default, an existing companion is skipped. ``--force`` is an explicit
+Existing companions are preserved; verified complete Markdown may be reused,
+otherwise it is reported as pending (exit 2) or changed (exit 1). Empty PDF pages
+are conservatively marked needs_ocr. ``--force`` is an explicit
 opt-in to overwrite it (原提取物先自行备份，或改用 ``--out-dir`` 写入派生
 目录)；``--dry-run`` never opens or writes a PDF. Originals are never
 modified.
@@ -91,6 +93,8 @@ def extract_pdf(pdf_path, out_path, fmt, source_path):
     finally:
         doc.close()
     text = "\n".join(text_parts)
+    complete = bool(text.strip()) and all(part.strip() for part in text_parts)
+    extraction_status = "complete" if complete else "needs_ocr"
     if fmt == "md":
         frontmatter = (
             "---\n"
@@ -99,6 +103,8 @@ def extract_pdf(pdf_path, out_path, fmt, source_path):
             f"source_sha256: {source_sha}\n"
             f"text_sha256: {sha256_text(text)}\n"
             f"extractor: pymupdf {_pymupdf_version(pymupdf)}\n"
+            f"extraction_status: {extraction_status}\n"
+            f"pages: {len(text_parts)}\n"
             "---\n\n"
         )
         out_path.write_text(frontmatter + text, encoding="utf-8")
@@ -109,7 +115,7 @@ def extract_pdf(pdf_path, out_path, fmt, source_path):
         "text_sha256": sha256_text(text),
         "pages": len(text_parts),
         "chars": len(text),
-        "status": "extracted",
+        "status": "extracted" if complete else "needs_ocr",
     }
 
 
@@ -201,6 +207,35 @@ def verify_md(root):
     return results
 
 
+def assess_reuse(pdf_path, out_path, fmt):
+    """Existing files are preserved; only complete, matching extraction is reusable."""
+    result = {"status": "unverified_existing", "reuse_status": "incomplete"}
+    if fmt != "md":
+        result["reason"] = "旧 txt 无原件指纹和提取状态，无法确认复用"
+        return result
+    check = verify_file(out_path, out_path.parent)
+    result["verification"] = check
+    if check["verification_status"] == "issues":
+        result.update(status="needs_reextract", reuse_status="issues",
+                      reason="原件或正文变化；先归因，不自动覆盖")
+        return result
+    if check["verification_status"] != "passed":
+        result["reason"] = "原件或正文核验未完成"
+        return result
+    try:
+        fm, body = split_frontmatter(out_path.read_text(encoding="utf-8"))
+        if Path(check["source_file"]).resolve() != pdf_path.resolve():
+            result["reason"] = "已存提取物对应其他原件"
+        elif not body.strip() or read_field(fm, "extraction_status") != "complete":
+            result["reason"] = "提取物为空或缺少完整提取状态，须人工确认/OCR"
+        else:
+            result.update(status="reused", reuse_status="verified",
+                          reason="指纹及提取状态一致；不代表内容准确性已人工核验")
+    except (OSError, UnicodeError) as exc:
+        result["reason"] = str(exc)
+    return result
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("papers_dir", nargs="?", default=".", help="directory containing PDF files")
@@ -239,7 +274,11 @@ def main(argv=None):
             display_out = str(out_path)
         entry = {"file": str(rel_pdf), "output": display_out}
         if out_path.exists() and not args.force:
-            entry["status"] = "skipped_existing"
+            if args.dry_run:
+                entry.update(status="skipped_existing", reuse_status="not_checked",
+                             note="预演未读原件，不能据此确认可复用")
+            else:
+                entry.update(assess_reuse(pdf_path, out_path, args.format))
             results.append(entry)
             continue
         if args.dry_run:
@@ -247,12 +286,19 @@ def main(argv=None):
             results.append(entry)
             continue
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        result = extract_pdf(pdf_path, out_path, args.format,
-                             f"{source_prefix}/{rel_pdf.as_posix()}")
+        try:
+            result = extract_pdf(pdf_path, out_path, args.format,
+                                 f"{source_prefix}/{rel_pdf.as_posix()}")
+        except (OSError, RuntimeError, ValueError, ImportError) as exc:
+            result = {"status": "extraction_failed", "error": str(exc)}
         entry.update(result)
         results.append(entry)
 
     print(json.dumps(results, ensure_ascii=False))
+    if any(r["status"] == "needs_reextract" for r in results):
+        return 1
+    if not results or any(r["status"] in ("unverified_existing", "needs_ocr", "extraction_failed") for r in results):
+        return 2
     return 0
 
 

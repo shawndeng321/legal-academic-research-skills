@@ -48,7 +48,7 @@ python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/papers --verify
 python3 "$RESEARCH_SKILL/scripts/batch_extract_papers.py" raw/derived/papers --verify
 ```
 
-- 默认**不覆盖**：目标已存在时跳过；重新提取请显式 `--force`（先自行备份原提取物）或写入派生目录。
+- 默认**不覆盖**：已有 md 只有原件和正文指纹相符、正文非空且 `extraction_status: complete` 时标 `reused`，不计为本次新提取。原件或正文漂移标 `needs_reextract`（退出 1）；旧 txt、缺状态、空正文或定位失败标 `unverified_existing`（退出 2）。预演不读取 PDF，只标未检查，不能据此确认可复用。新提取逐页有文本才记完整；有空文本页标 `needs_ocr`（退出 2），人工判断是否为空白页或需要 OCR，不自动切换工具。指纹和状态相符不等于内容准确。重新提取请显式 `--force`（先自行备份原提取物）或写入派生目录。
 - 复核保留 JSON 列表，逐项给出 `text_status`、`source_status`、`checks_complete` 与 `verification_status`（`passed / issues / incomplete`）。退出码 0 仅表示有扫描对象且全部核完相符；发现正文或原件漂移返回 1；无漂移但存在缺原件、缺元数据、不可读或空扫描等未完成项返回 2。漂移与未完成可以并存，退出 1 时仍须检查子状态。旧格式或缺指纹是未完成，不等于材料损坏。只按记录路径定位原件，不用同名文件替代；位置歧义须人工确认。先归因（真实变更？清洗？编码？），**不以“重算并覆盖”作为常规修复**。
 - 旧库兼容：既有 `.txt` 布局、既有 `.md`（含旧字段 `sha256`）原样保留。
 

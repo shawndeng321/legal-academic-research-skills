@@ -76,7 +76,8 @@ class ExtractMdTests(unittest.TestCase):
             dry = run(root, "--format", "md", "--dry-run")
             self.assertEqual(parse(dry)[0]["status"], "skipped_existing", dry.stdout)
             actual = run(root, "--format", "md")
-            self.assertEqual(parse(actual)[0]["status"], "skipped_existing", actual.stdout)
+            self.assertEqual(actual.returncode, 2, actual.stdout)
+            self.assertEqual(parse(actual)[0]["status"], "unverified_existing", actual.stdout)
             self.assertEqual(md.read_bytes(), md_before)
             self.assertEqual(pdf.read_bytes(), pdf_before)
 
