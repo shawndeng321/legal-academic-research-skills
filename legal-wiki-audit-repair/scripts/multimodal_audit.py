@@ -100,20 +100,22 @@ LOG_WARN_THRESHOLD = 500
 
 
 class Finding:
-    __slots__ = ("rule", "severity", "scope", "path", "location", "message")
+    __slots__ = ("rule", "severity", "scope", "path", "location", "message", "paths")
 
-    def __init__(self, rule, severity, scope, path, location, message):
+    def __init__(self, rule, severity, scope, path, location, message, paths=None):
         self.rule = rule
         self.severity = severity      # broken / warning / pass
         self.scope = scope            # 结构 / 来源 / 内容 / 链接 / 卫生 / 日志
         self.path = path
         self.location = location
         self.message = message
+        self.paths = list(paths) if paths is not None else None
 
     def to_dict(self):
         return {
             "rule": self.rule, "severity": self.severity, "scope": self.scope,
             "path": self.path, "location": self.location, "message": self.message,
+            **({"paths": self.paths, "path_count": len(self.paths)} if self.paths is not None else {}),
         }
 
 
@@ -142,8 +144,8 @@ class Audit:
         self.raw_files = {}
 
     # ---------- 基础 ----------
-    def add(self, rule, severity, scope, path, location, message):
-        self.findings.append(Finding(rule, severity, scope, path, location, message))
+    def add(self, rule, severity, scope, path, location, message, paths=None):
+        self.findings.append(Finding(rule, severity, scope, path, location, message, paths))
 
     def _skipped(self, rel_parts):
         return any(
@@ -254,18 +256,19 @@ class Audit:
             missing = sorted(page_set - resolved)
             if missing:
                 self.add("IDX-02", "broken", "结构", "index.md", "条目",
-                         f"磁盘页面不在索引中（{len(missing)}）：{'、'.join(missing[:8])}"
-                         + ("……" if len(missing) > 8 else ""))
+                         f"磁盘页面不在索引中（{len(missing)}）：{'、'.join(missing)}", paths=missing)
             ghosts = []
+            ghost_paths = []
             for k, v in entries.items():
                 if k.startswith("__ghost__"):
                     ghosts.append(f"[[{v}]]（无法解析）")
+                    ghost_paths.append(k[len("__ghost__:"):])
             for k in sorted(resolved - page_set):
                 ghosts.append(f"[[{entries[k]}]]（指向 {k}，非正式页面）")
+                ghost_paths.append(k)
             if ghosts:
                 self.add("IDX-03", "broken", "结构", "index.md", "条目",
-                         f"幽灵条目（{len(ghosts)}）：{'、'.join(ghosts[:8])}"
-                         + ("……" if len(ghosts) > 8 else ""))
+                         f"幽灵条目（{len(ghosts)}）：{'、'.join(ghosts)}", paths=ghost_paths)
             if not missing and not ghosts and (declared is None or declared == len(page_set)):
                 self.add("IDX-9", "pass", "结构", "index.md", "文件",
                          f"计数与条目一致（{len(page_set)} 页）")
@@ -936,6 +939,13 @@ def _rule_check(rule):
             "NORM": 7, "DUP": 7, "PRIV": 7}.get(prefix, 0)
 
 
+def display_message(finding):
+    if finding.paths is not None and len(finding.paths) > 8:
+        return (finding.message.split("：", 1)[0] + "：" + "、".join(finding.paths[:8])
+                + f"（另有 {len(finding.paths) - 8} 项；完整路径见 --json 的 paths 字段）")
+    return finding.message
+
+
 def print_report(audit):
     print("=" * 72)
     print("法学研究 Wiki 深检报告（结构与来源一致性）")
@@ -957,7 +967,7 @@ def print_report(audit):
             else:
                 print("  {} [{}] {}｜{} — {}".format(
                     SEVERITY_LABEL[finding.severity], finding.rule,
-                    finding.path, finding.location, finding.message))
+                    finding.path, finding.location, display_message(finding)))
     broken = [f for f in audit.findings if f.severity == "broken"]
     warnings = [f for f in audit.findings if f.severity == "warning"]
     print("\n" + "=" * 72)
