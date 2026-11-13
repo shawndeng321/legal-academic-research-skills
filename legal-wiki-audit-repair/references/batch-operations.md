@@ -1,6 +1,6 @@
 # Wiki 批量操作：重命名、重编号、链接迁移、反向链接、批量填充
 
-对 Obsidian/Markdown 研究库做**批量结构性操作**的安全流程。这类操作一次失误就可能造成全库死链或文件丢失。完成后必须按 `SKILL.md` 第十节做全量验收。链接规则的完整说明见 `legal-research-wiki` 的 `references/linking-and-cross-references.md`。
+对 Obsidian/Markdown 研究库做**批量结构性操作**的安全流程。这类操作一次失误就可能造成全库死链或文件丢失。完成后必须按 `SKILL.md` 第十二节做全量验收；按 [最终状态验收](final-state-validation.md) 在最后一次页面、索引、台账和日志写入后核验，同一状态的相同检查不重复执行。链接规则的完整说明见 `legal-research-wiki` 的 `references/linking-and-cross-references.md`。
 
 ## 适用情形
 
