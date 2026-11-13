@@ -6,11 +6,11 @@
   "skill_version": "2611.11.0",
   "files": {
     "agents/openai.yaml": "466d7c1256241fea798dfdfe807de841800c5102164bb22715c6dc1d6f13af0b",
-    "CHANGELOG.md": "9d4cae367666abfd8c0df93c50c8063f734a2f51558d9346ef214ad5da285c20",
+    "CHANGELOG.md": "c75b728427654930be53d3707e07bb77e2827d9a6e19c2c397b64044b95fbfeb",
     "evals/behavior-runs.md": "3b7b972f4cf22c36901167d4a0a728ed158aa0e7d55de1e83f9bbb7cb66490a4",
     "evals/pressure-tests.md": "5cd86fdc9ad6d457479650e089354df76658d0f24beef81059d57f972fed4083",
     "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "README.md": "213b9f45c88838dc5238481e4e91a2a3292209fffcfe9d84c8ba0fff20a97ef9",
+    "README.md": "e0b388d87c287061e48ebae5cc7ed2076201f0b9327c3a655ed0eef02c19d94c",
     "references/academic-usability-checklist.md": "1259cc71f65f9a7fcf1a7d023dea1afe64b8270db311a4828cf3866b22a14265",
     "references/batch-operations.md": "4b61d5cad02db118e22c715c3ad4ab574c9d4f3fc55c4d965e81faa2188e5bae",
     "references/comparison-page-format.md": "5e6586f78eb942684564a0c1d71d7eb2d4dd2b33d06ac3cbdcfb13b47b30500d",

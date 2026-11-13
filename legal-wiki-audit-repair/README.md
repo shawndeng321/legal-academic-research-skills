@@ -4,13 +4,13 @@
 
 > 运行时入口是 [`SKILL.md`](SKILL.md)。本页提供模式选择、安装和安全使用方式；批量操作细则见 `references/`。
 >
-> **当前版本：v2611.11（2026-11-11；机器字段 2611.11.0）**。本版：随技能包同步写作技能的上游 v1.5；本技能运行规则与脚本不变，继续保留既有建库/审计和多宿主能力。变更见 [CHANGELOG.md](CHANGELOG.md)。
+> **当前机器版本：2611.11.0；main 源码更新：2026-11-13。** 本次更新建库与库审计流程，写作规则保持上游 v1.5；没有新增版本标签或 Release。变更见 [CHANGELOG.md](CHANGELOG.md)及[本次更新说明](../docs/nonwriting-updates-2026-11.md)。
 >
 > 同批最终状态验收：先完成页面、关联、索引与台账日志写入，再核验；相同最终状态可复用，后续写入须重新核验，见 [细则](references/final-state-validation.md)。
 >
-> **未发布改动**：库审计默认当前模型配合已有工具，按需协作，无须角色注册表或多模型聚合；授权模式、技术与学术两轨、必要复核及写作规则不变。
+> **本次执行方式**：库审计默认当前模型配合已有工具，按需协作，无须角色注册表或多模型聚合；授权模式、技术与学术两轨、必要复核及写作规则不变。
 >
-> 精简屏幕报告：深检默认显示计数、异常、未检查项和下一步；--verbose 展开通过项及完整列表，--json 保留全部结构化明细；严重程度、检查范围和退出码不变。
+> 精简屏幕报告：深检默认显示计数、异常、未检查项和下一步；--verbose 展开通过项及完整列表，--json 保留结构化结果（NORM-03旧明细限制见[本次更新说明](../docs/nonwriting-updates-2026-11.md#验证与已知限制)）；严重程度、检查范围和退出码不变。
 >
 > 每日检查覆盖汇总：只读 daily_check.py 默认全量；可显式选择可信基线增量，无效即回退，跨日及每周保留全量。增量采集不完整时回退全量，读取或解析失败不存复用记录。哈希工具仍每次实查，缺依赖、失败、未覆盖及人工项保留；小库可能更适合直接全量，见 [细则](references/daily-maintenance-and-periodic-checks.md)。
 >
@@ -54,7 +54,7 @@
 ## 推荐工作流
 
 ```text
-AUDIT_ONLY → AUDIT_PLAN → 用户确认范围 → 备份 + DRY_RUN → REPAIR → VERIFY → 追加台账与 log
+AUDIT_ONLY → AUDIT_PLAN → 用户确认范围 → 备份 + DRY_RUN → REPAIR → 台账与 log → 最终 VERIFY
 ```
 
 任务提示应明确 Wiki 根目录、只读/写入权限、备份目录和本批页数。例如：
@@ -96,6 +96,8 @@ hermes skills install shawndeng321/legal-academic-research-skills/legal-wiki-aud
 - `scripts/sync_paper_case_links.py`：把案例页“与论文的关联”同步到论文页（先 `--dry-run`）。
 - `scripts/scan_missing_paper_case_links.py`、`scripts/verify_case_link_sections.py`：论文—案例关联的缺漏扫描与章节验收。
 - `scripts/insert_norm_sections.py`：按确认范围给概念页插入“规范依据”小节。
+- `scripts/daily_check.py`：只读每日检查覆盖汇总，默认直接全量；人工及未覆盖项保留未完成。
+- `scripts/audit_snapshot.py`：显式库外记录与最终状态复用；失效或扫描不完整时不沿用旧通过结果。
 - `scripts/multimodal_audit.py`：对指定 Wiki 执行索引、raw 摄入、frontmatter、wikilink、文件卫生、log 与法学专项（法规范时效／案件去重／隐私格式，`--privacy` 可选）七项只读深检。
 - `references/batch-operations.md`：批量重命名、编号、链接迁移、反链补齐、论文—案例同步与纯链接核验的安全流程。
 - `references/comparison-page-format.md`：跨案比较页格式与链接纪律。

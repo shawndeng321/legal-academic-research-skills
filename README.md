@@ -1,10 +1,12 @@
 # 法学学术研究技能包（Legal Academic Research Skills）
 
+**简体中文** · [English](README.en.md)
+
 面向中国法学学术研究的三项 AI Skill：把论文、案例和法条整理成来源可追溯的研究 Wiki，对研究库做审计与安全修复，再把研究证据转化为可核验的期刊论文工作稿。适用于任何部门法与研究主题，不绑定特定项目。
 
-> 全平台通用：同一份技能正文可在 Claude Code、Codex、Hermes、Devin（CLI / Desktop）、Google Antigravity 以及其他支持标准 `SKILL.md` 的代理宿主（如 DeepSeek Harness）中运行。各宿主的安装路径、工具对应与预检差异集中在每个技能的 `references/host-adapters.md`；运行时元数据分别放在 `SKILL.md`（通用 frontmatter）、`agents/openai.yaml`（Codex）与 `.claude-plugin/`（Claude Code 插件）中。
+> 宿主适配：同一份技能正文面向 Claude Code、Codex、Hermes、Devin（CLI / Desktop）、Google Antigravity、DeepSeek Harness 等支持标准 `SKILL.md` 的代理宿主，实际读图、转录与文件操作能力由宿主提供。各宿主的安装路径、工具对应与预检差异集中在每个技能的 `references/host-adapters.md`；运行时元数据分别放在 `SKILL.md`（通用 frontmatter）、`agents/openai.yaml`（Codex）与 `.claude-plugin/`（Claude Code 插件）中。
 
-[快速选择](#先从这里开始) · [当前状态](#未发布改动) · [最近发布](#2026-11-更新内容) · [安装](#安装) · [自动更新](#自动更新) · [验证与排错](#验证与排错) · [开发验证](#开发验证) · [历史与来源](docs/README.md)
+[快速选择](#先从这里开始) · [本次更新](#当前源码更新) · [版本记录](#2026-11-更新内容) · [安装](#安装) · [自动更新](#自动更新) · [验证与排错](#验证与排错) · [开发验证](#开发验证) · [历史与来源](docs/README.md)
 
 <p align="center">
   <img src="law-paper-writing/assets/readme/paper-banner.jpg" alt="法学学术研究、知识库审计与论文写作技能包" width="100%">
@@ -28,17 +30,30 @@
 | [`legal-research-wiki`](legal-research-wiki/) | **v2611.11** | 新建、扩充或重新整理研究库 | 研究思路先行、范围优先摄入、PDF/DOCX/图片/音频摄入、法规范分层、论文—案例双轨关联、研究设计层、六维质量门禁、闭世界查询 |
 | [`legal-wiki-audit-repair`](legal-wiki-audit-repair/) | **v2611.11** | 已有 Wiki 出现死链、字段缺失、批量操作或技能包更新需求 | AUDIT_ONLY、P0—P3 分级、备份/DRY_RUN、小批修复、模板化检测、每日检修与迭代、七项深检脚本（含法学专项） |
 
-## 未发布改动
+<a id="未发布改动"></a>
 
-建库、摄入与库审计默认“当前多模态主模型＋按需工具＋必要子代理”，不以角色注册表或多模型聚合为前提。写作 v1.5、原件与定位、来源核验、必要复核和交接要求保留；详见 [建库执行方式](legal-research-wiki/references/multimodal-task-execution.md)。版本字段仍为 2611.11.0，尚未发布。
+## 当前源码更新
 
-文档导航：区分未发布状态与最近发布记录，补齐开发验证入口；审计 README 的每日检修说明指向实际细则，运行规则不变。新增[文档与历史索引](docs/README.md)，按当前用法、历史变更、来源整合与开发记录分类，历史原文和路径保留。
+**2026-11-13：建库与库审计的17项优化并入 main；写作规则保持上游 v1.5。** 本次更新已有来源核验、材料处理、检查报告和验收复用流程，保留写作的触发、路由、阶段顺序、改稿与引注要求。
+
+| 变化 | 实际行为 |
+|---|---|
+| PDF 提取与清洗 | 原件、正文指纹及完成状态一致才复用；变化或无法确认时保留并待处理，空文本页提示 OCR；清洗保留词间空格与段落 |
+| 审计状态与明细 | 区分通过、问题与未完成；默认屏幕报告更短，JSON 保留结构化明细，索引异常含完整路径 |
+| 链接与图片 | 只统计正式知识页之间的真实关系；LINK-08数量少只作观察，死链、空目标和缺锚点照常检查；图片使用完整原件路径消歧 |
+| 同批验收 | 页面、索引及台账日志全部落盘后验收；只有输入与条件未变的机器结果可复用，来源核验和逐页回读保留 |
+| 每日检修 | 默认直接全量，增量须显式选择；读取或解析不完整时回退或标未完成，不保存可信复用记录；人工项不因缓存变成通过 |
+| 执行与导航 | 当前主模型配合按需工具和必要子代理；脚本目录与 Wiki 根分开定位；当前用法与历史资料分开导航 |
+
+完整逐项说明、使用入口与测试边界见 [2026-11 非写作更新说明](docs/nonwriting-updates-2026-11.md)。合成小库测时中，增量慢于原直接全量，因此保持可选，不承诺普遍提速。
+
+**获取本次内容**：使用下方源码安装，从 `main` 获取并备份后更新完整技能目录。版本字段仍为 `2611.11.0`；本次没有新增版本标签或 GitHub Release。已安装同版本时，自动检查不会仅因主干有新提交就提示“更高版本”，需要按安装方式手动更新。GitHub [Releases](https://github.com/shawndeng321/legal-academic-research-skills/releases) 中的历史包与主干源码可能不同，请按所需版本选择。
 
 ## 2026-11 更新内容
 
 > **v2611.11（2026-11-11；机器字段 2611.11.0）**：写作技能从上游 v1.4.0 增量同步至 **v1.5**，更新摘要内容要求与 350～400 字起草预算、通用论证与按内容触发的专项检查、结语及引注核对；保留 DOCX、实证、溯源、多宿主与引注分册能力。其他两个技能仅随包同步版本与文件锁。来源、逐文件处置及验证边界见 [整合说明](docs/upstream-integration-v2611.11.md)。
 
-> **历史记录阅读提示**：以下 2026-10、2026-09 区块保留当时的版本、宿主数量与验证描述；当前用法见[快速选择](#先从这里开始)和[安装](#安装)，来源整合与开发档案见[文档与历史索引](docs/README.md)。历史成绩不代表当前候选已通过验证。
+> **历史记录阅读提示**：以下 2026-10、2026-09 区块保留当时的版本、宿主数量与验证描述；当前用法见[快速选择](#先从这里开始)和[安装](#安装)，来源整合与开发档案见[文档与历史索引](docs/README.md)。历史成绩不代表当前代码已通过验证；本次边界见[更新说明](docs/nonwriting-updates-2026-11.md)。
 
 ## 2026-10 更新内容
 
@@ -330,6 +345,8 @@ python3 -X utf8 -m unittest discover -s tests -v
 
 未安装开发依赖时，依赖相关测试会以“跳过”（`skipped`，附原因）列出，不计入通过；发布校验必须在依赖齐全的环境中运行。
 
+本次主干代码在 Windows 的完整回归为291项，仍有1项基线已有的指纹测试失败及4项符号链接权限错误；与基线逐项比较无新增失败，但不称全套通过，也不作为正式 Release 全绿验证。具体边界见[更新说明](docs/nonwriting-updates-2026-11.md#验证与已知限制)。
+
 Claude Code 插件清单校验：
 
 ```bash
@@ -351,7 +368,8 @@ python -X utf8 $validator legal-wiki-audit-repair
 ## 目录结构
 
 ```text
-README.md                    # 总入口、安装、更新内容和验证
+README.md                    # 中文总入口、安装、更新内容和验证
+README.en.md                 # 英文入口与安装摘要
 requirements-dev.txt         # 开发、测试与发布校验依赖
 .claude-plugin/              # Claude Code 插件与 marketplace 清单
 law-paper-writing/           # 论文写作与投稿工作稿
@@ -360,6 +378,7 @@ legal-wiki-audit-repair/     # Wiki 审计、批量修复与复核
 bundle-release.json          # 技能包发布清单（自动更新读取）
 tools/                        # 发布清单生成与校验
 docs/README.md                # 当前用法、历史变更、来源整合与开发记录索引
+docs/nonwriting-updates-2026-11.md  # 本次非写作优化与验证边界
 docs/superpowers/             # 设计与实施记录
 tests/                        # 兼容性、脚本安全、深检/链接解析与更新器回归测试
 ```
@@ -367,7 +386,7 @@ tests/                        # 兼容性、脚本安全、深检/链接解析�
 ## 运行前提与边界
 
 - Hermes Agent、Claude Code、OpenAI Codex 或其他支持标准 `SKILL.md` 的宿主。
-- Python 3.9+（macOS 自带的 `python3` 即可；技能包更新器、各脚本、发布工具与测试均兼容 3.9）；DOCX 脚注脚本需要 `python-docx` 与 `lxml`；PDF 文字提取按需安装 `pymupdf`；七项深检脚本（multimodal_audit）需要 `PyYAML`（见 `requirements-dev.txt`）；扫描件与图片由模型直接读取。
+- 目标兼容 Python 3.9+；本次运行验证使用 Python 3.14.4，未实跑 Python 3.9。请先确认本机解释器和所需依赖；DOCX 脚注脚本需要 `python-docx` 与 `lxml`；PDF 文字提取按需安装 `pymupdf`；七项深检脚本（multimodal_audit）需要 `PyYAML`（见 `requirements-dev.txt`）；扫描件与图片由模型直接读取。
 - 默认不扫描整个 Obsidian Vault，也不写回用户资料；只有用户明确授权并指定目标文件后才允许修改。
 - 不编造法条、案号、页码、期刊规则或统计数字；资料不完整时必须保留待核状态。
 - 不适用于合同、诉状、法律意见书、客户法律建议、学位论文或声称保证录用的内容。
