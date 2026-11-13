@@ -18,7 +18,7 @@
     "assets/templates/revision-response.md": "5519efdfece0eb94b44e19a03b6e0924fa85b24614c818d1525d04487813805f",
     "assets/templates/source-register.md": "7247ee6ac6f83dbdc29612fa484e427fbab16f46d57b7fbb8bab2656d5a55e24",
     "assets/templates/submission-checklist.md": "bc4d0c05d43946eb5923a91cd18b0d6dea9553a3adf4b15c70ca95fb63a3c0ea",
-    "CHANGELOG.md": "5128f7f5a7e638f2eabd67818528def2e0d335b3fee86dce4fded2846654df16",
+    "CHANGELOG.md": "54d7ed8b2ed0722cff88b50c8a978921d1bc38addd9c8c68821961399a4613f1",
     "evals/2026-09-09-review.md": "a08a875932764f9883c510471dd3bb02cd285246e602b29d831835e040c75841",
     "evals/2026-09-18-writing-review.md": "758828912b82fea5773414bc6383c87075d7b3f4166b2a7585d9122de378bf9a",
     "evals/argumentation-cases.md": "5faef50c3308e7932af46e804d51f48fc8798508dc3c309558ec5178dd7b675b",
@@ -50,7 +50,7 @@
     "references/obsidian-knowledge-base.md": "2774e337e4839d7d648b1f1c7ef33eaaf390cf3d628867dee79fde0feb5a846f",
     "references/requirement-decomposition.md": "1c22ebb47737340359c45254a8169a3debd8cd611b950eca4d21e1ae36e77b02",
     "references/workflow.md": "74be90e3c7bcbe10ab349318af5332a922ed7939b84b65e1504cc2a9d3edacc1",
-    "scripts/legal_skills_update.py": "2bcfc4560dd57be290f36bbe58bc962ee1dbc413b06e813091e2143b3b1b7080",
+    "scripts/legal_skills_update.py": "d68280bcbcec0f47a73a9c0df55afccca08543655aa281f83e0e3ff99a6ab3f0",
     "scripts/md2docx_footnotes.py": "78a4423c3f3613b137c77c0df232a5d0edf0c2fb0b6c3445331f2adb631419e8",
     "SKILL.md": "12f546ade4e28fd5ab8efda20d0a64c77b238f0c58d6c463269e39746284e9b4"
   }

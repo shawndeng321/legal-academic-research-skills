@@ -27,7 +27,7 @@
     "assets/templates/SCHEMA.md": "51d3c4933d0b51de36ce37e6af76ef0c5e61567ceb73486714e855def167ee94",
     "assets/templates/wiki-design-brief.md": "079ac942386d54bf17895799a60151458cc3e31af6e54ecb5cd42e2611d2a491",
     "assets/templates/writing-outline.md": "b6494949f573fcc9a045479cb6a3d73fa12b0ac0e4ddf8107f8402b67358cc46",
-    "CHANGELOG.md": "83625ec4c4be6b14a59a3ddf0ac64916e669738c2614209d9bc574d6909c1896",
+    "CHANGELOG.md": "be1491fa5ff5e69083d234e0b50e95b2e8675dff4b971472e915dd194bc52d39",
     "evals/pressure-tests.md": "d7e8563c11f8f9318486035d29ce586a6c5ee6a4209dc4b3b109f7cd941cd1a2",
     "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
     "README.md": "023a7dccd64ea48852e5986d88467cd7f8a34c8e099516bc78bfa73035662752",
@@ -61,7 +61,7 @@
     "scripts/batch_extract_papers.py": "8b6a98b53d8372e7fdcfa0e8f083d33a3b45e68603ab18a2d52d3f93ac028c7d",
     "scripts/check_wikilinks.py": "8c0f8c4714671f6e1bc8231bf09ddef7f0122ace3f7089a553dd01045c2e0910",
     "scripts/clean_pdf_artifacts.py": "6de7f59e6357f51e74fde39e36d2721026ba63f97f6c5179d6ec7fecca5f9560",
-    "scripts/legal_skills_update.py": "2bcfc4560dd57be290f36bbe58bc962ee1dbc413b06e813091e2143b3b1b7080",
+    "scripts/legal_skills_update.py": "d68280bcbcec0f47a73a9c0df55afccca08543655aa281f83e0e3ff99a6ab3f0",
     "scripts/wiki_links.py": "273091dfa808e3086f9f2733db19f5e32ec5f3f4009413186f47d3e529a1bbe5",
     "SKILL.md": "846273aeacfb7e11d1d46ce78dde81a28002d1cc743ffd4e035f027adb5e2ead"
   }

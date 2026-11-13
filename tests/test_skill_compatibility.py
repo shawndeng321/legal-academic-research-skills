@@ -18,7 +18,7 @@ SKILLS = (
     "legal-wiki-audit-repair",
 )
 ALLOWED_FRONTMATTER_KEYS = {"name", "description", "license", "metadata"}
-# Descriptions drive automatic skill selection in Claude Code and Codex, so
+# Descriptions drive automatic skill selection in supported hosts, so
 # they carry Chinese trigger phrases. Codex allows up to 1024 characters; we
 # keep them short enough (<= 300) to stay within Hermes' routing budget.
 DESCRIPTION_MAX_LENGTH = 300

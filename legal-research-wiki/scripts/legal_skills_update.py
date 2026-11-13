@@ -849,6 +849,11 @@ def detect_installation_mode(
             raise ArchiveError(f"invalid Skill name: {raw_name}")
         skill_root = resolve_skill_dirs(skills_root, (raw_name,))[raw_name]
         _reject_symlink_ancestors(skill_root, f"Skill directory {raw_name}")
+        if is_managed_plugin_path(skill_root):
+            raise ArchiveError(
+                f"Skill directory {raw_name} is in a managed plugin tree; "
+                "use the host plugin manager"
+            )
         if not skill_root.exists():
             continue
         if not skill_root.is_dir():

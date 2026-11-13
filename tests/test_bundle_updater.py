@@ -1019,6 +1019,46 @@ class SourceTransactionTests(unittest.TestCase):
             self.assertEqual(before, {p.relative_to(skills_root).as_posix(): p.read_bytes()
                                      for p in skills_root.rglob("*") if p.is_file()})
 
+    def test_cli_refuses_plugin_skills_found_under_parent_before_writing(self):
+        for category in ("plugins", "PlUgInS"):
+            for plugin_names in (SKILLS, SKILLS[-1:]):
+                with self.subTest(category=category, plugin_names=plugin_names):
+                    with CanonicalTemporaryDirectory() as tmp:
+                        root = Path(tmp)
+                        skills_root = root / "skills"
+                        staged_root = root / "staged"
+                        state_root = root / "state"
+                        skills_root.mkdir()
+                        write_installation(skills_root)
+                        (skills_root / category).mkdir()
+                        for name in plugin_names:
+                            shutil.move(skills_root / name, skills_root / category / name)
+                        manifest, files = make_transaction_bundle()
+                        write_staged_bundle(staged_root, manifest, files)
+                        before = snapshot_tree(root)
+                        before_dirs = {p.relative_to(root).as_posix()
+                                       for p in root.rglob("*") if p.is_dir()}
+                        result = subprocess.run(
+                            [sys.executable, "-X", "utf8", str(UPDATER), "apply",
+                             "--skills-root", str(skills_root),
+                             "--staged-root", str(staged_root),
+                             "--state-root", str(state_root),
+                             "--manifest", str(staged_root / "bundle-release.json"),
+                             "--allow-local-changes", "--json"],
+                            cwd=root, capture_output=True, text=True, encoding="utf-8",
+                        )
+                        response = json.loads(result.stdout)
+                        self.assertEqual(response["status"], "rejected")
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        self.assertIn("plugin", response["message"].lower())
+                        self.assertFalse(state_root.exists())
+                        self.assertEqual(snapshot_tree(root), before)
+                        self.assertEqual(
+                            {p.relative_to(root).as_posix()
+                             for p in root.rglob("*") if p.is_dir()},
+                            before_dirs,
+                        )
+
     def test_check_reports_update_channel(self):
         with CanonicalTemporaryDirectory() as tmp:
             root = Path(tmp)
