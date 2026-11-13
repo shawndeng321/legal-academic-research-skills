@@ -161,7 +161,7 @@ metadata:
 
 **触发**：用户说“今天检修”“每日检修”，或按既定计划执行。检修**默认只读（含日志）**：未获既定授权时不写任何文件，报告直接输出在会话中；发现问题按模式纪律提出方案；P1 及以上先列方案等用户确认（默认每批 5—8 页）。
 
-约 10 分钟的五步流程、三日迭代规则、常见易错点与通用巡检增强（LOG-ROTATE／SHA256-DRIFT／CONTESTED／CLOSED-WORLD）见 [daily-maintenance-and-periodic-checks.md](references/daily-maintenance-and-periodic-checks.md)。
+五步流程、可选增量及失效回退、每周全量与三日迭代、通用巡检增强见 [daily-maintenance-and-periodic-checks.md](references/daily-maintenance-and-periodic-checks.md)。
 
 ## 十一、通用巡检增强
 

@@ -27,11 +27,21 @@ def run_tool(command):
             'error': proc.stderr, 'result': result}
 
 
-def summarize(wiki, research_skill=None, strict=False):
-    command = [sys.executable, '-X', 'utf8', str(Path(__file__).with_name('multimodal_audit.py')),
+def summarize(wiki, research_skill=None, strict=False, baseline=None, save_state=None,
+              incremental=False, force_full=False):
+    receipt_mode = bool(baseline or save_state or incremental or force_full)
+    script_name = 'audit_snapshot.py' if receipt_mode else 'multimodal_audit.py'
+    command = [sys.executable, '-X', 'utf8', str(Path(__file__).with_name(script_name)),
                str(wiki), '--json']
     if strict:
         command.append('--strict')
+    for flag, value in (('--baseline', baseline), ('--save-state', save_state)):
+        if value is not None:
+            command.extend((flag, str(value)))
+    if incremental:
+        command.append('--incremental')
+    if force_full:
+        command.append('--force-full')
     structure = run_tool(command)
     payload = structure['result']
     structure_valid = (isinstance(payload, dict) and isinstance(payload.get('checks'), list)
@@ -73,6 +83,8 @@ def summarize(wiki, research_skill=None, strict=False):
                 status = 'not_checked' if len(missing) == len(required_counts) else 'partial'
         if payload.get('unreadable_pages') or payload.get('unreadable_raw'):
             status = 'partial'
+        if payload.get('execution', {}).get('machine_scan_complete') is False:
+            status = 'partial'
         add(key, status, note)
 
     add('orientation', 'manual', '读取 log 最近30—80行及台账最近三条执行记录，人工确认本批范围')
@@ -106,17 +118,31 @@ def main(argv=None):
     parser.add_argument('wiki', type=Path)
     parser.add_argument('--research-skill', type=Path)
     parser.add_argument('--strict', action='store_true')
+    parser.add_argument('--baseline', type=Path)
+    parser.add_argument('--save-state', type=Path)
+    parser.add_argument('--incremental', action='store_true')
+    parser.add_argument('--force-full', action='store_true')
     parser.add_argument('--json', action='store_true')
     args = parser.parse_args(argv)
     wiki = args.wiki.expanduser().resolve()
     if not wiki.is_dir():
         parser.error('Wiki 根目录不存在或不是目录')
     research = args.research_skill.expanduser().resolve() if args.research_skill else None
-    result = summarize(wiki, research, args.strict)
+    if args.save_state and research:
+        target = args.save_state.resolve()
+        if target == research or research in target.parents:
+            parser.error('状态记录必须放在建库技能目录之外')
+    result = summarize(wiki, research, args.strict, args.baseline, args.save_state,
+                       args.incremental, args.force_full)
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
         print('每日检修覆盖汇总（只读）')
+        execution = (result['tools']['structure'].get('result') or {}).get('execution')
+        if execution:
+            print('机器检查模式：{}；原因：{}；重查：{}；复用：{}'.format(
+                execution['mode'], execution['reason'], execution.get('checks_executed', []),
+                execution.get('checks_reused', [])))
         for row in result['coverage']:
             print('[{}] {}：{}'.format(row['status'], row['id'], row['note']))
         for name, tool in result['tools'].items():
