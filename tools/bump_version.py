@@ -4,7 +4,7 @@ from __future__ import annotations
 
 bundle-release.json is produced by prepare_bundle_release.py and stays the
 machine source of truth; this script only syncs the human-facing copies:
-SKILL.md frontmatter, the Claude plugin manifest, and the README version
+SKILL.md frontmatter and the README version
 lines/badges. CHANGELOG entries and "本版" notes are content and stay manual.
 """
 
@@ -55,15 +55,6 @@ def rewrite(root: Path, version: str, release_date: str) -> dict[Path, str]:
             expect=1,
             label=f"{skill_name}/SKILL.md metadata.version",
         )
-
-    plugin = root / ".claude-plugin" / "plugin.json"
-    results[plugin] = _sub(
-        r'"version": "\d+\.\d+\.\d+"',
-        f'"version": "{version}"',
-        plugin.read_text(encoding="utf-8"),
-        expect=1,
-        label=".claude-plugin/plugin.json version",
-    )
 
     readme = root / "README.md"
     results[readme] = _sub(

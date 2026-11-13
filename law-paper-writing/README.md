@@ -11,12 +11,11 @@
 
 <div align="center">
 
-![Version: v2611.11](https://img.shields.io/badge/Version-v2611.11-5C3D2E?style=flat-square)
+![Version: v2611.13](https://img.shields.io/badge/Version-v2611.13-5C3D2E?style=flat-square)
 ![Antigravity: Skill](https://img.shields.io/badge/Antigravity-Skill-4285F4?style=flat-square)
 ![Devin: Skill](https://img.shields.io/badge/Devin-Skill-0B6E4F?style=flat-square)
 ![DeepSeek Harness: Skill](https://img.shields.io/badge/DeepSeek%20Harness-Skill-4D6BFE?style=flat-square)
 ![Hermes: Skill](https://img.shields.io/badge/Hermes-Skill-193B5A?style=flat-square)
-![Claude Code: Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-B4532A?style=flat-square)
 ![Codex: Skill](https://img.shields.io/badge/Codex-Skill-0F4C5C?style=flat-square)
 ![Obsidian: Scoped Workflow](https://img.shields.io/badge/Obsidian-Scoped%20Workflow-483699?style=flat-square)
 ![Citation Integrity: Guardrails](https://img.shields.io/badge/Citation%20Integrity-Guardrails-315C8D?style=flat-square)
@@ -34,9 +33,9 @@
   <a href="#检验与能力边界">检验与边界</a>
 </p>
 
-**当前版本：v2611.11（机器字段 2611.11.0；2026-11-11）**
+**当前版本：v2611.13（机器字段 2611.13.0；2026-11-13）**
 
-本版：将通用写作规则从上游 v1.4.0 增量同步至 **v1.5**，更新摘要内容要求与起草预算、论证专项检查、帽段与正文分工、结语及引注核对；保留本包的 DOCX 真实脚注、实证研究、知识库溯源、引注分册、更新器与多宿主适配。来源、差异处置与验证边界见 [v2611.11 整合说明](../docs/upstream-integration-v2611.11.md)；历史 v1.4.0 并入记录见 [v2610.9 整合说明](../docs/upstream-integration-v2610.9.md)。
+本版：移除 Claude Code 的专用插件、安装与更新适配，统一随技能包发布。写作规则继续采用上游 **v1.5**，五问、论证、来源登记、三轮改稿、DOCX 真实脚注与引注核查保持；本次只调整宿主适配和版本元数据。上次写作同步的来源与验证边界见 [v2611.11 整合说明](../docs/upstream-integration-v2611.11.md)，更早记录见 [v2610.9 整合说明](../docs/upstream-integration-v2610.9.md)。
 
 ## 为什么使用
 
@@ -103,14 +102,7 @@
 
 ## 安装与更新
 
-本技能属于[法学学术研究技能包](../README.md)，与 `legal-research-wiki`、`legal-wiki-audit-repair` 一起发布，Claude Code、Codex、Hermes、Devin、Google Antigravity、DeepSeek Harness 等支持 `SKILL.md` 的宿主通用。完整安装方式见[根目录的安装说明](../README.md#安装)，自动更新与回滚见[自动更新](../README.md#自动更新)。
-
-Claude Code（一次安装三个技能）：
-
-```bash
-claude plugin marketplace add shawndeng321/legal-academic-research-skills
-claude plugin install legal-academic-research@legal-academic-research
-```
+本技能属于[法学学术研究技能包](../README.md)，与 `legal-research-wiki`、`legal-wiki-audit-repair` 一起发布，Codex、Hermes、Devin、Google Antigravity、DeepSeek Harness 等支持 `SKILL.md` 的宿主通用。完整安装方式见[根目录的安装说明](../README.md#安装)，自动更新与回滚见[自动更新](../README.md#自动更新)。
 
 Hermes Skills Hub（脚本或 CI 环境加 `--yes`）：
 
@@ -118,7 +110,7 @@ Hermes Skills Hub（脚本或 CI 环境加 `--yes`）：
 hermes skills install shawndeng321/legal-academic-research-skills/law-paper-writing --yes
 ```
 
-其他支持 `SKILL.md` 的宿主（Codex、Devin、Antigravity、DeepSeek Harness 等）：复制完整的 `law-paper-writing` 目录（连同 `references/`、`assets/`、`scripts/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.claude/skills/`、`~/.config/devin/skills/`、`~/.gemini/config/skills/`、`~/.dsh/skills/` 或 `~/.agents/skills/`。
+其他支持 `SKILL.md` 的宿主（Codex、Devin、Antigravity、DeepSeek Harness 等）：复制完整的 `law-paper-writing` 目录（连同 `references/`、`assets/`、`scripts/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.config/devin/skills/`、`~/.gemini/config/skills/`、`~/.dsh/skills/` 或 `~/.agents/skills/`。
 
 每次加载时，技能会按 6 小时缓存检查技能包更新；只有发现新版本才提示，更新前必须由你确认。安装后在新会话中直接要求使用 `law-paper-writing`。
 
@@ -154,7 +146,7 @@ Word 正文、批注和修订的提取依赖运行环境的文档工具；本技
 
 ### 3. 调用 Skill
 
-在 Claude Code、Hermes、Devin、Antigravity 或 DeepSeek Harness 的新会话中：
+在 Codex、Hermes、Devin、Antigravity 或 DeepSeek Harness 的新会话中：
 
 ```text
 使用 law-paper-writing 的 OUTLINE 模式。根据我提供的论文项目卡、来源登记和允许读取的资料，
@@ -356,4 +348,4 @@ law-paper-writing/
 
 本技能的 6.x 版本线由两条来源合并而成：[VictorTran1023/law-paper-writing-skill](https://github.com/VictorTran1023/law-paper-writing-skill) 1.2.0-rc.1 的通用写作方法（正文、参考文件、模板与评估），以及本技能包 5.x 中仍然通用的 DOCX、溯源与更新能力；版本变更见 [CHANGELOG.md](CHANGELOG.md)。 v2610.9 增量并入上游 v1.4.0，v2611.11 继续同步至上游 v1.5（`0454eea1d6ee8955199d9c4c2af7e4c3e9d10c73`）；本包日期版本与上游版本分别编号。
 
-初始方法源于《关于中国法学类CSSCI期刊发表论文的写作过程与方法》，并结合论文修改反馈提炼了学术增量、理论框架、章节衔接和反馈落实检查，同时保留目标期刊适配、证据核验、引用完整性、法律时效和 Obsidian 协作规则。检验示例使用合成材料，不包含私人稿件全文、身份信息或原始批阅文件。它提供的是可审查的写作流程，不是任何 Hermes、Anthropic、OpenAI、Obsidian、CSSCI 期刊或其他机构的官方指南、认证或录用承诺。
+初始方法源于《关于中国法学类CSSCI期刊发表论文的写作过程与方法》，并结合论文修改反馈提炼了学术增量、理论框架、章节衔接和反馈落实检查，同时保留目标期刊适配、证据核验、引用完整性、法律时效和 Obsidian 协作规则。检验示例使用合成材料，不包含私人稿件全文、身份信息或原始批阅文件。它提供的是可审查的写作流程，不是任何 Hermes、OpenAI、Obsidian、CSSCI 期刊或其他机构的官方指南、认证或录用承诺。

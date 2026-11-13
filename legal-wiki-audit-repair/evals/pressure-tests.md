@@ -116,7 +116,7 @@
 
 **请求**：加载技能时更新检查返回 `update_available`。
 
-**必须**：展示 `[立即更新] [查看更新说明] [稍后提醒] [忽略此版本]`；用户明确确认后才执行更新。检查结果的 `update_channel` 为 `claude-plugin` 时，改为提示 `claude plugin update` 的方式。
+**必须**：展示 `[立即更新] [查看更新说明] [稍后提醒] [忽略此版本]`；用户明确确认后才执行更新。检查结果的 `update_channel` 为 `managed-plugin` 或 `antigravity-plugin` 时，由对应宿主插件管理器更新，不直接写入插件目录。
 
 **不得**：未经确认运行 `apply`；对插件安装运行 `apply`。
 

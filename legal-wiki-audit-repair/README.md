@@ -4,7 +4,7 @@
 
 > 运行时入口是 [`SKILL.md`](SKILL.md)。本页提供模式选择、安装和安全使用方式；批量操作细则见 `references/`。
 >
-> **当前版本：v2611.11（2026-11-11；机器字段 2611.11.0）**。main 源码更新：2026-11-13。 本次更新建库与库审计流程，写作规则保持上游 v1.5；没有新增版本标签或 Release。变更见 [CHANGELOG.md](CHANGELOG.md)及[本次更新说明](../docs/nonwriting-updates-2026-11.md)。
+> **当前版本：v2611.13（2026-11-13；机器字段 2611.13.0）**。 本版发布已验收的建库与库审计优化，并移除 Claude Code 专用适配；写作规则保持上游 v1.5。变更见 [CHANGELOG.md](CHANGELOG.md)及[本次更新说明](../docs/nonwriting-updates-2026-11.md)。
 >
 > 同批最终状态验收：先完成页面、关联、索引与台账日志写入，再核验；相同最终状态可复用，后续写入须重新核验，见 [细则](references/final-state-validation.md)。
 >
@@ -66,14 +66,7 @@ AUDIT_ONLY → AUDIT_PLAN → 用户确认范围 → 备份 + DRY_RUN → REPAIR
 
 ## 快速安装
 
-本技能属于[法学学术研究技能包](../README.md)，Claude Code、Codex、Hermes、Devin、Google Antigravity、DeepSeek Harness 等支持 `SKILL.md` 的宿主通用；完整说明见[根 README 的安装说明](../README.md#安装)。
-
-### Claude Code（插件，一次安装三个技能）
-
-```bash
-claude plugin marketplace add shawndeng321/legal-academic-research-skills
-claude plugin install legal-academic-research@legal-academic-research
-```
+本技能属于[法学学术研究技能包](../README.md)，Codex、Hermes、Devin、Google Antigravity、DeepSeek Harness 等支持 `SKILL.md` 的宿主通用；完整说明见[根 README 的安装说明](../README.md#安装)。
 
 ### Hermes Skills Hub
 
@@ -89,7 +82,7 @@ hermes skills install shawndeng321/legal-academic-research-skills/legal-wiki-aud
 
 ### 其他宿主（源码复制）
 
-复制完整的 `legal-wiki-audit-repair` 目录（连同 `references/`、`scripts/` 和 `agents/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.claude/skills/`、`~/.config/devin/skills/`、`~/.gemini/config/skills/`、`~/.hermes/skills/`、`~/.dsh/skills/` 或 `~/.agents/skills/`。
+复制完整的 `legal-wiki-audit-repair` 目录（连同 `references/`、`scripts/` 和 `agents/`）到宿主的技能目录，例如 `~/.codex/skills/`、`~/.config/devin/skills/`、`~/.gemini/config/skills/`、`~/.hermes/skills/`、`~/.dsh/skills/` 或 `~/.agents/skills/`。
 
 ## 配套脚本
 

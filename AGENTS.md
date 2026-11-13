@@ -4,7 +4,7 @@
 
 仓库位置以当前检出的实际路径为准，可用 `git rev-parse --show-toplevel` 确认；本文件中的仓库内相对路径均以该根目录为基准。命令与配置使用实际路径，不假定桌面目录或旧路径别名（技能更新器会拒绝祖先目录含符号链接的路径）。
 
-适用于 Hermes、Codex、Claude、Devin、Antigravity、DeepSeek 等所有在本机修改法学技能的 agent。
+适用于 Hermes、Codex、Devin、Antigravity、DeepSeek 等所有在本机修改法学技能的 agent。
 
 若宿主规则要求读取的上层或本地附加规则实际存在，按宿主的适用范围与优先级一并遵守；不存在 `../AGENTS.md` 不代表仓库缺失，也不据此创建或修改上层规则。
 
@@ -17,7 +17,7 @@
 - 工作区有别人未提交的改动时，不要覆盖、reset 或丢弃，先停下来告诉用户。
 
 ## 3. 每次修改一次提交
-- 一项改动一次提交，提交信息写明「agent 名称：改了什么」，例如：`Claude：law-paper-writing 摘要规则补充自查清单`。
+- 一项改动一次提交，提交信息写明「agent 名称：改了什么」，例如：`Hermes：law-paper-writing 摘要规则补充自查清单`。
 - 改动技能内容后：写 CHANGELOG 与 README“本版”说明 → `python3 tools/bump_version.py <版本>` → `python3 tools/prepare_bundle_release.py --write …`（见根 README“开发验证”）→ `--check` → 跑测试。
 - 不改写历史：禁止 `git push --force`、`git reset --hard`、`rebase` 已推送的提交。
 

@@ -2,6 +2,13 @@
 
 本文件记录本技能的版本与变更。自 v2610.9 起，公开版本按日期 `vYYMM.D` 编号，同日迭代加尾部序号；三技能与 Bundle 机器字段同步为 `YYMM.D.N`。历史能力代际编号原样保留，论文稿件版本不受此规则约束。变更同时更新 `SKILL.md`、锁、清单与当前 README。
 
+## v2611.13（2026-11-13；机器字段 2611.13.0）
+
+- 停止维护 Claude Code 专用适配：移除仓库插件清单、安装/更新命令、宿主映射和支持标记；保留历史版本记录。
+- 保留 Codex、Hermes、Devin、Google Antigravity、DeepSeek Harness 与标准技能目录分发；通用插件目录仍禁止更新器直接覆盖。
+- 三技能版本、发布清单与文件锁同步，完整技能目录作为正式 Release 附件提供。
+- 写作继续采用上游 v1.5；本次只调整宿主、安装说明、共享更新器和发布元数据，正式写作规则与评估场景不变。
+
 ## v2611.11（2026-11-11；机器字段 2611.11.0）
 
 - 增量同步 [VictorTran1023/law-paper-writing-skill v1.5](https://github.com/VictorTran1023/law-paper-writing-skill/tree/0454eea1d6ee8955199d9c4c2af7e4c3e9d10c73)，覆盖 v1.4.1、v1.4.2 与 v1.5；历史整合记录原样保留。

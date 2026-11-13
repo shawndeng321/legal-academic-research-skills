@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "bundle_id": "hermes-legal-research-skills",
-  "bundle_version": "2611.11.0",
+  "bundle_version": "2611.13.0",
   "skill_name": "law-paper-writing",
-  "skill_version": "2611.11.0",
+  "skill_version": "2611.13.0",
   "files": {
     ".gitignore": "6a81b94bd1bead23e3cabf52807afab7d89e3d73023b8da34e226fa951889b54",
     "agents/openai.yaml": "293e43ac9fc74fcf926fe76d0eaf1d543e5c7f935dcaccf2babbcc47dcf52007",
@@ -18,7 +18,7 @@
     "assets/templates/revision-response.md": "5519efdfece0eb94b44e19a03b6e0924fa85b24614c818d1525d04487813805f",
     "assets/templates/source-register.md": "7247ee6ac6f83dbdc29612fa484e427fbab16f46d57b7fbb8bab2656d5a55e24",
     "assets/templates/submission-checklist.md": "bc4d0c05d43946eb5923a91cd18b0d6dea9553a3adf4b15c70ca95fb63a3c0ea",
-    "CHANGELOG.md": "857d5811ecf8e7ffe7a9f9ffc6c5e9fb24165649e6fdb3dc6be605a335cc1f68",
+    "CHANGELOG.md": "5128f7f5a7e638f2eabd67818528def2e0d335b3fee86dce4fded2846654df16",
     "evals/2026-09-09-review.md": "a08a875932764f9883c510471dd3bb02cd285246e602b29d831835e040c75841",
     "evals/2026-09-18-writing-review.md": "758828912b82fea5773414bc6383c87075d7b3f4166b2a7585d9122de378bf9a",
     "evals/argumentation-cases.md": "5faef50c3308e7932af46e804d51f48fc8798508dc3c309558ec5178dd7b675b",
@@ -30,7 +30,7 @@
     "evals/writing-evaluation.md": "5d8782671b36e816542f797cd89ab9a751b3d3830b157c1fa26b0ef4db7d6256",
     "evals/writing-inputs.md": "5901f22c44689316ada2938fcc87a4991bebb04e9f1e7d58de579df99af00be3",
     "LICENSE": "911bbb65eefae9246cc68a14856c88c28ba0f965b6e4aa3f901d79ae1fda63e6",
-    "README.md": "ddff42cfcebd9f0ec83664343c8e4cdc860421d1b8670c7d76e5e6a47b7daad8",
+    "README.md": "edfdc40a11c7e35970ad3b45499c57005fcb0dfac63fd4ae3d2a02a06ccaf837",
     "references/argumentation-diagnostics.md": "129e7c9bca108b98ac9c62993d973252df41cea28dc1e261c50c642957626a60",
     "references/citation-format-chinese.md": "4dfac29369fb78fdda8528e6f39185fa248af81861e003276491d78d021b35f8",
     "references/citation-format-examples.md": "69676f783d2abadf98c56c6ddf1e98c8ff219a3c27d1ef16cfcc540ef691aa61",
@@ -43,15 +43,15 @@
     "references/docx-production.md": "2a174c650f86a61d4342d5a652120d5dd87989293336049526b9c0416a7c6dc2",
     "references/empirical-case-research.md": "017100d8441f8b0c03c5c1cf3c7350066813ffb63b7a9393de9ac0fd4f56819e",
     "references/evidence-and-legal-validity.md": "ad38e4a03eab02857207270d163cd899a75b89ccf70fab08dde06c6dc7c8aeda",
-    "references/host-adapters.md": "b65b57e58efab13d4bd64b75f51113e17d27e8479ec99918098aa219043515a6",
+    "references/host-adapters.md": "1d93be5e3b5d443da455104dfcae7b7879a84b4f4d13d1f68fe9112e9e7d0840",
     "references/journal-adaptation.md": "7c16e22fd60064660d1dc22fc639b30afaa7930fd2d07ceb8b9d696216bed596",
     "references/legal-prose.md": "1825d03d7bc974b3680a09fbf5dede09878ea925e863dcdbcf08f6c1a1828cf5",
-    "references/multimodal-citation-format.md": "dd4a802fdc185dc5eafc0fe93f7137be1ba3742b1728df4bd23f3c16f77af256",
-    "references/obsidian-knowledge-base.md": "f0267a56dc1e4423b1db78d9d3bffb65868b8ee3c5ba6d5e1168d5ebc85cb911",
+    "references/multimodal-citation-format.md": "12fa76a602fbad11adfcefe117f9a128ca4d7e6a9b5ab011e7c8384d1f26935d",
+    "references/obsidian-knowledge-base.md": "2774e337e4839d7d648b1f1c7ef33eaaf390cf3d628867dee79fde0feb5a846f",
     "references/requirement-decomposition.md": "1c22ebb47737340359c45254a8169a3debd8cd611b950eca4d21e1ae36e77b02",
     "references/workflow.md": "74be90e3c7bcbe10ab349318af5332a922ed7939b84b65e1504cc2a9d3edacc1",
-    "scripts/legal_skills_update.py": "7d0e1d5e448f97ba34a8a423c0302ce7beb9d2ca4624c5b730b1922989244c3a",
+    "scripts/legal_skills_update.py": "2bcfc4560dd57be290f36bbe58bc962ee1dbc413b06e813091e2143b3b1b7080",
     "scripts/md2docx_footnotes.py": "78a4423c3f3613b137c77c0df232a5d0edf0c2fb0b6c3445331f2adb631419e8",
-    "SKILL.md": "177401cb461ed639b1c21615a33ecb974c5f03fb53ea536d09e105eb47556218"
+    "SKILL.md": "12f546ade4e28fd5ab8efda20d0a64c77b238f0c58d6c463269e39746284e9b4"
   }
 }

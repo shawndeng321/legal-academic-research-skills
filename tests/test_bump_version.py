@@ -16,7 +16,6 @@ SKILLS = (
     "legal-wiki-audit-repair",
 )
 SYNCED_FILES = [
-    ".claude-plugin/plugin.json",
     "README.md",
     "law-paper-writing/README.md",
     "legal-research-wiki/README.md",
@@ -62,8 +61,7 @@ class BumpVersionTests(unittest.TestCase):
                 with self.subTest(skill=name):
                     skill = (root / name / "SKILL.md").read_text(encoding="utf-8")
                     self.assertIn('  version: "2610.18.1"', skill)
-            plugin = (root / ".claude-plugin/plugin.json").read_text(encoding="utf-8")
-            self.assertIn('"version": "2610.18.1"', plugin)
+            self.assertFalse((root / ".claude-plugin").exists())
             readme = (root / "README.md").read_text(encoding="utf-8")
             self.assertEqual(readme.count("| **v2610.18.1** |"), 3)
             paper = (root / "law-paper-writing/README.md").read_text(encoding="utf-8")

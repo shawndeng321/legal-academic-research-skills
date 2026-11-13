@@ -179,16 +179,9 @@ class SkillCompatibilityTests(unittest.TestCase):
         self.assertIn("$hermesHome", root_readme)
         self.assertIn("复制完整技能目录", root_readme)
         self.assertIn("## 2026-09 更新内容", root_readme)
-        self.assertIn(
-            "claude plugin marketplace add "
-            "shawndeng321/legal-academic-research-skills",
-            root_readme,
-        )
-        self.assertIn(
-            "claude plugin install legal-academic-research@legal-academic-research",
-            root_readme,
-        )
-        self.assertIn(".claude/skills", root_readme)
+        installation = root_readme.split("## 安装", 1)[1]
+        self.assertNotIn("claude plugin", installation)
+        self.assertNotIn(".claude/skills", installation)
         self.assertIn(".agents/skills", root_readme)
         self.assertIn("git clone", root_readme)
         self.assertIn("#安装", root_readme)
@@ -213,25 +206,16 @@ class SkillCompatibilityTests(unittest.TestCase):
             self.assertIn("../README.md#自动更新", skill_readme)
             self.assertIn("--yes", skill_readme)
 
-    def test_claude_code_plugin_manifests_expose_all_skills(self) -> None:
+    def test_distribution_uses_skill_directories_without_plugin_manifests(self) -> None:
         import json
 
-        plugin = json.loads(
-            (ROOT / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
-        )
-        marketplace = json.loads(
-            (ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8")
-        )
-        self.assertEqual(plugin["name"], "legal-academic-research")
-        self.assertEqual(
-            sorted(plugin["skills"]), sorted(f"./{name}" for name in SKILLS)
-        )
+        self.assertFalse((ROOT / ".claude-plugin").exists())
         release = json.loads((ROOT / "bundle-release.json").read_text(encoding="utf-8"))
-        self.assertEqual(plugin["version"], release["bundle_version"])
-        self.assertEqual(marketplace["name"], "legal-academic-research")
-        entries = {entry["name"]: entry for entry in marketplace["plugins"]}
-        self.assertEqual(entries["legal-academic-research"]["source"], "./")
-        self.assertIn("owner", marketplace)
+        self.assertNotIn("claude_code", release["compatibility"])
+        self.assertEqual(set(release["skills"]), set(SKILLS))
+        for name in SKILLS:
+            self.assertTrue((ROOT / name / "SKILL.md").is_file())
+            self.assertTrue((ROOT / name / "agents" / "openai.yaml").is_file())
 
     def test_skills_are_host_neutral(self) -> None:
         for skill_name in SKILLS:
@@ -244,8 +228,9 @@ class SkillCompatibilityTests(unittest.TestCase):
                 self.assertIn("update_channel", body)
                 self.assertIn("python3 -X utf8 scripts/legal_skills_update.py check --json", body)
                 self.assertNotIn("`python -X utf8 scripts/legal_skills_update.py", body)
-                self.assertIn("claude plugin update", adapters)
-                self.assertIn("Claude Code 插件安装时跳过预检", body)
+                self.assertIn("managed-plugin", adapters)
+                self.assertNotIn("Claude Code", adapters)
+                self.assertIn("宿主管理的插件目录跳过预检", body)
                 self.assertIn("/plugins/cache/", body)
 
     def test_skills_document_devin_host_mapping(self) -> None:
@@ -258,7 +243,7 @@ class SkillCompatibilityTests(unittest.TestCase):
             with self.subTest(skill=skill_name):
                 adapters = adapter_bodies[skill_name].decode("utf-8")
                 body = (ROOT / skill_name / "SKILL.md").read_text(encoding="utf-8")
-                for section in ("## Claude Code", "## Google Antigravity", "## Devin"):
+                for section in ("## 插件目录保护", "## Google Antigravity", "## Devin"):
                     self.assertIn(section, adapters)
                 self.assertIn("~/.config/devin/skills/", adapters)
                 self.assertIn("Base directory", adapters)
@@ -395,7 +380,7 @@ class SkillCompatibilityTests(unittest.TestCase):
         self.assertIn("SKILL.md", root_readme)
         self.assertIn("agents/openai.yaml", root_readme)
         self.assertIn("X.Y.Z", root_readme)
-        self.assertIn("Claude Code、Codex、Hermes、Devin", root_readme)
+        self.assertIn("Codex、Hermes、Devin", root_readme)
         self.assertNotIn("兼容性测试 8/8", root_readme)
         self.assertNotIn("脚本安全测试 9/9", root_readme)
         self.assertIn("兼容性、脚本安全与 Bundle 更新器测试", root_readme)

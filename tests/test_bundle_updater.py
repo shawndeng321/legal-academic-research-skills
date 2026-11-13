@@ -399,6 +399,25 @@ class ReleaseContractTests(unittest.TestCase):
             self.assertEqual(checked.returncode, 0, checked.stderr)
             self.assertIn("Bundle 1.0.0 is consistent", checked.stdout)
 
+    def test_new_release_drops_retired_host_flag_and_preserves_other_flags(self):
+        with CanonicalTemporaryDirectory() as tmp:
+            root = Path(tmp)
+            prepare_temporary_repository(root)
+            self.assertEqual(write_release(root).returncode, 0)
+            manifest_path = root / "bundle-release.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertNotIn("claude_code", manifest["compatibility"])
+            manifest["compatibility"].update({"claude_code": True, "custom_host": True})
+            original_history = manifest["history"]
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            result = run_prepare(root, "--write", "--bundle-version", "1.1.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            updated = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertNotIn("claude_code", updated["compatibility"])
+            self.assertTrue(updated["compatibility"]["custom_host"])
+            self.assertEqual(updated["history"][:-1], original_history)
+            self.assertEqual(run_prepare(root, "--check").returncode, 0)
+
     def test_cli_check_rejects_tampered_lock_even_when_manifest_hash_matches(self):
         with CanonicalTemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -967,36 +986,45 @@ class SourceTransactionTests(unittest.TestCase):
                 "source-copy",
             )
 
-    def test_recognizes_claude_code_plugin_directories(self):
-        module = self.module
-        self.assertTrue(module.is_claude_plugin_path(
-            Path("/home/u/.claude/plugins/cache/m/p/2.0.0/law-paper-writing"), env={}
-        ))
-        self.assertTrue(module.is_claude_plugin_path(
-            Path("/opt/cfg/plugins/cache/m/p/2.0.0"), env={}
-        ))
-        self.assertTrue(module.is_claude_plugin_path(
-            Path("/opt/custom/plugins/marketplaces/m"), env={"CLAUDE_CONFIG_DIR": "/opt/custom"}
-        ))
-        self.assertFalse(module.is_claude_plugin_path(
-            Path("/home/u/.claude/skills/law-paper-writing"), env={}
-        ))
-        self.assertFalse(module.is_claude_plugin_path(
-            Path("/home/u/.codex/skills"), env={}
-        ))
+    def test_recognizes_managed_plugin_directories(self):
+        for path in (
+            "/home/u/.host/plugins/cache/m/p/2.0.0/law-paper-writing",
+            "/opt/custom/plugins/marketplaces/m",
+            "/opt/custom/plugins/direct-install",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(self.module.is_managed_plugin_path(Path(path)))
+        for path in ("/home/u/.codex/skills", "/home/u/plugins-notes/skills"):
+            with self.subTest(path=path):
+                self.assertFalse(self.module.is_managed_plugin_path(Path(path)))
 
-    def test_refuses_to_apply_into_a_claude_code_plugin_directory(self):
+    def test_refuses_to_apply_into_a_managed_plugin_directory(self):
         with CanonicalTemporaryDirectory() as tmp:
-            skills_root = Path(tmp) / ".claude" / "plugins" / "cache" / "m" / "p" / "2.0.0"
+            root = Path(tmp)
+            skills_root = root / "host" / "plugins" / "direct-install"
+            staged_root = root / "staged"
+            state_root = root / "state"
             skills_root.mkdir(parents=True)
             write_installation(skills_root)
-            with self.assertRaises(self.module.ArchiveError):
-                self.module.detect_installation_mode(skills_root, SKILLS)
+            manifest, files = make_transaction_bundle()
+            write_staged_bundle(staged_root, manifest, files)
+            before = {p.relative_to(skills_root).as_posix(): p.read_bytes()
+                      for p in skills_root.rglob("*") if p.is_file()}
+            result = self.module.apply_source_transaction(
+                skills_root, staged_root, manifest, state_root
+            )
+            self.assertEqual(result["status"], "rejected")
+            self.assertIn("plugin", result["message"].lower())
+            self.assertFalse(state_root.exists())
+            self.assertEqual(before, {p.relative_to(skills_root).as_posix(): p.read_bytes()
+                                     for p in skills_root.rglob("*") if p.is_file()})
 
     def test_check_reports_update_channel(self):
         with CanonicalTemporaryDirectory() as tmp:
-            plugin_skill = Path(tmp) / ".claude" / "plugins" / "cache" / "m" / "p" / "2.0.0" / SKILLS[0]
-            plain_skill = Path(tmp) / "skills" / SKILLS[0]
+            root = Path(tmp)
+            plugin_skill = root / "host" / "plugins" / "direct-install" / SKILLS[0]
+            anti_skill = root / ".gemini" / "config" / "plugins" / SKILLS[0]
+            plain_skill = root / "skills" / SKILLS[0]
             calls = []
 
             def fake_inner(skill_dir, **kwargs):
@@ -1004,15 +1032,11 @@ class SourceTransactionTests(unittest.TestCase):
                 return {"status": "cached", "fatal": False}
 
             with patch.object(self.module, "_check_for_update", fake_inner):
-                self.assertEqual(
-                    self.module.check_for_update(plugin_skill)["update_channel"],
-                    "claude-plugin",
-                )
-                self.assertEqual(
-                    self.module.check_for_update(plain_skill)["update_channel"],
-                    "bundle",
-                )
-            self.assertEqual(calls, [plugin_skill, plain_skill])
+                for path, channel in ((plugin_skill, "managed-plugin"),
+                                      (anti_skill, "antigravity-plugin"),
+                                      (plain_skill, "bundle")):
+                    self.assertEqual(self.module.check_for_update(path)["update_channel"], channel)
+            self.assertEqual(calls, [plugin_skill, anti_skill, plain_skill])
 
     def test_applies_three_skills_and_keeps_timestamped_backup(self):
         with self.fixture() as fixture:

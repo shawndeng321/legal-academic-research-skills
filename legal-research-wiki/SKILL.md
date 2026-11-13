@@ -3,7 +3,7 @@ name: legal-research-wiki
 description: "Use when building or querying a Chinese legal wiki. 法学研究Wiki建库（Obsidian/Markdown）：摄入论文PDF/案例汇编/法律法规与司法解释/初稿/图片音频、研究设计、论文—案例—法规范关联、知识库查询. For auditing an existing wiki use legal-wiki-audit-repair."
 license: MIT
 metadata:
-  version: "2611.11.0"
+  version: "2611.13.0"
 ---
 
 # 法学研究 Wiki 建库
@@ -11,7 +11,7 @@ metadata:
 ## 预检与运行环境
 
 - **更新预检**：同一会话里本技能包任一技能已预检过就不再重复；否则运行 `python3 -X utf8 scripts/legal_skills_update.py check --json`（Windows 用 `py`；不在技能目录执行时拼成绝对路径）。结果按 6 小时缓存。只有 `update_available` 才向用户展示 `[立即更新] [查看更新说明] [稍后提醒] [忽略此版本]`；其他状态（含离线、沙箱拒绝）静默继续，不为预检申请权限。没有用户的明确确认，绝不运行 `apply`。
-- **Claude Code 插件安装时跳过预检**：基础目录含 `/plugins/cache/` 或位于 `.claude/plugins/` 下，或 `update_channel` 为 `claude-plugin`／`antigravity-plugin` 时，更新由宿主插件管理器负责，不运行 `apply`；更新命令见 [host-adapters.md](references/host-adapters.md)。
+- **宿主管理的插件目录跳过预检**：基础目录含完整的 `/plugins/` 路径组件（如 `/plugins/cache/`），或 `update_channel` 为 `managed-plugin`／`antigravity-plugin` 时，不运行预检或 `apply`，由宿主插件管理器处理；说明见 [host-adapters.md](references/host-adapters.md)。
 - `references/`、`assets/`、`scripts/` 均相对本技能目录；需要 Python 3.9+。宿主专属路径与工具名见 [host-adapters.md](references/host-adapters.md)，只读当前宿主那一节。
 
 ## 适用范围

@@ -194,7 +194,7 @@ def _normalize_release_input(root: Path, release: dict, *, skill_names: tuple[st
 
     compatibility = release.get("compatibility")
     if compatibility is None:
-        compatibility = {"hermes": True, "claude_code": True, "codex": True, "python": ">=3.9"}
+        compatibility = {"hermes": True, "codex": True, "python": ">=3.9"}
     elif not isinstance(compatibility, dict):
         raise ValueError("compatibility must be a mapping")
 
@@ -288,6 +288,9 @@ def _resolve_release(root: Path, args: argparse.Namespace) -> dict:
         release = _release_from_existing_manifest(existing)
     else:
         release = {}
+    if isinstance(release.get("compatibility"), dict):
+        release["compatibility"] = dict(release["compatibility"])
+        release["compatibility"].pop("claude_code", None)
     if args.bundle_version is not None:
         release["bundle_version"] = args.bundle_version
         # A new release derives its skill identities/versions from the tree;

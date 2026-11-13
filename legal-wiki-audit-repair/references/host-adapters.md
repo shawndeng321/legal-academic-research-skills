@@ -2,10 +2,10 @@
 
 只读当前宿主那一节。通用规则以各技能 `SKILL.md` 为准，本文件只补路径、工具名与更新渠道。三个技能各带一份，内容一致。
 
-## Claude Code
+## 插件目录保护
 
-- 插件安装（基础目录含 `/plugins/cache/`，或位于 `.claude/plugins/` 下；预检结果 `update_channel` 为 `claude-plugin`）：不运行预检，更新由 Claude Code 负责。用户问起更新时，请其运行 `claude plugin marketplace update legal-academic-research` 与 `claude plugin update legal-academic-research@legal-academic-research`，再在会话中运行 `/reload-plugins`。
-- 个人技能目录 `~/.claude/skills/` 按普通源码安装处理。
+- 本包采用完整技能目录分发。安装路径含完整的 `plugins` 目录组件时，更新器拒绝直接覆盖，避免破坏宿主管理的插件；由宿主插件管理器更新，或另选普通技能目录进行源码安装。
+- `update_channel` 为 `antigravity-plugin` 时保留 Antigravity 渠道；其他插件目录统一为 `managed-plugin`。普通源码安装为 `bundle`。
 
 ## Google Antigravity
 
@@ -15,7 +15,7 @@
 
 ## Devin（CLI / Desktop）
 
-- 路径：全局 `~/.config/devin/skills/` 或 `~/.agents/skills/`，项目级 `<workspace>/.devin/skills/` 或 `<workspace>/.agents/skills/`。Devin 也读 `~/.claude/skills/`，同一技能只保留一处安装。
+- 路径：全局 `~/.config/devin/skills/` 或 `~/.agents/skills/`，项目级 `<workspace>/.devin/skills/` 或 `<workspace>/.agents/skills/`。同一技能只保留一处安装，避免多个扫描目录出现同名副本。
 - 命令在工作区目录执行：预检与技能脚本都用加载技能时给出的 `Base directory` 拼绝对路径，如 `python3 -X utf8 "<Base directory>/scripts/legal_skills_update.py" check --json`。
 - 工具：提问用 `ask_user_question`（每次至多 4 题、每题 2—4 个选项，五问分两轮）；图片、截图、扫描页用 `read`，PDF、DOCX 用技能脚本抽取文本；只读检索可委派 `subagent_explore`，写入与核验结论由主会话完成；多阶段任务用 `todo_write` 跟踪；`web_search`／`webfetch` 取得的材料先登记来源再使用。
 

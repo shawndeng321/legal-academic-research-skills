@@ -3,7 +3,7 @@
 ## 职责边界
 
 - Obsidian（或其他 Markdown 知识库）保存原始资料索引、阅读笔记、来源元数据、摘录和作者分析。
-- 代理宿主（Hermes、Claude Code、Codex 或其他支持 `SKILL.md` 的工具）根据用户指定范围调用本 Skill，完成研究、结构、起草和审核。
+- 代理宿主（Hermes、Codex 或其他支持 `SKILL.md` 的工具）根据用户指定范围调用本 Skill，完成研究、结构、起草和审核。
 - 用 `legal-research-wiki` 建成的研究库同样适用本文件；回答中需要逐条溯源时另见 [note-level 溯源格式](multimodal-citation-format.md)。
 - Skill不得默认扫描整个 Vault，也不得把所有笔记全文塞入上下文。
 

@@ -798,25 +798,10 @@ def _validate_transaction_path_separation(
                 )
 
 
-def is_claude_plugin_path(
-    path: Path, env: Mapping[str, str] | None = None
-) -> bool:
-    """Return True for a skills tree inside Claude Code's plugin directory."""
-    values = os.environ if env is None else env
+def is_managed_plugin_path(path: Path) -> bool:
+    """Conservatively leave plugin directory trees under their host's control."""
     resolved = Path(path).expanduser().absolute()
-    parts = [part.lower() for part in resolved.parts]
-    for first, second in zip(parts, parts[1:]):
-        if (first, second) in {(".claude", "plugins"), ("plugins", "cache")}:
-            return True
-    config_dir = values.get("CLAUDE_CONFIG_DIR")
-    if config_dir:
-        plugins_root = Path(config_dir).expanduser().absolute() / "plugins"
-        try:
-            resolved.relative_to(plugins_root)
-            return True
-        except ValueError:
-            pass
-    return False
+    return "plugins" in {part.lower() for part in resolved.parts}
 
 
 def is_antigravity_plugin_path(path: Path) -> bool:
@@ -837,15 +822,15 @@ def detect_installation_mode(
 ) -> str:
     """Identify a normal copied-source installation without following links."""
     skills_root = Path(skills_root)
-    if is_claude_plugin_path(skills_root):
-        raise ArchiveError(
-            "Claude Code plugin installations are updated with "
-            "`claude plugin update`, not by this updater"
-        )
     if is_antigravity_plugin_path(skills_root):
         raise ArchiveError(
             "Antigravity plugin installations are updated through the plugin manager, "
             "not by directly overwriting plugin directories with this updater"
+        )
+    if is_managed_plugin_path(skills_root):
+        raise ArchiveError(
+            "Managed plugin directories are owned by their host; "
+            "use the host plugin manager or install a separate source copy"
         )
     _reject_symlink_ancestors(skills_root, "Skills root")
     if not skills_root.is_dir():
@@ -1760,8 +1745,8 @@ def check_for_update(
     path = Path(skill_dir)
     if is_antigravity_plugin_path(path):
         result["update_channel"] = "antigravity-plugin"
-    elif is_claude_plugin_path(path):
-        result["update_channel"] = "claude-plugin"
+    elif is_managed_plugin_path(path):
+        result["update_channel"] = "managed-plugin"
     else:
         result["update_channel"] = "bundle"
     return result
