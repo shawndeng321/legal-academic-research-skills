@@ -238,7 +238,7 @@ Expected: ERROR for each missing `agents/openai.yaml` file.
 Run the bundled Codex generator with these exact values:
 
 ```powershell
-$generator = 'C:\Users\Victor\.codex\skills\.system\skill-creator\scripts\generate_openai_yaml.py'
+$generator = Join-Path $HOME '.codex\skills\.system\skill-creator\scripts\generate_openai_yaml.py'
 python -X utf8 $generator chinese-law-paper-writing --interface 'display_name=中国法学论文写作' --interface 'short_description=以可核验来源规划、起草、修改和审核中国法学期刊论文' --interface 'default_prompt=Use $chinese-law-paper-writing to plan or review this Chinese legal journal paper.'
 python -X utf8 $generator legal-research-wiki --interface 'display_name=法学研究 Wiki 建库' --interface 'short_description=构建并维护来源可追溯的中国法学研究 Obsidian Wiki' --interface 'default_prompt=Use $legal-research-wiki to build this Chinese legal research wiki.'
 python -X utf8 $generator legal-wiki-audit-repair --interface 'display_name=法学 Wiki 审计修复' --interface 'short_description=审计并分批修复法学研究 Wiki 的结构、链接和内容质量' --interface 'default_prompt=Use $legal-wiki-audit-repair to audit this legal research wiki before repairs.'
@@ -359,7 +359,7 @@ Expected: three tests pass with zero failures and zero errors.
 - [ ] **Step 2: Run Codex validation for every skill**
 
 ```powershell
-$validator = 'C:\Users\Victor\.codex\skills\.system\skill-creator\scripts\quick_validate.py'
+$validator = Join-Path $HOME '.codex\skills\.system\skill-creator\scripts\quick_validate.py'
 python -X utf8 $validator chinese-law-paper-writing
 python -X utf8 $validator legal-research-wiki
 python -X utf8 $validator legal-wiki-audit-repair

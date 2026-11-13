@@ -179,7 +179,7 @@
 
 - [ ] **Step 2: Run all skill validators**
 
-  Run `python -X utf8 C:\Users\Victor\.codex\skills\.system\skill-creator\scripts\quick_validate.py <skill-directory>` for each of the three skills and require `Skill is valid!` three times.
+  Run `python -X utf8 "$HOME\.codex\skills\.system\skill-creator\scripts\quick_validate.py" <skill-directory>` for each of the three skills and require `Skill is valid!` three times.
 
 - [ ] **Step 3: Run artifact and diff checks**
 
