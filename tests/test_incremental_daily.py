@@ -213,6 +213,44 @@ class IncrementalTests(unittest.TestCase):
         self.assertFalse(result['execution']['machine_scan_complete'])
         self.assertFalse(self.receipt.exists())
 
+    def test_raw_yaml_parse_failure_is_incomplete_and_never_cached(self):
+        path = self.wiki/'raw/evidence.md'
+        original = path.read_bytes()
+        path.write_text('---\ntitle: [broken\n---\n合成正文\n', encoding='utf-8')
+        before = contents(self.wiki)
+        result = self.run_check('--save-state', self.receipt)
+        self.assertFalse(result['execution']['machine_scan_complete'])
+        self.assertIn('raw/evidence.md', result['unreadable_raw'])
+        self.assertTrue(any(f['rule'] == 'RAW-05' for f in result['findings']))
+        self.assertEqual(result['summary']['exit_code'], 1)
+        self.assertFalse(self.receipt.exists())
+        again = self.run_check('--incremental', '--baseline', self.receipt)
+        self.assertEqual(again['execution']['mode'], 'full')
+        self.assertFalse(again['execution']['machine_scan_complete'])
+        self.assertEqual(comparable(result), comparable(again))
+        self.assertEqual(contents(self.wiki), before)
+        path.write_bytes(original)
+        repaired = self.run_check('--save-state', self.receipt)
+        self.assertTrue(repaired['execution']['machine_scan_complete'])
+        self.assertTrue(self.receipt.is_file())
+        self.assertEqual(self.run_check('--baseline', self.receipt)['execution']['mode'], 'reused')
+
+    def test_unreadable_changed_page_falls_back_and_matches_full(self):
+        self.run_check('--save-state', self.receipt)
+        (self.wiki/'entities/a.md').write_bytes(b'\xff\xfe\xffcannot decode')
+        before = contents(self.wiki)
+        output = self.parent/'incomplete.json'
+        result = self.run_check('--incremental', '--baseline', self.receipt,
+                                '--save-state', output)
+        full = self.run_check('--force-full')
+        self.assertEqual(comparable(result), comparable(full))
+        self.assertEqual(result['execution']['mode'], 'full')
+        self.assertEqual(result['execution']['checks_reused'], [])
+        self.assertTrue({'IDX-01', 'IDX-03'} <= {f['rule'] for f in result['findings']})
+        self.assertFalse(result['execution']['machine_scan_complete'])
+        self.assertFalse(output.exists())
+        self.assertEqual(contents(self.wiki), before)
+
     def test_changed_target_rechecks_inbound_anchors_and_legal_dependencies(self):
         a = self.wiki/'entities/a.md'
         a.write_text(a.read_text(encoding='utf-8')+'\n[[entities/c#c]]\n', encoding='utf-8')

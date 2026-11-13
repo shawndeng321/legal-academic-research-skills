@@ -217,6 +217,11 @@ def run(wiki, strict=False, privacy=False, baseline=None, save_state=None, force
         result, complete = old['result'], True
     else:
         result, complete = full_audit(wiki, strict, privacy, selected, old['result'] if old else None)
+        if selected is not None and not complete:
+            # Unreadable pages can change the collected page set, invalidating
+            # index checks even when the on-disk path namespace is unchanged.
+            selected, reason = None, 'incremental_scan_incomplete'
+            result, complete = full_audit(wiki, strict, privacy)
     after = snapshot(wiki)
     stable = before == after and engine == engine_identity(strict, privacy) and day == date.today().isoformat()
     complete = complete and stable

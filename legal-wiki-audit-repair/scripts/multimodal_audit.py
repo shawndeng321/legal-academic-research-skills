@@ -389,6 +389,7 @@ class Audit:
             except yaml.YAMLError as exc:
                 self.add("RAW-05", "broken", "来源", rel, "文件",
                          f"frontmatter 解析失败：{getattr(exc, 'problem', exc)}")
+                self.raw_unreadable.append(rel)
                 continue
             if isinstance(data, dict) and data.get("sha256") in PLACEHOLDER_HASHES:
                 self.add("RAW-06", "broken", "来源", rel, "frontmatter", "占位 sha256")
