@@ -104,7 +104,7 @@ class Finding:
 
     def __init__(self, rule, severity, scope, path, location, message, paths=None):
         self.rule = rule
-        self.severity = severity      # broken / warning / pass
+        self.severity = severity      # broken / warning / observation / pass
         self.scope = scope            # 结构 / 来源 / 内容 / 链接 / 卫生 / 日志
         self.path = path
         self.location = location
@@ -566,9 +566,9 @@ class Audit:
         under = [(rel, len(outbound.get(rel, ()))) for rel in sorted(knowledge)]
         under = [(rel, n) for rel, n in under if n < 2]
         for rel, n in under:
-            self.add("LINK-08", "warning", "链接", rel, "文件", f"出站链接不足（{n} < 2）")
+            self.add("LINK-08", "observation", "链接", rel, "文件", f"出站链接数量观察（{n} < 2）；按依据建立关联，不为数量补链接")
         if self.pages and not under:
-            self.add("LINK-9", "pass", "链接", "（全库）", "全库", "所有页面出站链接均 ≥2")
+            self.add("LINK-9", "pass", "链接", "（全库）", "全库", "无低出链数量观察项；关系依据仍需人工核验")
         broken = any(f.severity == "broken" for f in self.findings if f.scope == "链接")
         warning = any(f.severity == "warning" for f in self.findings if f.scope == "链接")
         stats["status"] = "fail" if broken else ("warn" if warning else "pass")
@@ -929,7 +929,7 @@ CHECK_TITLES = {
     4: "链接完整性", 5: "文件卫生与惯例", 6: "日志格式",
     7: "法学专项（法规范时效、案件去重、隐私格式）",
 }
-SEVERITY_LABEL = {"broken": "🔴 阻断", "warning": "🟡 提示"}
+SEVERITY_LABEL = {"broken": "🔴 阻断", "warning": "🟡 提示", "observation": "🔵 观察"}
 STATUS_LABEL = {"pass": "✅ 通过", "warn": "🟡 有提示", "fail": "🔴 有阻断", "not_checked": "⚪ 未检查"}
 
 
@@ -975,6 +975,8 @@ def print_report(audit, verbose=False):
     print("汇总")
     print("=" * 72)
     print("  🔴 阻断项：{}｜🟡 提示项：{}".format(len(broken), len(warnings)))
+    print("  🔵 数量观察项：{}（不影响退出码，--strict 也不计入失败）".format(
+        sum(f.severity == "observation" for f in audit.findings)))
     if audit.unreadable:
         print("  ⚪ 解析失败、其余检查未执行的页面（{}）：{}".format(
             len(audit.unreadable), "、".join(audit.unreadable if verbose else audit.unreadable[:8]) +
@@ -1008,7 +1010,8 @@ def build_result(audit, strict, exit_code):
             for n in range(1, 8)
         ],
         "findings": [f.to_dict() for f in audit.findings if f.severity != "pass"],
-        "summary": {"broken": len(broken), "warning": len(warnings), "exit_code": exit_code},
+        "summary": {"broken": len(broken), "warning": len(warnings),
+                    "observation": sum(f.severity == "observation" for f in audit.findings), "exit_code": exit_code},
     }
 
 

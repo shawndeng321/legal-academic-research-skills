@@ -183,7 +183,8 @@ class AuditScanTests(unittest.TestCase):
             write(wiki, "concepts/孤页.md", fm(title="孤页") + "# 孤页\n")
 
             human = self.run_script(wiki)
-            self.assertIn("出站链接不足（0 < 2）", human.stdout)
+            self.assertIn("出站链接数量观察（0 < 2）", human.stdout)
+            self.assertIn("[LINK-07]", human.stdout)  # 真实孤页仍报告
             self.assertNotIn("所有页面出站链接均 ≥2", human.stdout)
 
     @requires_yaml
@@ -220,6 +221,12 @@ class AuditScanTests(unittest.TestCase):
             plain = self.run_script(wiki)
             self.assertEqual(plain.returncode, 0, plain.stdout[-2000:])
             strict = self.run_script(wiki, "--strict")
+            self.assertEqual(strict.returncode, 0, strict.stdout[-2000:])
+            # 数量观察不失败；真正的缺失锚点提示仍使严格模式失败。
+            with (wiki / "concepts/概念丙.md").open("a", encoding="utf-8") as f:
+                f.write("\n[[概念甲#不存在的章节]]\n")
+            strict = self.run_script(wiki, "--strict")
+            self.assertIn("[LINK-06]", strict.stdout)
             self.assertEqual(strict.returncode, 1, strict.stdout[-2000:])
 
         with tempfile.TemporaryDirectory() as tmp:

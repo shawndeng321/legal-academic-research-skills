@@ -19,6 +19,8 @@
 
 ## 深检脚本 `multimodal_audit.py`
 
+`LINK-08`（低出链数量）仅为 `observation` 观察项，在人类报告与JSON中保留，不影响退出码，`--strict` 下也不算失败。`LINK-06` 是锚点缺失，仍为提示；死链、空目标、歧义、自链接不计边及真实孤页的原判定保留。`summary.observation` 单列观察数，不混入 `warning`。关系真实性仍须人工回读证据。
+
 > 由审计技能 SKILL.md 第十一节迁出（v2610.17 精简）。
 
 `scripts/multimodal_audit.py "<WIKI_PATH>" [--json] [--strict] [--privacy]`：七项全库深检——索引一致性、未摄入原始材料、frontmatter 质量、链接完整性、文件卫生与惯例、日志格式、法学专项（法规范时效、案件去重、隐私格式）。中文报告，每条发现含规则编号（IDX/RAW/FM/LINK/HYG/LOG/NORM/DUP/PRIV）、路径、定位、严重程度与检查范围；退出码 0=通过、1=存在阻断项（`--strict` 下提示项也计入）、2=执行失败或扫描不完整，未扫描到对象时不输出“通过”。需要 PyYAML（见 `requirements-dev.txt`）；链接解析与 `legal-research-wiki` 的 `check_wikilinks.py` 共用 `scripts/wiki_links.py`（两份字节一致）。已按法学库适配：页面以 vault 相对路径为身份、同名文件单独报告；默认扫描整个 `raw/`（含 `cases/`、`法规范/`），仅 `raw/transcripts`、`raw/screenshots` 强制同名提取；frontmatter 用真实 YAML 解析并检查字段类型、空值与重复键（解析失败单列）；标签词表兼容分类标题式 SCHEMA，只对单次使用且不在词表中的标签提示；跳过 `.maintenance`、`drafts`、`_scripts`、备份与隐藏目录（备份不得掩盖死链）；正式目录、排除目录、必填字段、`norm_verify_max_age_days` 与 `privacy{enabled, extra_patterns}` 可用 vault 根的 `wiki-audit.config.json` 覆盖（`--privacy` 启用可选隐私检查，命中值打码、只报告不改动）。不要用上游 multimodal-wiki 的脚本覆盖。

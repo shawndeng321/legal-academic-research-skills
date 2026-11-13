@@ -80,7 +80,7 @@ confidence: medium                            # ASR 会误读人名与术语，�
 
 ### 4. 编织进 Layer 2（常规摄入步骤 ③④⑤⑥）
 
-检查已有页面，新建/更新实体页与概念页，交叉链接（≥2 个 `[[wikilinks]]`），更新 `index.md` + `log.md`。
+检查已有页面，新建/更新实体页与概念页，按实际证据建立交叉链接（数量仅作观察，不为凑数补链），更新 `index.md` + `log.md`。
 
 - 页面 frontmatter 引用来源：`sources: [raw/transcripts/<主题>.md]`。
 - 综合论断加溯源标记：`^[raw/transcripts/<主题>.md]`（格式见 `law-paper-writing` 技能的 `references/multimodal-citation-format.md`——raw 笔记路径是可追溯锚点）。
