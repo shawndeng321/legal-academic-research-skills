@@ -2,6 +2,14 @@
 
 本文件记录本技能的版本与变更。自 v2610.9 起，公开版本按日期 `vYYMM.D` 编号，同日迭代加尾部序号；三技能与 Bundle 机器字段同步为 `YYMM.D.N`。历史能力代际编号原样保留，论文稿件版本不受此规则约束。变更同时更新 `SKILL.md`、锁、清单与当前 README。
 
+## v2611.27（2026-11-27；机器字段 2611.27.0）
+
+- 增量同步 [VictorTran1023/law-paper-writing-skill v1.6](https://github.com/VictorTran1023/law-paper-writing-skill/tree/9e6507aed1f55946e3186a172346f9bf45860fa6)，强化正文—原文实质忠实度逆向核验与改稿压缩防失真；另两技能业务规则与脚本不变，仅随包同步版本号与文件锁。
+- 引注核验：`citation-integrity.md` 新增“实质忠实度逆向核查”（脱离起草记忆回翻原件、长文大改建议独立只读复核、局部修改仅查受影响引注），补“禁一注兜底无据推演”与事实通报/学理观点分注；`citation-audit.md` 拆为形式链路与实质忠实度两栏，`workflow.md` 增设第4轮“引注回原核验轮”，`claim-evidence-matrix.md` 提示附关键限定短摘录。
+- 法律、案例与样本边界：`evidence-and-legal-validity.md` 增补按材料触发的法条与条约实质四查（方向与编章、分款与但书前提、禁常识外延与未见全文推定常见条款、排查外文法典 `Draft`/非官方译本偏移，链接适配本包 `citation-format-chinese.md` 与 `citation-format-legal.md` 分册）、典型案例“裁判结果”与“典型意义”区分、会晤报道禁拔高为“达成共识”、转引多组统计样本分母隔离（同步 `empirical-case-research.md`）及检索摘要归入 `LEAD_ONLY` 与纸媒优先；保留规范参照论证与已核准外国法引注保护。
+- 表达润色、DOCX 与知识库协作：`legal-prose.md` 补结构性 AI 套话识别与改稿压缩四禁（合句不并款、缩句不混样本、对仗不添事实、拆句重对注位，保留有出处专有提法）；`docx-production.md`、`argumentation-diagnostics.md`、`workflow.md` 与 `submission-checklist.md` 补旧样稿页眉核对、对外修改说明与正文同步条号数据及内部工具话术脱敏；`obsidian-knowledge-base.md` 补多课题同库异题隔离及库内文件版本再核验。
+- 新增 `evals/citation-fidelity-cases.md`（C1—C12）并更新 `pressure-tests.md`；逐文件处置与验证边界见 [整合说明](../docs/upstream-integration-v2611.27.md)。
+
 ## v2611.13（2026-11-13；机器字段 2611.13.0）
 
 - 停止维护 Claude Code 专用适配：移除仓库插件清单、安装/更新命令、宿主映射和支持标记；保留历史版本记录。

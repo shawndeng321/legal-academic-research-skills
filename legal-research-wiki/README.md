@@ -4,7 +4,7 @@
 
 > 运行时入口是 [`SKILL.md`](SKILL.md)。本页解决“什么时候用、怎么开始、如何验收”；详细规则按需阅读 `references/`。
 >
-> **当前版本：v2611.13（2026-11-13；机器字段 2611.13.0）**。 本版发布已验收的建库与库审计优化，并移除 Claude Code 专用适配；写作规则保持上游 v1.5。变更见 [CHANGELOG.md](CHANGELOG.md)及[本次更新说明](../docs/nonwriting-updates-2026-11.md)。
+> **当前版本：v2611.27（2026-11-27；机器字段 2611.27.0）**。 本版发布已验收的建库与库审计优化，并移除 Claude Code 专用适配；写作规则保持上游 v1.5。变更见 [CHANGELOG.md](CHANGELOG.md)及[本次更新说明](../docs/nonwriting-updates-2026-11.md)。
 >
 > 同批最终状态验收：先完成页面、关联、索引与台账日志写入，再核验；相同最终状态可复用，后续写入须重新核验，见 [细则](references/final-state-validation.md)。
 >

@@ -20,18 +20,9 @@ For a full paper project, use the writing skill's five questions to define the p
 
 ## Current source update
 
-The **v2611.13 release (2026-11-13)** removes the Claude Code plugin manifests, installation commands, and dedicated host adapter. It also ships the 17 reviewed improvements to wiki ingestion, auditing, and documentation. Writing rules remain based on upstream **v1.5**. See the [release scope](docs/release-v2611.13.md).
+The **v2611.27 release (2026-11-27)** incrementally syncs `law-paper-writing` from upstream **v1.5** to **v1.6** (`9e6507a`), adding reverse substantive citation-fidelity checks against primary texts, statute direction/proviso and draft-translation checks, separation between court holdings and official typical-case commentary, multi-sample denominator isolation, `LEAD_ONLY` handling for search summaries, revision-compression safeguards, and synthetic evaluation cases `C1–C12`. `legal-research-wiki` and `legal-wiki-audit-repair` keep their **v2611.13** rules and scripts unchanged (syncing only bundle versions and lock files). See the [v2611.27 release scope](docs/release-v2611.27.md), [upstream v1.6 integration notes](docs/upstream-integration-v2611.27.md), and earlier [non-writing improvements](docs/nonwriting-updates-2026-11.md).
 
-- PDF extraction is reused only when source and output fingerprints and completion status match. Uncertain or changed inputs are preserved for review; empty-text pages require OCR or manual inspection.
-- Audit results distinguish passed, failed, and incomplete checks. The default console report is concise; JSON retains structured results, with full paths for index discrepancies.
-- Relationship counts cover links between actual knowledge pages. Low link quantity (`LINK-08`) is an observation; broken targets, empty targets, and missing anchors remain defects.
-- Machine validation can be reused only for unchanged final inputs and conditions. Pages, indexes, and logs must be saved before final validation. Source verification and page readback remain required.
-- Daily checks remain full scans by default. Incremental mode is explicit and conservative; incomplete reads or parsing prevent trusted reuse. Human checks never become passed merely because a cache matched.
-- The current model uses tools and independent agents when needed; no model-role registry is required for ingestion and auditing. Skill directories and wiki roots are resolved separately.
-
-See the [detailed update and limitations](docs/nonwriting-updates-2026-11.md). A synthetic small-wiki benchmark did **not** show an advantage over the original direct full scan, so incremental mode is optional.
-
-Download the complete skill directories from [v2611.13](https://github.com/shawndeng321/legal-academic-research-skills/releases/tag/v2611.13), or use source installation below. The bundle and skill versions are recorded in [bundle-release.json](bundle-release.json). Back up local changes before updating. Managed plugin directories remain protected from direct replacement; use the host plugin manager or a separate source installation. Older release notes are retained as historical records.
+Download the complete skill directories from [v2611.27](https://github.com/shawndeng321/legal-academic-research-skills/releases/tag/v2611.27), or use source installation below. The bundle and skill versions (`2611.27.0`) are recorded in [bundle-release.json](bundle-release.json). Back up local changes before updating. Managed plugin directories remain protected from direct replacement; use the host plugin manager or a separate source installation. Older release notes are retained as historical records.
 
 ## Installation
 

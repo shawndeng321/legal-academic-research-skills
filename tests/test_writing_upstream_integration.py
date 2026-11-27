@@ -105,6 +105,29 @@ class WritingUpstreamIntegrationTests(unittest.TestCase):
                     covered.update(range(start, end + 1))
         self.assertEqual(covered, set(range(1, 151)))
 
+    def test_v16_citation_fidelity_and_split_volume_links(self) -> None:
+        writing = ROOT / "law-paper-writing"
+        citation = (writing / "references/citation-integrity.md").read_text(encoding="utf-8")
+        evidence = (writing / "references/evidence-and-legal-validity.md").read_text(encoding="utf-8")
+        prose = (writing / "references/legal-prose.md").read_text(encoding="utf-8")
+        obsidian = (writing / "references/obsidian-knowledge-base.md").read_text(encoding="utf-8")
+        audit = (writing / "assets/templates/citation-audit.md").read_text(encoding="utf-8")
+        pressure = (writing / "evals/pressure-tests.md").read_text(encoding="utf-8")
+        fidelity_path = writing / "evals/citation-fidelity-cases.md"
+
+        self.assertTrue(fidelity_path.is_file())
+        fidelity = fidelity_path.read_text(encoding="utf-8")
+        for idx in range(1, 13):
+            self.assertIn(f"## C{idx} ", fidelity)
+        self.assertIn("citation-fidelity-cases.md", pressure)
+        self.assertIn("## 实质忠实度逆向核查", citation)
+        self.assertIn("禁一注兜底无据推演", citation)
+        self.assertIn("](citation-format-chinese.md)", evidence)
+        self.assertIn("](citation-format-legal.md)", evidence)
+        self.assertIn("合句不并款", prose)
+        self.assertIn("同库异题隔离", obsidian)
+        self.assertIn("## 二、正文—原文实质忠实度核查", audit)
+
 
 if __name__ == "__main__":
     unittest.main()

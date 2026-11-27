@@ -11,7 +11,7 @@
 
 <div align="center">
 
-![Version: v2611.13](https://img.shields.io/badge/Version-v2611.13-5C3D2E?style=flat-square)
+![Version: v2611.27](https://img.shields.io/badge/Version-v2611.27-5C3D2E?style=flat-square)
 ![Antigravity: Skill](https://img.shields.io/badge/Antigravity-Skill-4285F4?style=flat-square)
 ![Devin: Skill](https://img.shields.io/badge/Devin-Skill-0B6E4F?style=flat-square)
 ![DeepSeek Harness: Skill](https://img.shields.io/badge/DeepSeek%20Harness-Skill-4D6BFE?style=flat-square)
@@ -33,9 +33,9 @@
   <a href="#检验与能力边界">检验与边界</a>
 </p>
 
-**当前版本：v2611.13（机器字段 2611.13.0；2026-11-13）**
+**当前版本：v2611.27（机器字段 2611.27.0；2026-11-27）**
 
-本版：移除 Claude Code 的专用插件、安装与更新适配，统一随技能包发布。写作规则继续采用上游 **v1.5**，五问、论证、来源登记、三轮改稿、DOCX 真实脚注与引注核查保持；本次只调整宿主适配和版本元数据。上次写作同步的来源与验证边界见 [v2611.11 整合说明](../docs/upstream-integration-v2611.11.md)，更早记录见 [v2610.9 整合说明](../docs/upstream-integration-v2610.9.md)。
+本版：写作规则增量同步至上游 **v1.6**（`9e6507a`），新增正文—原文实质忠实度逆向核查、法条方向与分款但书核对、域外法草案译本排查、典型案例“裁判结果”与“典型意义”区分、转引多组样本隔离、检索摘要 `LEAD_ONLY` 边界、改稿压缩防失真与多份交付物同步脱敏，并增补 C1—C12 合成评估场景；保留本包五问、通用论证、DOCX 真实脚注、实证细则、知识库溯源、多宿主适配与引注 7 分册结构。本次同步来源与验证边界见 [v2611.27 整合说明](../docs/upstream-integration-v2611.27.md)，历史同步记录见 [v2611.11 整合说明](../docs/upstream-integration-v2611.11.md) 与 [v2610.9 整合说明](../docs/upstream-integration-v2610.9.md)。
 
 ## 为什么使用
 
@@ -257,8 +257,8 @@ Word 正文、批注和修订的提取依赖运行环境的文档工具；本技
 #### 引注审核
 
 ```text
-使用 AUDIT 模式，检查以下正文、脚注和来源登记。
-从正文到脚注、从脚注到来源编号和原始资料双向核查；输出断链、待核项、法律版本问题与修复顺序。
+使用 AUDIT 模式，检查以下正文、脚注、来源登记与对应原始材料。
+除检查正文与脚注双向对应外，请脱离起草印象逐条回翻原始文件，核对法条方向与款项、限定前提、案例栏目边界、样本口径及注位对应；输出断链、失真项、待核项与修复顺序。
 ```
 
 #### 期刊适配
@@ -338,7 +338,7 @@ law-paper-writing/
 
 ## 检验与能力边界
 
-当前诊断与边界检验材料共 71 个场景：[24 个论证诊断场景](evals/argumentation-cases.md)、[9 个边界压力场景](evals/pressure-tests.md)、[6 个通用规则融合场景](evals/generic-fusion-cases.md)、[8 个引注体例场景](evals/citation-format-cases.md)、[24 个审读反馈与摘要场景](evals/review-feedback-cases.md)。这些是可执行的评估材料，不是已全部通过的成绩；v2611.11 同步新增 A13—A24、H19—H24 并修订相关旧场景。旧版 2026-09-09 桌面走查与 2026-09-14 静态检查只证明当时快照的对应范围，不充当本次结果。
+当前诊断与边界检验材料共 83 个场景：[24 个论证诊断场景](evals/argumentation-cases.md)、[9 个边界压力场景](evals/pressure-tests.md)、[6 个通用规则融合场景](evals/generic-fusion-cases.md)、[8 个引注体例场景](evals/citation-format-cases.md)、[24 个审读反馈与摘要场景](evals/review-feedback-cases.md)、[12 个引注实质忠实度与改稿防失真场景](evals/citation-fidelity-cases.md)（C1—C12）。这些是可执行的评估材料，不是已全部通过的成绩；v2611.27 同步新增 C1—C12，v2611.11 同步新增 A13—A24、H19—H24 并修订相关旧场景。旧版 2026-09-09 桌面走查与 2026-09-14 静态检查只证明当时快照的对应范围，不充当本次结果。
 
 [检验记录](evals/2026-09-09-review.md) 是同一助手完成的桌面走查，不是独立模型盲测或多模型性能比较。它不证明特定模型能稳定识别所有论文问题，也不代表实际论文的法律、案例与文献已经核验。运行效果仍取决于材料完整性、模型和可用的检索、文档工具。
 
@@ -346,6 +346,6 @@ law-paper-writing/
 
 ## 来源说明
 
-本技能的 6.x 版本线由两条来源合并而成：[VictorTran1023/law-paper-writing-skill](https://github.com/VictorTran1023/law-paper-writing-skill) 1.2.0-rc.1 的通用写作方法（正文、参考文件、模板与评估），以及本技能包 5.x 中仍然通用的 DOCX、溯源与更新能力；版本变更见 [CHANGELOG.md](CHANGELOG.md)。 v2610.9 增量并入上游 v1.4.0，v2611.11 继续同步至上游 v1.5（`0454eea1d6ee8955199d9c4c2af7e4c3e9d10c73`）；本包日期版本与上游版本分别编号。
+本技能的 6.x 版本线由两条来源合并而成：[VictorTran1023/law-paper-writing-skill](https://github.com/VictorTran1023/law-paper-writing-skill) 1.2.0-rc.1 的通用写作方法（正文、参考文件、模板与评估），以及本技能包 5.x 中仍然通用的 DOCX、溯源与更新能力；版本变更见 [CHANGELOG.md](CHANGELOG.md)。 v2610.9 增量并入上游 v1.4.0，v2611.11 继续同步至上游 v1.5（`0454eea1d6ee8955199d9c4c2af7e4c3e9d10c73`），v2611.27 继续同步至上游 v1.6（`9e6507aed1f55946e3186a172346f9bf45860fa6`）；本包日期版本与上游版本分别编号。
 
 初始方法源于《关于中国法学类CSSCI期刊发表论文的写作过程与方法》，并结合论文修改反馈提炼了学术增量、理论框架、章节衔接和反馈落实检查，同时保留目标期刊适配、证据核验、引用完整性、法律时效和 Obsidian 协作规则。检验示例使用合成材料，不包含私人稿件全文、身份信息或原始批阅文件。它提供的是可审查的写作流程，不是任何 Hermes、OpenAI、Obsidian、CSSCI 期刊或其他机构的官方指南、认证或录用承诺。

@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "bundle_id": "hermes-legal-research-skills",
-  "bundle_version": "2611.13.0",
+  "bundle_version": "2611.27.0",
   "skill_name": "legal-research-wiki",
-  "skill_version": "2611.13.0",
+  "skill_version": "2611.27.0",
   "files": {
     "agents/openai.yaml": "32715f38b3c294e6047531ee661833abff9f33aa927f70a67029405dcc0b7fae",
     "assets/templates/anchor-draft.md": "4a27a29e0c67e4e4ae60b201cfb41d7dcef61db92727c0c1ed916bded03c15dd",
@@ -30,7 +30,7 @@
     "CHANGELOG.md": "be1491fa5ff5e69083d234e0b50e95b2e8675dff4b971472e915dd194bc52d39",
     "evals/pressure-tests.md": "d7e8563c11f8f9318486035d29ce586a6c5ee6a4209dc4b3b109f7cd941cd1a2",
     "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "README.md": "023a7dccd64ea48852e5986d88467cd7f8a34c8e099516bc78bfa73035662752",
+    "README.md": "2ed1bfd7455bf6b5934ff9eb524630b4bc35e525b1d551d8f4390d167717d517",
     "references/case-ingestion.md": "2c0a848fb62f37340ee1a19b00752be80d5feba5ff6a54ddf56c79d736221c66",
     "references/content-completeness.md": "5c48a61039139f6022f8ca662343a73630b54f165b025c481be9962f52f41a95",
     "references/directory-layout-and-page-types.md": "338119db7bb3b44a5f2cf88be4ca59ef60a08fc816407eaace440a471e300e21",
@@ -63,6 +63,6 @@
     "scripts/clean_pdf_artifacts.py": "6de7f59e6357f51e74fde39e36d2721026ba63f97f6c5179d6ec7fecca5f9560",
     "scripts/legal_skills_update.py": "d68280bcbcec0f47a73a9c0df55afccca08543655aa281f83e0e3ff99a6ab3f0",
     "scripts/wiki_links.py": "273091dfa808e3086f9f2733db19f5e32ec5f3f4009413186f47d3e529a1bbe5",
-    "SKILL.md": "846273aeacfb7e11d1d46ce78dde81a28002d1cc743ffd4e035f027adb5e2ead"
+    "SKILL.md": "f2a36749f1de9b0400555055a1b9b6205ef1a8a7ca728f2f45b53ff684235d6d"
   }
 }

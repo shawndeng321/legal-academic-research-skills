@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "bundle_id": "hermes-legal-research-skills",
-  "bundle_version": "2611.13.0",
+  "bundle_version": "2611.27.0",
   "skill_name": "legal-wiki-audit-repair",
-  "skill_version": "2611.13.0",
+  "skill_version": "2611.27.0",
   "files": {
     "agents/openai.yaml": "466d7c1256241fea798dfdfe807de841800c5102164bb22715c6dc1d6f13af0b",
     "CHANGELOG.md": "494a9bba6064c5f9f2478aaed435799b1fe559bb4f1aa91675e229fe04df5aca",
     "evals/behavior-runs.md": "9b97087e9254ddadc58caf66bcba1d22dbc340bd5f3ab09d3714aab9782b7d70",
     "evals/pressure-tests.md": "48f01334822c9d8ee9b61b17d19f05eb9c102459c5f6194fd4105b4d8b108ae2",
     "LICENSE": "b3f9110f538701c205a0aade6a72efc69ba5acf96b27caa17814a6332a510b85",
-    "README.md": "9ebd40ec80f9f4093449802d689dffdb7aa601e0c19dad8cad12a1e821e00a5c",
+    "README.md": "fc5a4934196183177a389e01fe81339014d7f49ca12bdc4772e5edd29277b7c5",
     "references/academic-usability-checklist.md": "1259cc71f65f9a7fcf1a7d023dea1afe64b8270db311a4828cf3866b22a14265",
     "references/batch-operations.md": "4b61d5cad02db118e22c715c3ad4ab574c9d4f3fc55c4d965e81faa2188e5bae",
     "references/comparison-page-format.md": "5e6586f78eb942684564a0c1d71d7eb2d4dd2b33d06ac3cbdcfb13b47b30500d",
@@ -36,6 +36,6 @@
     "scripts/sync_paper_case_links.py": "25a6b450a629d80551efaa71f1327737130a43a4c795087dc05562a050c20e01",
     "scripts/verify_case_link_sections.py": "5d8cd0a2ef73c89275a9169012dd2a7315a9c6a6d204c149086094aa4c6fb749",
     "scripts/wiki_links.py": "273091dfa808e3086f9f2733db19f5e32ec5f3f4009413186f47d3e529a1bbe5",
-    "SKILL.md": "5b6c5bb09e3a01a27e97001039dd801c302c6dd44ff1e73ffe8f679ba03c0270"
+    "SKILL.md": "59bc4d8ecb3b990307c395fa459a6f95e57e69acc86b382fba4d75c831ee9456"
   }
 }
